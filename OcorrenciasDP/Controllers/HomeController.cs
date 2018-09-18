@@ -4,32 +4,80 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using OcorrenciasDP.Database;
 using OcorrenciasDP.Models;
 
-namespace OcorrenciasDP.Controllers {
-    public class HomeController : Controller {
-        public IActionResult Index() {
+namespace OcorrenciasDP.Controllers
+{
+    public class HomeController : Controller
+    {
+
+        private DatabaseContext _db;
+        public HomeController(DatabaseContext db)
+        {
+            _db = db;
+        }
+
+        public IActionResult Inicio()
+        {
+            var usuarios = _db.Int_Dp_Usuarios.ToList();
+            return View(usuarios);
+        }
+
+        [HttpGet]
+        public ActionResult Index()
+        {
+            ViewBag.Usuario = new Usuario();
             return View();
         }
 
-        public IActionResult About() {
+        [HttpPost]
+        public ActionResult Index([FromForm]Usuario usuario)
+        {
+            
+
+            if (ModelState.IsValid) //Se a autenticação é válida
+            {
+                // var id = _db.Int_Dp_Usuarios.
+
+                if (usuario.Login.ToLower() == "aleff" && usuario.Senha.ToLower() == "123456")
+                {
+                    return RedirectToAction("Inicio", "Home"); //Vai para a página de Início
+                }
+                else
+                {
+                    ViewBag.Mensagem = "Os dados informados são inválidos!";
+                    return View();
+                }
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+        public IActionResult About()
+        {
             ViewData["Message"] = "Your application description page.";
 
             return View();
         }
 
-        public IActionResult Contact() {
+        public IActionResult Contact()
+        {
             ViewData["Message"] = "Your contact page.";
 
             return View();
         }
 
-        public IActionResult Privacy() {
+        public IActionResult Privacy()
+        {
             return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error() {
+        public IActionResult Error()
+        {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }

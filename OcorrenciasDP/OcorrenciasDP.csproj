@@ -5,7 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="NovaPasta1\**" />
+    <Compile Remove="Views\NovaPasta\**" />
+    <Content Remove="NovaPasta1\**" />
+    <Content Remove="Views\NovaPasta\**" />
+    <EmbeddedResource Remove="NovaPasta1\**" />
+    <EmbeddedResource Remove="Views\NovaPasta\**" />
+    <None Remove="NovaPasta1\**" />
+    <None Remove="Views\NovaPasta\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
   </ItemGroup>
 
 </Project>
