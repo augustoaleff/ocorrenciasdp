@@ -42,6 +42,8 @@ namespace OcorrenciasDP
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1); //Adiciona o serviço do MVC
+            services.AddDistributedMemoryCache();
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,6 +62,8 @@ namespace OcorrenciasDP
             app.UseHttpsRedirection();
             app.UseStaticFiles(); //Usa os arquivos estáticos como imagens e documentos
             app.UseCookiePolicy();
+
+            app.UseSession();
 
             app.UseMvc(routes =>
             { //Habilita o uso do MVC

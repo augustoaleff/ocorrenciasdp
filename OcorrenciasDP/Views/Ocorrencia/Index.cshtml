@@ -1,0 +1,31 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewData["Title"] = "Ocorrências";
+}
+
+<h2>Inclusão de Ocorrência</h2>
+<br />
+<form>
+    <div class="form-group">
+        <label for="nome">Nome</label>
+        <input type="text" name ="nome"class="form-control" id="nome" placeholder="">
+    </div>
+    <div class="form-group">
+        <label for="data">Data</label>
+        <input type="date" name="data" class="form-control" id="data" >
+    </div>
+    <div class="form-group">
+        <label for="ocorrencia">Ocorrência</label>
+        <textarea class="form-control" name="ocorrencia "id="ocorrencia" rows="5"></textarea>
+    </div>
+     <div class="custom-file">
+        <input type="file" class="custom-file-input" id="customFileLang" lang="pt-br">
+        <label class="custom-file-label" for="customFileLang">Selecionar Arquivo</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enviar</button>
+</form>
