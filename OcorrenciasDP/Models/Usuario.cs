@@ -15,5 +15,10 @@ namespace OcorrenciasDP.Models
 
         [Required(ErrorMessage = "O campo 'Senha' é obrigatório")]
         public string Senha { get; set; }
+
+        public byte Ativo { get; set; }
+        public string Nome { get; set; }
+        public string Setor { get; set; }
+        public string Perfil { get; set; }
     }
 }

@@ -19,7 +19,9 @@ namespace OcorrenciasDP.Library.Filters
                     Controller controlador = context.Controller as Controller;
                     controlador.TempData["MensagemErro"] = "Efetue o login para acessar a página";
                 }
+
                 context.Result = new RedirectToActionResult("Index", "Home", null);
+
             }
             
         }

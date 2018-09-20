@@ -10,6 +10,7 @@ namespace OcorrenciasDP.Database
     public class DatabaseContext : DbContext
     {
         public DbSet<Usuario> Int_Dp_Usuarios { get; set; }
+        public DbSet<Ocorrencia> Int_DP_Ocorrencias { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {

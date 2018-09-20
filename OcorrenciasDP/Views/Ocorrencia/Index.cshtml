@@ -1,31 +1,135 @@
-﻿
+﻿@using Microsoft.AspNetCore.Http;
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Ocorrências";
+    string nome_login = Context.Session.GetString("Login");
+    string setor_login = Context.Session.GetString("Setor");
 }
 
-@{
-    ViewData["Title"] = "Ocorrências";
+
+@if (TempData["MsgOcorrenciaOK"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["MsgOcorrenciaOK"]
+    </div>
 }
+@if (TempData["MsgOcorrenciaNotOK"] != null)
+{
+    <!--
+    <div class="alert alert-danger" role="alert">
+        @TempData["MsgOcorrenciaNotOK"]
+    </div>
+    -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        Launch demo modal
+    </button>
+    <!--
+    <div class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Atenção</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p> Já existe uma ocorrencia cadastrada para esta data, deseja atualizar?</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="/Ocorrencia/Atualizar" id="botaoupdate" type="button" class="btn btn-secondary" data-dismiss="modal">Sim</a>
+                    <button type="button" class="btn btn-primary">Não</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    -->
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Atenção</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Já existe uma ocorrencia cadastrada para esta data, deseja atualizar?
+                </div>
+                <div class="modal-footer">
+                    <a href="/Ocorrencia/Atualizar" id="botaoupdate" type="button" class="btn btn-secondary" data-dismiss="modal">Sim</a>
+                    <button type="button" class="btn btn-primary">Não</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
 
 <h2>Inclusão de Ocorrência</h2>
 <br />
-<form>
-    <div class="form-group">
-        <label for="nome">Nome</label>
-        <input type="text" name ="nome"class="form-control" id="nome" placeholder="">
+<form method="post">
+    <div class="form-row">
+        <div class="form-group col-md-auto">
+            <label for="nome">Nome</label>
+            <input type="text" name="nome" class="form-control" id="usuario" value="@nome_login" placeholder="" readonly>
+        </div>
+        <div class="form-group col-md-auto">
+            <label for="setor">Setor</label>
+            <input type="text" name="setor" class="form-control" id="setor" value="@setor_login" placeholder="" readonly>
+        </div>
     </div>
     <div class="form-group">
         <label for="data">Data</label>
-        <input type="date" name="data" class="form-control" id="data" >
+        <input type="date" name="data" class="form-control" id="data">
+        @Html.ValidationMessage("data")
     </div>
     <div class="form-group">
-        <label for="ocorrencia">Ocorrência</label>
-        <textarea class="form-control" name="ocorrencia "id="ocorrencia" rows="5"></textarea>
+        <label for="descricao">Ocorrência</label>
+        <textarea class="form-control" name="descricao" id="descricao" rows="5"></textarea>
+        @Html.ValidationMessage("descricao")
     </div>
-     <div class="custom-file">
-        <input type="file" class="custom-file-input" id="customFileLang" lang="pt-br">
-        <label class="custom-file-label" for="customFileLang">Selecionar Arquivo</label>
+    <div class="custom-file">
+        <input type="file" class="custom-file-input" name="anexo" id="anexo" lang="pt-br">
+        <label class="custom-file-label" for="anexo">Selecionar Arquivo</label>
+        @Html.ValidationMessage("arquivo")
     </div>
-
     <button type="submit" class="btn btn-primary">Enviar</button>
+
+    @if (ViewBag.Update_OC == "true")
+    {
+        <!--
+        <script>
+            $('#modalupdate').on('shown.bs.modal', function () {
+                $('#botaoupdate').trigger('focus')
+            })
+        </script>
+
+        <div class="modal fade" id="modalupdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterTitle">Atenção</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Já existe uma ocorrencia cadastrada para esta data, deseja atualizar?
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/Ocorrencia/Atualizar" id="botaoupdate" type="button" class="btn btn-secondary" data-dismiss="modal">Sim</a>
+                        <button type="button" class="btn btn-primary">Não</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        -->
+
+
+    }
+
 </form>

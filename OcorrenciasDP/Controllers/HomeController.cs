@@ -11,11 +11,14 @@ using OcorrenciasDP.Models;
 
 namespace OcorrenciasDP.Controllers
 {
-   
+  
     public class HomeController : Controller
     {
- 
+
         private DatabaseContext _db;
+        //const string SessionName = "_Nome";
+        //const string SessionID = "_Cod";
+
         public HomeController(DatabaseContext db)
         {
             _db = db;
@@ -40,15 +43,54 @@ namespace OcorrenciasDP.Controllers
 
         public ActionResult Index([FromForm]Usuario usuario)
         {
-            
+
             if (ModelState.IsValid) //Se a autenticação é válida
             {
-                // var id = _db.Int_Dp_Usuarios.
+                //Verifica se o login existe no banco
+                var vLogin = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
+
+                //Se existir ele entra no if
+                if (vLogin != null) {
+
+                    //Verifica se está ativo
+                    if (vLogin.Ativo == 1)
+                    {
+                        //Verifica se a senha está correta
+                        if (Equals(vLogin.Senha, usuario.Senha.ToLower()))
+                        {
+                            //Envia para a página
+                            HttpContext.Session.SetString("Login", vLogin.Nome);
+                            HttpContext.Session.SetString("Acesso", vLogin.Perfil);
+                            HttpContext.Session.SetString("Setor", vLogin.Setor);
+                            HttpContext.Session.SetInt32("ID", vLogin.Id);
+                            return RedirectToAction("Inicio", "Home"); //Vai para a página de Início
+
+                        }
+                        else
+                        {
+                            TempData["MensagemErro"] = "Senha incorreta";
+                            return View(usuario);
+                        }
+                    }
+                    else
+                    {
+                        TempData["MensagemErro"] = "O Usuário não está Ativo";
+                        return View(usuario);
+                    }
+
+                } else {
+                    TempData["MensagemErro"] = "Usuário não Encontrado";
+                    return View(usuario);
+                }
+                /*
 
                 if (usuario.Login.ToLower() == "aleff" && usuario.Senha.ToLower() == "123456")
                 {
+                   // HttpContext.Session.SetString(SessionName, "aleff");
+                    //HttpContext.Session.SetInt32(SessionID, 123);
+
                     HttpContext.Session.SetString("Login", "true");
-                    return RedirectToAction("About","Home"); //Vai para a página de Início
+                    return RedirectToAction("Inicio","Home"); //Vai para a página de Início
 
                 }
                 else
@@ -62,27 +104,9 @@ namespace OcorrenciasDP.Controllers
             {
                 return View();
             }
-        }
+            */
+            }
 
-
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
-        
-        public IActionResult Privacy()
-        {
             return View();
         }
 
@@ -97,7 +121,7 @@ namespace OcorrenciasDP.Controllers
         public ActionResult Logout()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("Home", "Index");
+            return RedirectToAction("Index","Home");
         }
     }
 }
