@@ -10,7 +10,7 @@ namespace OcorrenciasDP.Models
     {
         public Int64 Id { get; set; }
 
-        public int? Id_usuario { get; set; }
+        //public int? Id_usuario { get; set; }
 
         [Required(ErrorMessage ="Esse Campo é Obrigatório")]
         public DateTime Data { get; set; }
@@ -20,5 +20,7 @@ namespace OcorrenciasDP.Models
         public string Descricao { get; set; }
 
         public string Anexo { get; set; }
+
+        public Usuario Usuario { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿
+﻿@model X.PagedList.IPagedList<OcorrenciasDP.Models.Ocorrencia>
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -6,6 +8,10 @@
 @{
     ViewData["Title"] = "Relatório";
 }
+
+<link href="/css/PagedList.css" rel="stylesheet" type="text/css" />
+
+
 
 <h2>Relatório</h2>
 <br />
@@ -34,32 +40,39 @@
 <div>
     <br />
 </div>
+
+<span><b>Total de Registros:</b> @Model.TotalItemCount</span>
 <table class="table table-hover" style="padding-top: 15px">
     <thead>
         <tr>
             <th scope="col">#</th>
-            <th scope="col">First</th>
-            <th scope="col">Last</th>
-            <th scope="col">Handle</th>
+            <th scope="col">Data</th>
+            <th scope="col">Descrição</th>
+            <th scope="col">Usuario</th>
+            <th scope="col">Setor</th>
         </tr>
     </thead>
     <tbody>
+        @foreach (var ocor in Model)
+        {
         <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@@mdo</td>
+            <th scope="row">@ocor.Id</th>
+            <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
+            @if (ocor.Descricao.Length >= 20)
+            {
+                <td>@ocor.Descricao.Substring(0, 20)</td>
+            }
+            else
+            {
+                <td>@ocor.Descricao</td>
+            }
+
+            <td>@ocor.Usuario.Nome</td>
+            <td>@ocor.Usuario.Setor</td>
         </tr>
-        <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@@fat</td>
-        </tr>
-        <tr>
-            <th scope="row">3</th>
-            <td colspan="2">Larry the Bird</td>
-            <td>@@twitter</td>
-        </tr>
+        }
     </tbody>
 </table>
+
+
+@Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page }))

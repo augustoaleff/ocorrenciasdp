@@ -63,6 +63,7 @@ namespace OcorrenciasDP.Controllers
                             HttpContext.Session.SetString("Acesso", vLogin.Perfil);
                             HttpContext.Session.SetString("Setor", vLogin.Setor);
                             HttpContext.Session.SetInt32("ID", vLogin.Id);
+
                             return RedirectToAction("Inicio", "Home"); //Vai para a página de Início
 
                         }

@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Http;
+﻿@model OcorrenciasDP.Models.Ocorrencia
+@using Microsoft.AspNetCore.Http;
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Ocorrências";
@@ -15,15 +16,17 @@
 }
 @if (TempData["MsgOcorrenciaNotOK"] != null)
 {
-    <!--
-    <div class="alert alert-danger" role="alert">
-        @TempData["MsgOcorrenciaNotOK"]
+
+    <div class="alert alert-warning" role="alert">
+        @TempData["MsgOcorrenciaNotOK"],<a asp-area="" asp-controller="Ocorrencia" asp-action="Index"  class="alert-link">Clique aqui</a> para atualizar a cocorrência
     </div>
-    -->
+
+
+    <!--
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
         Launch demo modal
     </button>
-    <!--
+
     <div class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -44,7 +47,7 @@
         </div>
     </div>
 
-    -->
+
 
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -65,13 +68,15 @@
             </div>
         </div>
     </div>
+               -->
 }
 
 
 
 <h2>Inclusão de Ocorrência</h2>
 <br />
-<form method="post">
+<form method="post" action="/ocorrencia/index">
+    <input type="hidden" name="id" value="@Model.Id" />
     <div class="form-row">
         <div class="form-group col-md-auto">
             <label for="nome">Nome</label>
@@ -84,16 +89,16 @@
     </div>
     <div class="form-group">
         <label for="data">Data</label>
-        <input type="date" name="data" class="form-control" id="data">
+        <input type="date" name="data" value="@Model.Data" class="form-control" id="data">
         @Html.ValidationMessage("data")
     </div>
     <div class="form-group">
         <label for="descricao">Ocorrência</label>
-        <textarea class="form-control" name="descricao" id="descricao" rows="5"></textarea>
+        <textarea class="form-control" name="descricao" value="@Model.Descricao" id="descricao" rows="5"></textarea>
         @Html.ValidationMessage("descricao")
     </div>
     <div class="custom-file">
-        <input type="file" class="custom-file-input" name="anexo" id="anexo" lang="pt-br">
+        <input type="file" class="custom-file-input" value="@Model.Anexo" name="anexo" id="anexo" lang="pt-br">
         <label class="custom-file-label" for="anexo">Selecionar Arquivo</label>
         @Html.ValidationMessage("arquivo")
     </div>
@@ -128,8 +133,6 @@
             </div>
         </div>
         -->
-
-
     }
 
 </form>
