@@ -1,0 +1,51 @@
+﻿@model OcorrenciasDP.Models.OcorrenciaViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Detalhar Ocorrência";
+}
+
+<div>
+    <a asp-area="" asp-controller="Relatorio" asp-action="Index" class="btn btn-default btn-lg">
+        <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+    </a>
+</div>
+<h2>Detalhes da Ocorrência</h2>
+<br />
+
+<div>
+    <strong>#ID: </strong> @Model.Id
+</div>
+
+<br />
+
+<div>
+    <strong>Data: </strong>
+    @Model.Data.Date.ToLongDateString()
+</div>
+
+<br />
+
+<div>
+    <strong>Nome: </strong>
+    @Model.Nome
+</div>
+<br />
+
+<div>
+    <strong>Setor: </strong>
+    @Model.Setor
+</div>
+<br />
+
+<div >
+    <strong>Descrição: </strong>
+    @Model.Descricao
+</div>
+
+<br />
+
+<div >
+    <strong>Anexo: </strong>
+    @Model.Anexo
+</div>
+

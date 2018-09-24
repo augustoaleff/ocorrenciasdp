@@ -1,4 +1,4 @@
-﻿@model X.PagedList.IPagedList<OcorrenciasDP.Models.Ocorrencia>
+﻿@model X.PagedList.IPagedList<OcorrenciasDP.Models.OcorrenciaViewModel>
 @using X.PagedList;
 @using X.PagedList.Mvc.Core;
 @{
@@ -9,39 +9,91 @@
     ViewData["Title"] = "Relatório";
 }
 
+@{
+    string datainicio1, datafim1, setor1, inform;
+
+    inform = "Dados da Pesquisa: ";
+
+    if (ViewBag.Pesquisa.DataInicio != null)
+    {
+        datainicio1 = ViewBag.Pesquisa.DataInicio.ToString("yyyy-MM-dd");
+        inform = inform + "De:" + ViewBag.Pesquisa.DataInicio.ToString("dd/MM/yyyy") + " ";
+    }
+    else
+    {
+        datainicio1 = "";
+    }
+
+    if (ViewBag.Pesquisa.DataFim != null)
+    {
+        datafim1 = ViewBag.Pesquisa.DataFim.ToString("yyyy-MM-dd");
+        inform = inform + " Até:" + ViewBag.Pesquisa.DataFim.ToString("dd/MM/yyyy") + " ";
+    }
+    else
+    {
+        datafim1 = "";
+    }
+
+    if (ViewBag.Pesquisa.Setor != null)
+    {
+        setor1 = ViewBag.Pesquisa.Setor;
+        inform = inform + "Setor:" + ViewBag.Pesquisa.Setor;
+    }
+    else
+    {
+        setor1 = "";
+    }
+}
+
+
 <link href="/css/PagedList.css" rel="stylesheet" type="text/css" />
 
+@if (TempData["OcorrenciaExcluir"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["OcorrenciaExcluir"]
+    </div>
+}
 
-
+@if (inform != "Dados da Pesquisa: ")
+{
+    <div class="alert alert-info" role="alert">
+        <strong> @inform</strong>
+    </div>
+}
 <h2>Relatório</h2>
 <br />
-<form class="form-inline">
+<form class="form-inline" method="post" asp-controller="Relatorio" asp-action="Filtrar">
     <div class="form-group mb-2">
         <label for="datainicio">Data Início</label>
-        <input type="date" name="datainicio" class="form-control-plaintext" id="datainicio" value="">
+        <input type="date" name="datainicio" class="form-control-plaintext" id="datainicio" value="@datainicio1">
     </div>
+
     <div class="form-group mb-2">
         <label for="datafim">Data Fim</label>
-        <input type="date" name="datafim" class="form-control-plaintext" id="datafim" value="">
+        <input type="date" name="datafim" class="form-control-plaintext" id="datafim" value="@datafim1">
     </div>
+
     <div class="form-group p-2">
         <label for="setor">Setor</label>
-        <select name="setor" id="setor" class="form-control mb-2">
-            <option>Setor 1</option>
-            <option>Setor 2</option>
-            <option>Setor 3</option>
+
+        <select name="setor" id="setor" class="form-control mb-2" value="@setor1">
+            <option>*Todos*</option>
+            <option>CPD</option>
+            <option>RH</option>
+            <option>Televendas</option>
         </select>
     </div>
     <button type="submit" class="btn btn-primary">Pesquisar</button>
 </form>
 <div style=" display: flex;justify-content:flex-end">
-    <strong>Total de Resultados: </strong> 000
+    <b>Total de Resultados: </b> @Model.TotalItemCount
 </div>
 <div>
     <br />
 </div>
 
-<span><b>Total de Registros:</b> @Model.TotalItemCount</span>
+<!--<span><b>Total de Registros:</b> @Model.TotalItemCount</span>-->
 <table class="table table-hover" style="padding-top: 15px">
     <thead>
         <tr>
@@ -50,29 +102,56 @@
             <th scope="col">Descrição</th>
             <th scope="col">Usuario</th>
             <th scope="col">Setor</th>
+            <th scope="col">Anexo</th>
+            <th scope="col">Detalhar</th>
+            <th scope="col">Excluir</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var ocor in Model)
         {
-        <tr>
-            <th scope="row">@ocor.Id</th>
-            <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
-            @if (ocor.Descricao.Length >= 20)
-            {
-                <td>@ocor.Descricao.Substring(0, 20)</td>
-            }
-            else
-            {
-                <td>@ocor.Descricao</td>
-            }
+            <tr>
+                <th scope="row">@ocor.Id</th>
+                <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
+                @if (ocor.Descricao.Length >= 20)
+                {
+                    <td>@ocor.Descricao.Substring(0, 20)</td>
+                }
+                else
+                {
+                    <td>@ocor.Descricao</td>
+                }
 
-            <td>@ocor.Usuario.Nome</td>
-            <td>@ocor.Usuario.Setor</td>
-        </tr>
+                <td>@ocor.Nome</td>
+                <td>@ocor.Setor</td>
+
+                @if (ocor.Anexo != null)
+                {
+                    <td>
+                        <button type="button" class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
+                        </button>
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
+
+                <td>
+                    <a href="/Relatorio/Detalhar/@ocor.Id" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </a>
+                </td>
+                <td>
+                    <a href="/Relatorio/Excluir/@ocor.Id" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </a>
+                </td>
+
+            </tr>
         }
     </tbody>
 </table>
-
 
 @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page }))
