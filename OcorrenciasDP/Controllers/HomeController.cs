@@ -16,12 +16,17 @@ namespace OcorrenciasDP.Controllers
     {
 
         private DatabaseContext _db;
+
         //const string SessionName = "_Nome";
         //const string SessionID = "_Cod";
+        readonly List<Setor> setores = new List<Setor>();
 
         public HomeController(DatabaseContext db)
         {
             _db = db;
+
+            setores = _db.Int_DP_Setores.ToList();
+
         }
 
         
@@ -52,6 +57,9 @@ namespace OcorrenciasDP.Controllers
                 //Se existir ele entra no if
                 if (vLogin != null) {
 
+                   // var vSetor = _db.Int_DP_Setores.Find(vLogin.Setor.Id);
+                   // vLogin.Setor = vSetor;
+
                     //Verifica se está ativo
                     if (vLogin.Ativo == 1)
                     {
@@ -61,7 +69,7 @@ namespace OcorrenciasDP.Controllers
                             //Envia para a página
                             HttpContext.Session.SetString("Login", vLogin.Nome);
                             HttpContext.Session.SetString("Acesso", vLogin.Perfil);
-                            HttpContext.Session.SetString("Setor", vLogin.Setor);
+                            HttpContext.Session.SetString("Setor", vLogin.Setor.Nome);
                             HttpContext.Session.SetInt32("ID", vLogin.Id);
 
                             return RedirectToAction("Inicio", "Home"); //Vai para a página de Início

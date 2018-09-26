@@ -10,38 +10,39 @@
 }
 
 @{
-    string datainicio1, datafim1, setor1, inform;
+    string datainicio, datafim, inform;
+    int setor;
 
     inform = "Dados da Pesquisa: ";
 
     if (ViewBag.Pesquisa.DataInicio != null)
     {
-        datainicio1 = ViewBag.Pesquisa.DataInicio.ToString("yyyy-MM-dd");
-        inform = inform + "De:" + ViewBag.Pesquisa.DataInicio.ToString("dd/MM/yyyy") + " ";
+        datainicio = ViewBag.Pesquisa.DataInicio.ToString("yyyy-MM-dd");
+        inform = inform + " De:" + ViewBag.Pesquisa.DataInicio.ToString("dd/MM/yyyy") + " ";
     }
     else
     {
-        datainicio1 = "";
+        datainicio = "";
     }
 
     if (ViewBag.Pesquisa.DataFim != null)
     {
-        datafim1 = ViewBag.Pesquisa.DataFim.ToString("yyyy-MM-dd");
+        datafim = ViewBag.Pesquisa.DataFim.ToString("yyyy-MM-dd");
         inform = inform + " Até:" + ViewBag.Pesquisa.DataFim.ToString("dd/MM/yyyy") + " ";
     }
     else
     {
-        datafim1 = "";
+        datafim = "";
     }
 
     if (ViewBag.Pesquisa.Setor != null)
     {
-        setor1 = ViewBag.Pesquisa.Setor;
-        inform = inform + "Setor:" + ViewBag.Pesquisa.Setor;
+        setor = Int32.Parse(ViewBag.Pesquisa.Setor);
+        inform = inform + " Setor:" + ViewBag.NomeSetor;
     }
     else
     {
-        setor1 = "";
+        setor = 0;
     }
 }
 
@@ -63,25 +64,32 @@
 }
 <h2>Relatório</h2>
 <br />
-<form class="form-inline" method="post" asp-controller="Relatorio" asp-action="Filtrar">
+<form class="form-inline" method="get" asp-controller="Relatorio" asp-action="Filtrar">
     <div class="form-group mb-2">
         <label for="datainicio">Data Início</label>
-        <input type="date" name="datainicio" class="form-control-plaintext" id="datainicio" value="@datainicio1">
+        <input type="date" name="datainicio" class="form-control-plaintext" id="datainicio" value="@datainicio">
     </div>
 
     <div class="form-group mb-2">
         <label for="datafim">Data Fim</label>
-        <input type="date" name="datafim" class="form-control-plaintext" id="datafim" value="@datafim1">
+        <input type="date" name="datafim" class="form-control-plaintext" id="datafim" value="@datafim">
     </div>
 
     <div class="form-group p-2">
         <label for="setor">Setor</label>
+        <select name="setor" id="setor" class="form-control mb-2">
+            @foreach (var depto in ViewBag.Setores)
+            {
+                if (depto.Id == setor)
+                {
+                    <option value="@depto.Id" selected>@depto.Nome</option>
+                }
+                else
+                {
+                    <option value="@depto.Id">@depto.Nome</option>
+                }
 
-        <select name="setor" id="setor" class="form-control mb-2" value="@setor1">
-            <option>*Todos*</option>
-            <option>CPD</option>
-            <option>RH</option>
-            <option>Televendas</option>
+            }
         </select>
     </div>
     <button type="submit" class="btn btn-primary">Pesquisar</button>
@@ -93,7 +101,6 @@
     <br />
 </div>
 
-<!--<span><b>Total de Registros:</b> @Model.TotalItemCount</span>-->
 <table class="table table-hover" style="padding-top: 15px">
     <thead>
         <tr>
@@ -154,4 +161,15 @@
     </tbody>
 </table>
 
+@if (datafim != null || datainicio != null || setor != 0){
+
+@Html.PagedListPager((IPagedList)Model, page => Url.Action("Filtrar", new {datainicio,datafim,setor,page }))
+
+}else{
+
 @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page }))
+
+}
+
+
+

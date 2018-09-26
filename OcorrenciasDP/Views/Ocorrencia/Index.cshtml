@@ -14,69 +14,38 @@
         @TempData["MsgOcorrenciaOK"]
     </div>
 }
+
+@{
+    string data1;
+
+    if (ViewBag.Ocorrencia != null)
+    {
+        data1 = ViewBag.Ocorrencia.Data.ToString("yyyy-MM-dd");
+    }
+    else
+    {
+        data1 = DateTime.Now.ToString("yyyy-MM-dd");
+    }
+}
 @if (TempData["MsgOcorrenciaNotOK"] != null)
 {
-
     <div class="alert alert-warning" role="alert">
-        @TempData["MsgOcorrenciaNotOK"],<a asp-area="" asp-controller="Ocorrencia" asp-action="Index"  class="alert-link">Clique aqui</a> para atualizar a cocorrência
+        @TempData["MsgOcorrenciaNotOK"], <button id="botaoupdate" asp class="alert-link">Clique aqui</button> para enviar outra ocorrência.
+        @{
+            ViewBag.UpdateOcor = "true";
+        }
     </div>
-
-
-    <!--
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-        Launch demo modal
-    </button>
-
-    <div class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Atenção</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p> Já existe uma ocorrencia cadastrada para esta data, deseja atualizar?</p>
-                </div>
-                <div class="modal-footer">
-                    <a href="/Ocorrencia/Atualizar" id="botaoupdate" type="button" class="btn btn-secondary" data-dismiss="modal">Sim</a>
-                    <button type="button" class="btn btn-primary">Não</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Atenção</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Já existe uma ocorrencia cadastrada para esta data, deseja atualizar?
-                </div>
-                <div class="modal-footer">
-                    <a href="/Ocorrencia/Atualizar" id="botaoupdate" type="button" class="btn btn-secondary" data-dismiss="modal">Sim</a>
-                    <button type="button" class="btn btn-primary">Não</button>
-                </div>
-            </div>
-        </div>
-    </div>
-               -->
 }
-
-
+else
+{
+    ViewBag.UpdateOcor = "false";
+}
 
 <h2>Inclusão de Ocorrência</h2>
 <br />
-<form method="post" action="/ocorrencia/index">
-    <input type="hidden" name="id" value="@Model.Id" />
+
+<form method="post" action="\ocorrencia\index\">
+    <input type="hidden" name="id" value="@ViewBag.Ocorrencia.Id" />
     <div class="form-row">
         <div class="form-group col-md-auto">
             <label for="nome">Nome</label>
@@ -89,50 +58,47 @@
     </div>
     <div class="form-group">
         <label for="data">Data</label>
-        <input type="date" name="data" value="@Model.Data" class="form-control" id="data">
+        <input type="date" name="data" value="@data1" class="form-control" id="data">
         @Html.ValidationMessage("data")
     </div>
     <div class="form-group">
         <label for="descricao">Ocorrência</label>
-        <textarea class="form-control" name="descricao" value="@Model.Descricao" id="descricao" rows="5"></textarea>
+        <textarea class="form-control" name="descricao" id="descricao" rows="5">@ViewBag.Ocorrencia.Descricao</textarea>
         @Html.ValidationMessage("descricao")
     </div>
     <div class="custom-file">
-        <input type="file" class="custom-file-input" value="@Model.Anexo" name="anexo" id="anexo" lang="pt-br">
+        <input type="file" class="custom-file-input" value="@ViewBag.Ocorrencia.Anexo" name="anexo" id="anexo" lang="pt-br">
         <label class="custom-file-label" for="anexo">Selecionar Arquivo</label>
         @Html.ValidationMessage("arquivo")
     </div>
-    <button type="submit" class="btn btn-primary">Enviar</button>
-
-    @if (ViewBag.Update_OC == "true")
-    {
-        <!--
-        <script>
-            $('#modalupdate').on('shown.bs.modal', function () {
-                $('#botaoupdate').trigger('focus')
-            })
-        </script>
-
-        <div class="modal fade" id="modalupdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalCenterTitle">Atenção</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        Já existe uma ocorrencia cadastrada para esta data, deseja atualizar?
-                    </div>
-                    <div class="modal-footer">
-                        <a href="/Ocorrencia/Atualizar" id="botaoupdate" type="button" class="btn btn-secondary" data-dismiss="modal">Sim</a>
-                        <button type="button" class="btn btn-primary">Não</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        -->
-    }
+    <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
 
 </form>
+
+<script>
+
+    var btnUpdate = document.getElementById("botaoupdate");
+    var btnEnviar = document.getElementById("botaoenviar");
+
+    function MudarVariavel() {
+        var vbUpdate;
+
+        if (vbUpdate == false || vbUpdate == null) {
+
+           vbUpdate == true
+            btnEnviar.click();
+
+        } else {
+
+            vbUpdate == false
+
+        }
+
+        @(ViewBag.Update) == vbUpdate;
+
+    }
+
+
+    btnUpdate.onclick(MudarVariavel());
+
+</script>

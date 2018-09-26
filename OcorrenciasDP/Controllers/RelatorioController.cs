@@ -11,18 +11,26 @@ using X.PagedList;
 
 namespace OcorrenciasDP.Controllers
 {
+
     [Login]
     public class RelatorioController : Controller
     {
         private DatabaseContext _db;
+        readonly List<Setor> setores = new List<Setor>();
+        List<OcorrenciaViewModel> relatorioVM = new List<OcorrenciaViewModel>();
 
         public RelatorioController(DatabaseContext db)
         {
             _db = db;
+
+            setores = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
+            ViewBag.Setor = setores;
+            setores.Add(new Setor() { Id = 0, Nome = "*Todos*" });
         }
 
         public ActionResult Excluir(Int64 id)
         {
+            ViewBag.Setor = setores;
             var ocorrencia = _db.Int_DP_Ocorrencias.Find(id);
             _db.Int_DP_Ocorrencias.Remove(ocorrencia);
             _db.SaveChanges();
@@ -33,20 +41,23 @@ namespace OcorrenciasDP.Controllers
 
         public ActionResult Detalhar(Int64 id)
         {
+            ViewBag.Setor = setores;
             var ocorrencia = _db.Int_DP_Ocorrencias.Find(id);
 
             var relat = _db.Int_DP_Ocorrencias
                .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
-               .Where(a => a.o.Id == id)
+               .Join(_db.Int_DP_Setores, a => a.u.Setor.Id, b => b.Id, (a, b) => new { a, b })
+               .Where(w => w.a.o.Id == id)
                .Select(s => new
                {
-                   s.o.Data,
-                   s.o.Descricao,
-                   s.o.Id,
-                   s.o.Anexo,
-                   s.u.Nome,
-                   s.u.Setor
+                   s.a.o.Data,
+                   s.a.o.Descricao,
+                   s.a.o.Id,
+                   s.a.o.Anexo,
+                   s.a.u.Nome,
+                   Setor = s.b.Nome,
                }).FirstOrDefault();
+
 
             OcorrenciaViewModel detalhes = new OcorrenciaViewModel
             {
@@ -61,46 +72,49 @@ namespace OcorrenciasDP.Controllers
             return View(detalhes);
         }
 
-        [HttpPost]
-        public ActionResult Filtrar([FromForm]FiltrarPesquisaRelatViewModel pesquisa, int? page)
+        [HttpGet]
+        public ActionResult Filtrar(DateTime? datainicio, DateTime? datafim, string setor, int? page)
         {
+            FiltrarPesquisaRelatViewModel pesquisa = new FiltrarPesquisaRelatViewModel() { DataInicio = datainicio, DataFim = datafim, Setor = setor };
 
+            ViewBag.Setores = setores;
             var pageNumber = page ?? 1;
 
             var query = _db.Int_DP_Ocorrencias
                        .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
-                       .OrderByDescending(a => a.o.Data)
+                       .Join(_db.Int_DP_Setores, a => a.u.Setor.Id, b => b.Id, (a, b) => new { a, b })
+                       .OrderByDescending(c => c.a.o.Data)
                        .AsQueryable();
 
             if (pesquisa.DataInicio != null)
             {
                 if (pesquisa.DataFim != null)
                 {
-                    query = query.Where(a => a.o.Data >= pesquisa.DataInicio && a.o.Data <= pesquisa.DataFim);
+                    query = query.Where(a => a.a.o.Data >= pesquisa.DataInicio && a.a.o.Data <= pesquisa.DataFim);
 
                 }
                 else
                 {
-                    query = query.Where(a => a.o.Data >= pesquisa.DataInicio);
+                    query = query.Where(a => a.a.o.Data >= pesquisa.DataInicio);
                 }
             }
 
-            if (pesquisa.Setor != null && pesquisa.Setor != "*Todos*")
+            if (pesquisa.Setor != null && pesquisa.Setor != "0")
             {
-                query = query.Where(a => a.u.Setor.Equals(pesquisa.Setor));
+                query = query.Where(a => a.a.u.Setor.Id == int.Parse(pesquisa.Setor));
             }
 
             var relat = query.Select(s => new
             {
-                s.o.Data,
-                s.o.Descricao,
-                s.o.Id,
-                s.o.Anexo,
-                s.u.Nome,
-                s.u.Setor
+                s.a.o.Data,
+                s.a.o.Descricao,
+                s.a.o.Id,
+                s.a.o.Anexo,
+                s.a.u.Nome,
+                Setor = s.a.u.Setor.Nome
             }).ToList();
 
-            List<OcorrenciaViewModel> relatorioVM = new List<OcorrenciaViewModel>();
+
 
             foreach (var linha in relat)
             {
@@ -116,82 +130,71 @@ namespace OcorrenciasDP.Controllers
                 relatorioVM.Add(ocorVM);
             }
 
-            var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
-            ViewBag.Pesquisa = pesquisa;
-            return View("Index", resultadoPaginado);
+            var vPesquisa = _db.Int_DP_Setores.Find(int.Parse(pesquisa.Setor));
 
+            if (vPesquisa != null)
+            {
+                ViewBag.NomeSetor = vPesquisa.Nome;
+            }
+            else
+            {
+                ViewBag.NomeSetor = "*Todos*";
+            }
+
+
+
+            ViewBag.Pesquisa = pesquisa;
+            var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
+            return View("Index", resultadoPaginado);
 
         }
 
         [HttpGet]
-        //Visualizar as palavras
         public IActionResult Index(int? page)
         {
+
+            ViewBag.Setores = setores;
             ViewBag.Pesquisa = new FiltrarPesquisaRelatViewModel();
             var pageNumber = page ?? 1;
 
-            /* var relat = _db.Int_DP_Ocorrencias.OrderByDescending(o => o.Data).ToList();
-             var relat = (from o in _db.Int_DP_Ocorrencias
-                         from u in _db.Int_Dp_Usuarios
-                         where o.Id_usuario == u.Id
-                         select o.Id
-            */
-            /* var relat = _db.Int_DP_Ocorrencias
-                  .Join(_db.Int_Dp_Usuarios,
-                        o => o.Id_usuario,
-                        u => u.Id,
-                        (o,u) => new 
-                        )*/
 
-            /*var listaClientes = (from Cli in db.Clientes
-                                        join Ped in db.Pedidos on Cli.ClienteId equals Ped.ClienteId
-                                        select new { Cli.Nome, Cli.Email, Cli.Endereco,
-                                                          Ped.DataPedido, Ped.PrecoPedido }).ToList();
-             */
-
-            /*  SELECT O.DATA,O.DESCRICAO,O.ID,U.NOME,U.SETOR 
+            /*  SELECT O.DATA,O.DESCRICAO,O.ID,U.NOME,R.SETOR
              *  FROM INT_DP_OCORRENCIAS AS O 
-             *  INNER JOIN INT_DP_USUARIOS AS U 
-             *  ON O.ID_USUARIO = U.ID
+             *  INNER JOIN INT_DP_USUARIOS AS U ON O.ID_USUARIO = U.ID
+             *  INNER JOIN INT_DEP_SETORES AS R ON U.SETORID = R.ID
              *  ORDER BY O.DATA */
 
-
-            List<OcorrenciaViewModel> relatorioVM = new List<OcorrenciaViewModel>();
-
-            var relat = _db.Int_DP_Ocorrencias
-               .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
-               .OrderByDescending(a => a.o.Data)
-               .Select(s => new
-               {
-                   s.o.Data,
-                   s.o.Descricao,
-                   s.o.Id,
-                   s.o.Anexo,
-                   s.u.Nome,
-                   s.u.Setor
-               }).ToList();
-
-            foreach (var linha in relat)
+            if (relatorioVM.Count == 0)
             {
-                OcorrenciaViewModel ocorVM = new OcorrenciaViewModel
+
+                var relat = _db.Int_DP_Ocorrencias
+                   .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
+                   .Join(_db.Int_DP_Setores, r => r.u.Setor.Id, s => s.Id, (r, s) => new { r, s })
+                   .OrderByDescending(a => a.r.o.Data)
+                   .Select(s => new
+                   {
+                       s.r.o.Data,
+                       s.r.o.Descricao,
+                       s.r.o.Id,
+                       s.r.o.Anexo,
+                       s.r.u.Nome,
+                       Setor = s.r.u.Setor.Nome
+                   }).ToList();
+
+                foreach (var linha in relat)
                 {
-                    Nome = linha.Nome,
-                    Setor = linha.Setor,
-                    Descricao = linha.Descricao,
-                    Data = linha.Data,
-                    Id = linha.Id,
-                    Anexo = linha.Anexo
-                };
-                relatorioVM.Add(ocorVM);
+                    OcorrenciaViewModel ocorVM = new OcorrenciaViewModel
+                    {
+                        Nome = linha.Nome,
+                        Setor = linha.Setor,
+                        Descricao = linha.Descricao,
+                        Data = linha.Data,
+                        Id = linha.Id,
+                        Anexo = linha.Anexo
+                    };
+                    relatorioVM.Add(ocorVM);
+                }
             }
-
-            /* var relat = _db.Int_DP_Ocorrencias
-                .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o,u }) 
-                .ToList();*/
-
-
-            //var relat = _db.Int_DP_Ocorrencias.OrderByDescending(o => o.Data).ToList();
-
 
             var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
 

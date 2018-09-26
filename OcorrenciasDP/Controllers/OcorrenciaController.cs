@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OcorrenciasDP.Database;
@@ -20,23 +21,31 @@ namespace OcorrenciasDP.Controllers
             _db = db;
         }
 
+
         [HttpGet]
         public IActionResult Index()
         {
             ViewBag.Ocorrencia = new Ocorrencia();
+            ViewBag.Ocorrencia.Data = DateTime.Now;
+
             return View(new Ocorrencia());
         }
 
-        /*public ActionResult Atualizar(int id)
-        {
-            Ocorrencia ocorrencia = _db.Int_DP_Ocorrencias.Find(id);
 
-
-        }*/
-
-        [HttpPost]
         public ActionResult Atualizar([FromForm]Ocorrencia ocorrencia)
         {
+
+            //POST - Request.Form
+            //GET - Request.QueryString
+
+            //Ocorrencia ocorrencia = new Ocorrencia();
+
+            ocorrencia.Data = DateTime.Parse(Request.Form["data"]);
+            ocorrencia.Descricao = Request.Form["descricao"];
+            ocorrencia.Anexo = Request.Form["anexo"];
+
+            //return View("Index", ocorrencia); //retorna para o Index
+
             //ocorrencia.Id_usuario = HttpContext.Session.GetInt32("ID");
 
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
@@ -47,22 +56,14 @@ namespace OcorrenciasDP.Controllers
 
             if (ModelState.IsValid)
             {
-                //SELECT * FROM INT_DP_OCORRENCIAS WHERE DATA = " & Format(Data.Text, 'YYYYMMDD') & ";
-                var vOcorrencia = _db.Int_DP_Ocorrencias.Where(o => o.Data.Equals(ocorrencia.Data) && (o.Usuario.Id == ocorrencia.Usuario.Id)).FirstOrDefault();
-
-                //Se for igual a null, não há nenhuma ocorrencia lançada com a data informada
-                if (vOcorrencia != null)
-                {
-                    _db.Int_DP_Ocorrencias.Update(ocorrencia);
-                    _db.SaveChanges();
-                    TempData["MsgOcorrenciaOK"] = "Ocorrência Atualizada com Sucesso";
-                    //ViewBag.Update_OC = "false"; 
-                    return View("Index");
-                }
-
-                return View(ocorrencia);
+                ViewBag.Ocorrencia = new Ocorrencia();
+                ViewBag.Ocorrencia.Data = DateTime.Now;
+                _db.Int_DP_Ocorrencias.Add(ocorrencia);
+                _db.SaveChanges();
+                TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
+                return View("Index", ocorrencia);
             }
-
+            
             return View();
         }
 
@@ -70,7 +71,7 @@ namespace OcorrenciasDP.Controllers
         [HttpPost]
         public ActionResult Index([FromForm]Ocorrencia ocorrencia)
         {
-            //ocorrencia.Id_usuario = HttpContext.Session.GetInt32("ID");
+
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
 
             Usuario usuario =_db.Int_Dp_Usuarios.Find(id_notnull);
@@ -79,28 +80,27 @@ namespace OcorrenciasDP.Controllers
 
             if (ModelState.IsValid)
             {
-                //SELECT * FROM INT_DP_OCORRENCIAS WHERE DATA = " & Format(Data.Text, 'YYYYMMDD') & ";
-                //var vOcorrencia = _db.Int_DP_Ocorrencias.Where(o => o.Data.Equals(ocorrencia.Data) && o.Usuario.Id.Equals(ocorrencia.Usuario.Id)).FirstOrDefault();
+                //SELECT * FROM INT_DP_OCORRENCIAS WHERE DATA = " & Format(Data.Text, 'YYYYMMDD') & ";/
                 var vOcorrencia = _db.Int_DP_Ocorrencias.Where(o => o.Data.Equals(ocorrencia.Data) && (o.Usuario.Id == ocorrencia.Usuario.Id)).FirstOrDefault();
 
                 //Se for igual a null, não há nenhuma ocorrencia lançada com a data informada
-                if (vOcorrencia == null)
+                if (vOcorrencia == null || ViewBag.Update == true)
                 {
                     ViewBag.Ocorrencia = new Ocorrencia();
+                    ViewBag.Ocorrencia.Data = DateTime.Now;
                     _db.Int_DP_Ocorrencias.Add(ocorrencia);
                     _db.SaveChanges();
+                    
                     TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
-                    //ViewBag.Update_OC = "false";
+                   
                     return View("Index",ocorrencia);
                 }
-                else
+                else 
                 {
                     ViewBag.Ocorrencia= ocorrencia;
-                    ViewBag.Ocorrencia.Id = ocorrencia.Id;
 
                     //### Gerar alerta para o usuário perguntado se ele quer que atualize a pagina, se sim, executa este código, senão, não executa e volta pra View;
                     TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrencia cadastrada para esta data!";
-                    //ViewBag.Update_OC = "true";
                     //Retorna o valor como Objeto Ocorrencia para a View
                     return View("Index",ocorrencia);
                 }
@@ -108,6 +108,39 @@ namespace OcorrenciasDP.Controllers
 
             return View();
         }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ConsultarBanco([FromForm]Ocorrencia ocorrencia)
+        {
+            if (ModelState.IsValid)
+            {
+                int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
+
+                Usuario usuario = _db.Int_Dp_Usuarios.Find(id_notnull);
+
+                ocorrencia.Usuario = usuario;
+
+                var vOcorrencia = _db.Int_DP_Ocorrencias.Where(o => o.Data.Equals(ocorrencia.Data) && (o.Usuario.Id == ocorrencia.Usuario.Id)).FirstOrDefault();
+
+                if(vOcorrencia == null || ViewBag.Update == true)
+                {
+                    ViewBag.Ocorrencia = new Ocorrencia();
+                    ViewBag.Ocorrencia.Data = DateTime.Now;
+
+                    return RedirectToAction("Incluir", ocorrencia);
+                }
+                else
+                {
+                    ViewBag.Ocorrencia = ocorrencia;
+                    TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrencia cadastrada para esta data!";
+                    return View("Index", ocorrencia);
+                }
+            }
+            return View("Index", ocorrencia);
+        }
+
+
 
     }
 }
