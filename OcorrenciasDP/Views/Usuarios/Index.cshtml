@@ -1,0 +1,103 @@
+﻿@model X.PagedList.IPagedList<OcorrenciasDP.ViewModels.UsuariosViewModel>
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewData["Title"] = "Usuários";
+}
+
+@{
+    string nome;
+    int setor;
+
+    nome = "";
+
+    setor = 0;
+
+}
+<h2>Usuários</h2>
+<br />
+<div style="display:flex; justify-content:flex-end">
+    <a asp-controller="Usuarios" asp-action="Cadastrar" class="btn btn-success">
+        Cadastrar Novo
+    </a>
+</div>
+
+<form class="form-inline" method="get" asp-controller="Usuarios" asp-action="Filtrar">
+    <div class="form-group mb-2">
+        <label for="nome">Nome</label>
+        <input type="text" name="nome" class="form-control-plaintext" id="nome" value="@nome">
+    </div>
+
+    <div class="form-group p-2">
+        <label for="setor">Setor</label>
+        <select name="setor" id="setor" class="form-control mb-2">
+            @foreach (var depto in ViewBag.Setores)
+            {
+                if (depto.Id == setor)
+                {
+                    <option value="@depto.Id" selected>@depto.Nome</option>
+                }
+                else
+                {
+                    <option value="@depto.Id">@depto.Nome</option>
+                }
+
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Pesquisar</button>
+</form>
+
+<br />
+
+<table class="table table-hover" style="padding-top: 15px">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Login</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Setor</th>
+            <th scope="col">Perfil</th>
+            <th scope="col">Ativo</th>
+            <th scope="col">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var user in Model)
+        {
+        <tr>
+            <th scope="row">@user.Id</th>
+            <td>@user.Login.ToLower()</td>
+            <td>@user.Nome</td>
+            <td>@user.Setor</td>
+            <td>@user.Perfil</td>
+            @if (user.Ativo == 0)
+            {
+            <td>Inativo</td>
+            }
+            else
+            {
+            <td>Ativo</td>
+            }
+
+            <td>
+                <a href="#" class="btn btn-warning btn-sm">
+                    Alterar
+                </a>
+                <a href="#" class="btn btn-danger btn-sm">
+                    Excluir
+                </a>
+
+            </td>
+        </tr>
+                }
+            
+        </tbody>
+</table>
+
+@Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page }))

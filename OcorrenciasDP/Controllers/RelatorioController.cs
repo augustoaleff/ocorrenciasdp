@@ -72,6 +72,7 @@ namespace OcorrenciasDP.Controllers
             return View(detalhes);
         }
 
+
         [HttpGet]
         public ActionResult Filtrar(DateTime? datainicio, DateTime? datafim, string setor, int? page)
         {

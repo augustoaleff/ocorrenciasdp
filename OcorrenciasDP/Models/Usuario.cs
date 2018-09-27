@@ -11,12 +11,16 @@ namespace OcorrenciasDP.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "O campo 'Login' é obrigatório")]
+        [MaxLength(50, ErrorMessage ="O login deve conter no máximo 50 caracteres")]
         public string Login { get; set; }
 
         [Required(ErrorMessage = "O campo 'Senha' é obrigatório")]
+        [MaxLength(50, ErrorMessage = "A senha deve conter no máximo 50 caracteres")]
         public string Senha { get; set; }
 
         public byte Ativo { get; set; }
+
+        [MaxLength(50, ErrorMessage = "O nome deve possuir no máximo 50 caracteres")]
         public string Nome { get; set; }
         public string Perfil { get; set; }
         public Setor Setor { get; set; }

@@ -132,6 +132,7 @@ namespace OcorrenciasDP.Controllers
                 }
                 else
                 {
+ 
                     ViewBag.Ocorrencia = ocorrencia;
                     TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrencia cadastrada para esta data!";
                     return View("Index", ocorrencia);
