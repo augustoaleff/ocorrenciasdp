@@ -150,7 +150,7 @@
                     </a>
                 </td>
                 <td>
-                    <a href="/Relatorio/Excluir/@ocor.Id" class="btn btn-default btn-sm">
+                    <a href="/Relatorio/Excluir/@ocor.Id" onclick="return confirmaApagar();" class="btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                     </a>
                 </td>
@@ -160,15 +160,25 @@
     </tbody>
 </table>
 
-@if (datafim != null || datainicio != null || setor != 0){
+@if (datafim != null || datainicio != null || setor != 0)
+{
 
-@Html.PagedListPager((IPagedList)Model, page => Url.Action("Filtrar", new {datainicio,datafim,setor,page }))
+    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Filtrar", new { datainicio, datafim, setor, page }))
 
-}else{
+}
+else
+{
 
-@Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page }))
+    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page }))
 
 }
 
+@section Scripts{
+    <script language="javascript">
+        function confirmaApagar() {
+            return confirm("Confirma Exclusão?");
+        }
+    </script>
+}
 
-
+ 

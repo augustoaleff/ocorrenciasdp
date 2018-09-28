@@ -125,6 +125,7 @@ namespace OcorrenciasDP.Controllers
 
                 if(vOcorrencia == null || ViewBag.Update == true)
                 {
+
                     ViewBag.Ocorrencia = new Ocorrencia();
                     ViewBag.Ocorrencia.Data = DateTime.Now;
 
@@ -137,11 +138,12 @@ namespace OcorrenciasDP.Controllers
                     TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrencia cadastrada para esta data!";
                     return View("Index", ocorrencia);
                 }
+
             }
+
             return View("Index", ocorrencia);
+
         }
-
-
 
     }
 }

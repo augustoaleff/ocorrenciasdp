@@ -70,30 +70,105 @@ namespace OcorrenciasDP.Controllers
         }
 
         [HttpGet]
-        public ActionResult Cadastrar()
+        public ActionResult Excluir(int id)
         {
-            ViewBag.User = new Usuario();
+            var usuario =_db.Int_Dp_Usuarios.Find(id);
+            _db.Int_Dp_Usuarios.Remove(usuario);
+            _db.SaveChanges();
+
+            TempData["UsuarioExcluido"] = "O usuário '" + usuario.Login + "' foi excluido!";
+
+            return RedirectToAction("Index");
+        }
+        
+
+        [HttpGet]
+        public ActionResult Atualizar(int id)
+        {
+            Usuario usuario = _db.Int_Dp_Usuarios.Find(id);
+
+            usuario.Login = usuario.Login.ToLower();
+
+            ViewBag.User = usuario;
             ViewBag.Setores2 = setores2;
-            return View();
+
+            return View("Cadastrar");
         }
 
 
         [HttpPost]
-        public ActionResult Cadastrar([FromForm]Usuario usuario) {
-
+        public ActionResult Atualizar([FromForm]Usuario usuario)
+        {
+            var vSetor = _db.Int_DP_Setores.Find(usuario.Setor.Id);
+            usuario.Setor = vSetor;
 
             ViewBag.User = new Usuario();
             ViewBag.Setores2 = setores2;
 
             if (ModelState.IsValid)
             {
-
-                var vUsuario = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login));
-
+                var vUsuario = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
 
                 if (vUsuario == null)
                 {
+                    usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
+                    usuario.Senha = usuario.Senha.ToLower(); //Passa para minúsculo a Senha
 
+                    _db.Int_Dp_Usuarios.Add(usuario);
+                    _db.Int_DP_Ocorrencias.Update
+                    _db.SaveChanges();
+                    TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi cadastrado com sucesso!";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    TempData["ExisteUsuario"] = "Já existe um usuário com esse login, favor escolher outro!";
+                    ViewBag.User = usuario;
+                    return View();
+                }
+
+            }
+
+            return View();
+
+
+        }
+
+
+        [HttpGet]
+        public ActionResult Cadastrar()
+        {
+
+            ViewBag.User = new Usuario();
+            ViewBag.Setores2 = setores2;
+            return View();
+
+        }
+
+
+
+        [HttpPost]
+        public ActionResult Cadastrar([FromForm]Usuario usuario) {
+
+            var vSetor = _db.Int_DP_Setores.Find(usuario.Setor.Id);
+            usuario.Setor = vSetor;
+
+            ViewBag.User = new Usuario();
+            ViewBag.Setores2 = setores2;
+
+            if (ModelState.IsValid)
+            {
+                var vUsuario = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
+
+                if (vUsuario == null)
+                {
+                    usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
+                    usuario.Senha = usuario.Senha.ToLower(); //Passa para minúsculo a Senha
+                    
+                    _db.Int_Dp_Usuarios.Add(usuario);
+                    _db.SaveChanges();
+                    TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi cadastrado com sucesso!";
+                    return RedirectToAction("Index");
                 }
                 else
                 {

@@ -6,13 +6,23 @@
     ViewData["Title"] = "Cadastrar Usuário";
 }
 @{
+
     int setor;
-    setor = 0;
+    if(ViewBag.User.Setor != null)
+    {
+        setor = ViewBag.User.Setor.Id;
+    }
+    else
+    {
+        setor = 0;
+    }
+
+
 }
 
 @if (TempData["ExisteUsuario"] != null)
 {
-    <div class="alert alert-warning" role="alert">
+    <div class="alert alert-danger" role="alert">
         @TempData["ExisteUsuario"]
     </div>
 }
@@ -20,7 +30,8 @@
 <h2>Cadastro de Usuário</h2>
 <br />
 <form method="post" action="\usuarios\cadastrar\">
-    <input type="hidden" name="id" value="" />
+        <input type="hidden" name="id" value="@ViewBag.User.Id" />
+    <input type="hidden" name="ativo" value="1" />
     <!--Login-->
     <div class="form-group col-md-auto">
         <label for="login">Login</label>
@@ -34,31 +45,42 @@
     </div>
     @Html.ValidationMessage("nome")
     <!--Senha-->
+
     <div class="form-group col-md-auto">
         <label for="senha">Senha</label>
         <input type="password" name="senha" class="form-control" id="senha" value="@ViewBag.User.Senha" placeholder="" required>
     </div>
     @Html.ValidationMessage("senha")
 
-    <!--Confirmar Senha-->
+    <!--Confirmar Senha
     <div class="form-group col-md-auto">
         <label for="confirmarsenha">Confirmar Senha</label>
-        <input type="password" name="confirmarsenha" class="form-control" id="confirmarsenha" value="@ViewBag.User.Senha" placeholder="" required>
+        <input type="password" class="form-control" id="confirmarsenha" value="" placeholder="" required>
     </div>
-
+        -->
     <!--Perfil-->
     <div class="form-group col-md-auto">
-        <label for="perifl">Perfil</label>
+        <label for="perfil">Perfil</label>
         <select name="perfil" id="perfil" class="form-control" required value="@ViewBag.User.Perfil">
-            <option value="admin">Administrador</option>
-            <option value="usuario">Usuário</option>
+            @if (ViewBag.User.Perfil == "admin")
+            {
+
+                <option value="admin" selected>Administrador</option>
+                <option value="usuario">Usuário</option>
+
+            }
+            else
+            {
+                <option value="admin">Administrador</option>
+                <option value="usuario" selected>Usuário</option>
+            }
         </select>
     </div>
 
     <!--Setor-->
     <div class="form-group p-2">
         <label for="setor">Setor</label>
-        <select name="setor" id="setor" class="form-control mb-2" required value="@ViewBag.User.Setor">
+        <select name="setor.id" id="setor" class="form-control mb-2" required>
             @foreach (var depto in ViewBag.Setores2)
             {
                 if (depto.Id == setor)
@@ -77,3 +99,4 @@
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
 
 </form>
+

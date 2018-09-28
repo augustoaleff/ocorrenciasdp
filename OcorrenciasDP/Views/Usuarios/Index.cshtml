@@ -18,6 +18,19 @@
     setor = 0;
 
 }
+@if (TempData["CadastroUserOK"] != null)
+{
+    <div class="alert alert-succsess" role="alert">
+        @TempData["CadastroUserOK"]
+    </div>
+}
+@if (TempData["UsuarioExcluido"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["UsuarioExcluido"]
+    </div>
+}
+
 <h2>Usuários</h2>
 <br />
 <div style="display:flex; justify-content:flex-end">
@@ -70,34 +83,55 @@
 
         @foreach (var user in Model)
         {
-        <tr>
-            <th scope="row">@user.Id</th>
-            <td>@user.Login.ToLower()</td>
-            <td>@user.Nome</td>
-            <td>@user.Setor</td>
-            <td>@user.Perfil</td>
-            @if (user.Ativo == 0)
-            {
-            <td>Inativo</td>
-            }
-            else
-            {
-            <td>Ativo</td>
-            }
-
-            <td>
-                <a href="#" class="btn btn-warning btn-sm">
-                    Alterar
-                </a>
-                <a href="#" class="btn btn-danger btn-sm">
-                    Excluir
-                </a>
-
-            </td>
-        </tr>
+            <tr>
+                <th scope="row">@user.Id</th>
+                <td>@user.Login.ToLower()</td>
+                <td>@user.Nome</td>
+                <td>@user.Setor</td>
+                @if (user.Perfil == "admin")
+                {
+                    <td>Administrador</td>
                 }
-            
-        </tbody>
+                else if (user.Perfil == "usuario")
+                {
+                    <td>Usuário</td>
+                }
+                else
+                {
+                    <td>@user.Perfil</td>
+                }
+
+
+                @if (user.Ativo == 0)
+                {
+                    <td>Inativo</td>
+                }
+                else
+                {
+                    <td>Ativo</td>
+                }
+
+                <td>
+                    <a href="/Usuarios/Atualizar/@user.Id/" class="btn btn-warning btn-sm">
+                        Alterar
+                    </a>
+                    <a href="/Usuarios/Excluir/@user.Id/" onclick="return confirmaApagar();" on class="btn btn-danger btn-sm">
+                        Excluir
+                    </a>
+
+                </td>
+            </tr>
+        }
+
+    </tbody>
 </table>
 
 @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page }))
+
+@section Scripts{
+    <script language="javascript">
+        function confirmaApagar() {
+            return confirm("Confirma Exclusão?");
+        }
+    </script>
+}
