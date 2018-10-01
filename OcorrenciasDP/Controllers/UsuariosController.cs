@@ -29,10 +29,68 @@ namespace OcorrenciasDP.Controllers
         }
 
         [HttpGet]
+        public IActionResult Filtrar(string nome, string setor, int? page)
+        {
+            ViewBag.Setores = setores;
+            var pageNumber = page ?? 1;
+
+            var query = _db.Int_Dp_Usuarios
+                .Join(_db.Int_DP_Setores, u => u.Setor.Id, o => o.Id, (u,o) => new { u, o })
+                .AsQueryable();
+
+            if(nome != null)
+            {
+                query = query.Where(a => a.u.Nome.ToLower().Contains(nome.ToLower()));
+            }
+
+            if(setor != null && setor != "0")
+            {
+                query = query.Where(a => a.u.Setor.Id == int.Parse(setor));
+
+            }
+
+            var relat = query.Select(s => new
+            {
+                s.u.Id,
+                s.u.Login,
+                s.u.Nome,
+                Setor = s.o.Nome,
+                s.u.Perfil,
+                s.u.Ativo
+
+            }).ToList();
+
+
+            foreach (var user in relat)
+            {
+                UsuariosViewModel userVM = new UsuariosViewModel
+                {
+                    Id = user.Id,
+                    Login = user.Login,
+                    Nome = user.Nome,
+                    Perfil = user.Perfil,
+                    Ativo = user.Ativo,
+                    Setor = user.Setor
+                };
+                usuariosVM.Add(userVM);
+            }
+
+            ViewBag.PesquisaSetor = setor;
+            ViewBag.PesquisaNome = nome;
+
+            var resultadoPaginado = usuariosVM.ToPagedList(pageNumber, 5);
+
+
+            return View("Index",resultadoPaginado);
+
+        }
+
+
+        [HttpGet]
         public IActionResult Index(int? page)
         {
             ViewBag.Setores = setores;
-            var pageNumber= page ?? 0;
+            var pageNumber = page ?? 0;
 
 
             var relat = _db.Int_Dp_Usuarios
@@ -47,8 +105,8 @@ namespace OcorrenciasDP.Controllers
                     s.a.Ativo,
                     Setor = s.a.Setor.Nome
                 }).ToList();
-            
-            foreach(var user in relat)
+
+            foreach (var user in relat)
             {
                 UsuariosViewModel userVM = new UsuariosViewModel
                 {
@@ -62,9 +120,8 @@ namespace OcorrenciasDP.Controllers
                 usuariosVM.Add(userVM);
             }
 
-            var resultadoPaginado = usuariosVM.ToPagedList(pageNumber, 10);
+            var resultadoPaginado = usuariosVM.ToPagedList(pageNumber, 5);
 
-           
             return View(resultadoPaginado);
 
         }
@@ -72,7 +129,7 @@ namespace OcorrenciasDP.Controllers
         [HttpGet]
         public ActionResult Excluir(int id)
         {
-            var usuario =_db.Int_Dp_Usuarios.Find(id);
+            var usuario = _db.Int_Dp_Usuarios.Find(id);
             _db.Int_Dp_Usuarios.Remove(usuario);
             _db.SaveChanges();
 
@@ -80,7 +137,7 @@ namespace OcorrenciasDP.Controllers
 
             return RedirectToAction("Index");
         }
-        
+
 
         [HttpGet]
         public ActionResult Atualizar(int id)
@@ -107,30 +164,63 @@ namespace OcorrenciasDP.Controllers
 
             if (ModelState.IsValid)
             {
-                var vUsuario = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
 
-                if (vUsuario == null)
+                var vUsuario = _db.Int_Dp_Usuarios.Find(usuario.Id);
+                if (vUsuario.Login.ToLower() != usuario.Login.ToLower())
+                {
+
+                    var vUsuario2 = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
+
+                    if (vUsuario2 == null)
+                    {
+                        usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
+                        usuario.Senha = usuario.Senha.ToLower(); //Passa para minúsculo a Senha
+
+                        var vUpdate = _db.Int_Dp_Usuarios.Find(usuario.Id);
+
+                        vUpdate.Login = usuario.Login;
+                        vUpdate.Nome = usuario.Nome;
+                        vUpdate.Perfil = usuario.Perfil;
+                        vUpdate.Senha = usuario.Senha;
+                        vUpdate.Setor = usuario.Setor;
+                        vUpdate.Ativo = usuario.Ativo;
+
+                        _db.SaveChanges();
+                        _db.SaveChanges();
+                        TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi atualizado com sucesso!";
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        TempData["ExisteUsuario"] = "Já existe um usuário com esse login, favor escolher outro!";
+                        ViewBag.User = usuario;
+                        return View("Cadastrar");
+                    }
+
+                }
+                else
                 {
                     usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
                     usuario.Senha = usuario.Senha.ToLower(); //Passa para minúsculo a Senha
 
-                    _db.Int_Dp_Usuarios.Add(usuario);
-                    _db.Int_DP_Ocorrencias.Update
+                    var vUpdate =_db.Int_Dp_Usuarios.Find(usuario.Id);
+
+                    vUpdate.Login = usuario.Login;
+                    vUpdate.Nome = usuario.Nome;
+                    vUpdate.Perfil = usuario.Perfil;
+                    vUpdate.Senha = usuario.Senha;
+                    vUpdate.Setor = usuario.Setor;
+                    vUpdate.Ativo = usuario.Ativo;
+
                     _db.SaveChanges();
-                    TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi cadastrado com sucesso!";
+
+                    TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi atualizado com sucesso!";
                     return RedirectToAction("Index");
-                }
-                else
-                {
-                    TempData["ExisteUsuario"] = "Já existe um usuário com esse login, favor escolher outro!";
-                    ViewBag.User = usuario;
-                    return View();
                 }
 
             }
 
-            return View();
-
+            return View("Cadastrar");
 
         }
 
@@ -148,7 +238,8 @@ namespace OcorrenciasDP.Controllers
 
 
         [HttpPost]
-        public ActionResult Cadastrar([FromForm]Usuario usuario) {
+        public ActionResult Cadastrar([FromForm]Usuario usuario)
+        {
 
             var vSetor = _db.Int_DP_Setores.Find(usuario.Setor.Id);
             usuario.Setor = vSetor;
@@ -164,7 +255,7 @@ namespace OcorrenciasDP.Controllers
                 {
                     usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
                     usuario.Senha = usuario.Senha.ToLower(); //Passa para minúsculo a Senha
-                    
+
                     _db.Int_Dp_Usuarios.Add(usuario);
                     _db.SaveChanges();
                     TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi cadastrado com sucesso!";
@@ -180,7 +271,7 @@ namespace OcorrenciasDP.Controllers
             }
 
             return View();
-            
+
         }
 
     }

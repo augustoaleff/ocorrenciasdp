@@ -8,6 +8,7 @@ namespace OcorrenciasDP.Models
 {
     public class Usuario
     {
+        [Key]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "O campo 'Login' é obrigatório")]

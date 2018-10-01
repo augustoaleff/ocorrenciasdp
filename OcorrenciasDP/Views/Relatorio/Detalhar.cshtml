@@ -46,6 +46,6 @@
 
 <div >
     <strong>Anexo: </strong>
-    @Model.Anexo
+    <a href="\Relatorio\Download?filename=@string.Concat(Model.Id.ToString(),"_",Model.Anexo)">@Model.Anexo</a>
 </div>
 

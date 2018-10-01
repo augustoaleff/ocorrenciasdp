@@ -29,8 +29,8 @@
 
 <h2>Cadastro de Usuário</h2>
 <br />
-<form method="post" action="\usuarios\cadastrar\">
-        <input type="hidden" name="id" value="@ViewBag.User.Id" />
+<form method="post">
+    <input type="hidden" name="id" value="@ViewBag.User.Id" />
     <input type="hidden" name="ativo" value="1" />
     <!--Login-->
     <div class="form-group col-md-auto">
@@ -67,7 +67,6 @@
 
                 <option value="admin" selected>Administrador</option>
                 <option value="usuario">Usuário</option>
-
             }
             else
             {

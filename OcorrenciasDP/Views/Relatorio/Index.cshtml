@@ -54,6 +54,13 @@
         @TempData["OcorrenciaExcluir"]
     </div>
 }
+@if (TempData["ErroAnexo"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErroAnexo"]
+    </div>
+}
+
 
 @if (inform != "Dados da Pesquisa: ")
 {
@@ -134,16 +141,15 @@
                 @if (ocor.Anexo != null)
                 {
                     <td>
-                        <button type="button" class="btn btn-default btn-sm">
+                        <a href="\Relatorio\Download?filename=@string.Concat(ocor.Id.ToString(),"_",ocor.Anexo)" type="button" class="btn btn-default btn-sm">
                             <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
-                        </button>
+                        </a>
                     </td>
                 }
                 else
                 {
                     <td></td>
                 }
-
                 <td>
                     <a href="/Relatorio/Detalhar/@ocor.Id" class="btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
@@ -181,4 +187,4 @@ else
     </script>
 }
 
- 
+

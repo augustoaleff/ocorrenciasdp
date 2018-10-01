@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using OcorrenciasDP.Database;
 
 namespace OcorrenciasDP
@@ -38,8 +40,13 @@ namespace OcorrenciasDP
 
                 //options.UseSqlServer("Driver={SQL Server Native Client 10.0};Server=tcp:lz72uivirk.database.windows.net,1433;Database=ELETRO_AZURE;Uid=eletro_az@lz72uivirk;Pwd=if360alWK;Encrypt=yes;Connection Timeout=30;");
                  options.UseSqlServer("Server=tcp:lz72uivirk.database.windows.net,1433;Database=ELETRO_AZURE;Uid=eletro_az@lz72uivirk;Pwd=if360alWK;Encrypt=yes;Connection Timeout=30;");
+                options.EnableSensitiveDataLogging(true);
+               
+    });
 
-            });
+            services.AddSingleton<IFileProvider>(
+                new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1); //Adiciona o serviço do MVC
             services.AddDistributedMemoryCache();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +16,7 @@ namespace OcorrenciasDP.Controllers
     public class OcorrenciaController : Controller
     {
         private DatabaseContext _db;
+        public string idOcorrencia;
 
         public OcorrenciaController(DatabaseContext db)
         {
@@ -57,24 +59,24 @@ namespace OcorrenciasDP.Controllers
             if (ModelState.IsValid)
             {
                 ViewBag.Ocorrencia = new Ocorrencia();
+               
                 ViewBag.Ocorrencia.Data = DateTime.Now;
                 _db.Int_DP_Ocorrencias.Add(ocorrencia);
                 _db.SaveChanges();
                 TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
                 return View("Index", ocorrencia);
             }
-            
+
             return View();
         }
 
-
         [HttpPost]
-        public ActionResult Index([FromForm]Ocorrencia ocorrencia)
+        public ActionResult Index([FromForm]Ocorrencia ocorrencia, IFormFile anexo)
         {
 
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
 
-            Usuario usuario =_db.Int_Dp_Usuarios.Find(id_notnull);
+            Usuario usuario = _db.Int_Dp_Usuarios.Find(id_notnull);
 
             ocorrencia.Usuario = usuario;
 
@@ -88,27 +90,40 @@ namespace OcorrenciasDP.Controllers
                 {
                     ViewBag.Ocorrencia = new Ocorrencia();
                     ViewBag.Ocorrencia.Data = DateTime.Now;
+                    ViewBag.Ocorrencia.Anexo = anexo.FileName;
+
+                    if(anexo != null) { 
+                    ocorrencia.Anexo = anexo.FileName;
+                    }
                     _db.Int_DP_Ocorrencias.Add(ocorrencia);
                     _db.SaveChanges();
-                    
+
+                    idOcorrencia = ocorrencia.Id.ToString() + "_";
+                    UploadFile(anexo);
                     TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
-                   
-                    return View("Index",ocorrencia);
+
+                    return View("Index", ocorrencia);
                 }
-                else 
+                else
                 {
-                    ViewBag.Ocorrencia= ocorrencia;
+                    ViewBag.Ocorrencia = ocorrencia;
+
+                    if(anexo != null) { 
+                    ViewBag.Ocorrencia.Anexo = anexo.FileName;
+                    }
 
                     //### Gerar alerta para o usuário perguntado se ele quer que atualize a pagina, se sim, executa este código, senão, não executa e volta pra View;
                     TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrencia cadastrada para esta data!";
                     //Retorna o valor como Objeto Ocorrencia para a View
-                    return View("Index",ocorrencia);
+                    return View("Index", ocorrencia);
                 }
-            }
 
+            }
+            
             return View();
+
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ConsultarBanco([FromForm]Ocorrencia ocorrencia)
@@ -121,9 +136,10 @@ namespace OcorrenciasDP.Controllers
 
                 ocorrencia.Usuario = usuario;
 
+
                 var vOcorrencia = _db.Int_DP_Ocorrencias.Where(o => o.Data.Equals(ocorrencia.Data) && (o.Usuario.Id == ocorrencia.Usuario.Id)).FirstOrDefault();
 
-                if(vOcorrencia == null || ViewBag.Update == true)
+                if (vOcorrencia == null || ViewBag.Update == true)
                 {
 
                     ViewBag.Ocorrencia = new Ocorrencia();
@@ -133,17 +149,38 @@ namespace OcorrenciasDP.Controllers
                 }
                 else
                 {
- 
+
                     ViewBag.Ocorrencia = ocorrencia;
                     TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrencia cadastrada para esta data!";
                     return View("Index", ocorrencia);
                 }
-
             }
 
             return View("Index", ocorrencia);
 
         }
+
+        //Updload
+        public async void UploadFile(IFormFile file)
+        {
+            if (file != null || file.Length != 0)
+            {
+
+                var path = Path.Combine(
+                            Directory.GetCurrentDirectory(), "wwwroot",
+                            string.Concat(idOcorrencia,file.FileName));
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+            }
+
+        }
+
+
+
+
 
     }
 }

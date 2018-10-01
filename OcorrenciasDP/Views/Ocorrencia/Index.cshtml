@@ -30,13 +30,14 @@
 @if (TempData["MsgOcorrenciaNotOK"] != null)
 {
     <div class="alert alert-warning" role="alert">
-        @TempData["MsgOcorrenciaNotOK"], <button id="botaoupdate" asp class="alert-link">Clique aqui</button> para enviar outra ocorrência.
+        @TempData["MsgOcorrenciaNotOK"], <button id="botaoupdate" onclick="return EnviarForm();" class="alert-link">Clique aqui</button> para enviar outra ocorrência.
         @{
             ViewBag.UpdateOcor = "true";
         }
     </div>
 }
 else
+
 {
     ViewBag.UpdateOcor = "false";
 }
@@ -44,7 +45,7 @@ else
 <h2>Inclusão de Ocorrência</h2>
 <br />
 
-<form method="post" action="\ocorrencia\index\">
+<form method="post" action="\ocorrencia\index\" enctype="multipart/form-data">
     <input type="hidden" name="id" value="@ViewBag.Ocorrencia.Id" />
     <div class="form-row">
         <div class="form-group col-md-auto">
@@ -61,11 +62,13 @@ else
         <input type="date" name="data" value="@data1" class="form-control" id="data">
         @Html.ValidationMessage("data")
     </div>
+
     <div class="form-group">
         <label for="descricao">Ocorrência</label>
         <textarea class="form-control" name="descricao" id="descricao" rows="5">@ViewBag.Ocorrencia.Descricao</textarea>
         @Html.ValidationMessage("descricao")
     </div>
+
     <div class="custom-file">
         <input type="file" class="custom-file-input" value="@ViewBag.Ocorrencia.Anexo" name="anexo" id="anexo" lang="pt-br">
         <label class="custom-file-label" for="anexo">Selecionar Arquivo</label>
@@ -75,10 +78,16 @@ else
 
 </form>
 
-<script>
+@section Scripts{
+    <script language="javascript">
 
     var btnUpdate = document.getElementById("botaoupdate");
-    var btnEnviar = document.getElementById("botaoenviar");
+   
+
+        function EnviarForm() {
+        var btnEnviar = document.getElementById("botaoenviar");
+        return btnEnviar.click();
+    }
 
     function MudarVariavel() {
         var vbUpdate;
@@ -98,7 +107,8 @@ else
 
     }
 
-
     btnUpdate.onclick(MudarVariavel());
 
-</script>
+    </script>
+
+}
