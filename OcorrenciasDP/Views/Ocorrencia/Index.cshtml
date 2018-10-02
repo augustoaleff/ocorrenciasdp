@@ -30,7 +30,7 @@
 @if (TempData["MsgOcorrenciaNotOK"] != null)
 {
     <div class="alert alert-warning" role="alert">
-        @TempData["MsgOcorrenciaNotOK"], <button id="botaoupdate" onclick="return EnviarForm();" class="alert-link">Clique aqui</button> para enviar outra ocorrência.
+        @TempData["MsgOcorrenciaNotOK"], <button id="botaoupdate" onclick="return btnEnviar.click();" class="alert-link">Clique aqui</button> para enviar outra ocorrência.
         @{
             ViewBag.UpdateOcor = "true";
         }
@@ -75,40 +75,31 @@ else
         @Html.ValidationMessage("arquivo")
     </div>
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
-
 </form>
 
 @section Scripts{
     <script language="javascript">
-
+    
     var btnUpdate = document.getElementById("botaoupdate");
-   
-
-        function EnviarForm() {
-        var btnEnviar = document.getElementById("botaoenviar");
-        return btnEnviar.click();
-    }
+    var btnEnviar = document.getElementById("botaoenviar");
 
     function MudarVariavel() {
         var vbUpdate;
 
-        if (vbUpdate == false || vbUpdate == null) {
-
-           vbUpdate == true
-            btnEnviar.click();
-
+        if (vbUpdate == "false" || vbUpdate == null) {
+        
+           vbUpdate == "true"
+           btnEnviar.click();
+        
         } else {
-
-            vbUpdate == false
-
+        
         }
-
         @(ViewBag.Update) == vbUpdate;
-
+    
     }
-
+    
     btnUpdate.onclick(MudarVariavel());
-
+    
     </script>
 
 }

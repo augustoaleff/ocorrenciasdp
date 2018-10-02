@@ -59,7 +59,6 @@ namespace OcorrenciasDP.Controllers
             if (ModelState.IsValid)
             {
                 ViewBag.Ocorrencia = new Ocorrencia();
-               
                 ViewBag.Ocorrencia.Data = DateTime.Now;
                 _db.Int_DP_Ocorrencias.Add(ocorrencia);
                 _db.SaveChanges();
@@ -73,16 +72,16 @@ namespace OcorrenciasDP.Controllers
         [HttpPost]
         public ActionResult Index([FromForm]Ocorrencia ocorrencia, IFormFile anexo)
         {
-
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
 
             Usuario usuario = _db.Int_Dp_Usuarios.Find(id_notnull);
-
+             
             ocorrencia.Usuario = usuario;
 
             if (ModelState.IsValid)
             {
                 //SELECT * FROM INT_DP_OCORRENCIAS WHERE DATA = " & Format(Data.Text, 'YYYYMMDD') & ";/
+
                 var vOcorrencia = _db.Int_DP_Ocorrencias.Where(o => o.Data.Equals(ocorrencia.Data) && (o.Usuario.Id == ocorrencia.Usuario.Id)).FirstOrDefault();
 
                 //Se for igual a null, não há nenhuma ocorrencia lançada com a data informada
@@ -117,11 +116,9 @@ namespace OcorrenciasDP.Controllers
                     //Retorna o valor como Objeto Ocorrencia para a View
                     return View("Index", ocorrencia);
                 }
-
             }
             
             return View();
-
         }
 
         [HttpPost]
@@ -136,10 +133,9 @@ namespace OcorrenciasDP.Controllers
 
                 ocorrencia.Usuario = usuario;
 
-
                 var vOcorrencia = _db.Int_DP_Ocorrencias.Where(o => o.Data.Equals(ocorrencia.Data) && (o.Usuario.Id == ocorrencia.Usuario.Id)).FirstOrDefault();
 
-                if (vOcorrencia == null || ViewBag.Update == true)
+                if (vOcorrencia == null || ViewBag.Update == "true")
                 {
 
                     ViewBag.Ocorrencia = new Ocorrencia();
@@ -174,13 +170,10 @@ namespace OcorrenciasDP.Controllers
                 {
                     await file.CopyToAsync(stream);
                 }
+
             }
 
         }
-
-
-
-
 
     }
 }
