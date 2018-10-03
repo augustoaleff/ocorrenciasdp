@@ -14,6 +14,7 @@ namespace OcorrenciasDP.Controllers
 {
 
     [Login]
+    [Admin]
     public class RelatorioController : Controller
     {
         private DatabaseContext _db;

@@ -2,6 +2,7 @@
 
 @{
     string Login = Context.Session.GetString("Login");
+    string Perfil = Context.Session.GetString("Perfil");
 }
 
 <!DOCTYPE html>
@@ -46,9 +47,12 @@
                     {
                         <li><a asp-area="" asp-controller="Home" asp-action="Inicio">Início</a></li>
                         <li><a asp-area="" asp-controller="Ocorrencia" asp-action="Index">Ocorrência</a></li>
-                        <li><a asp-area="" asp-controller="Relatorio" asp-action="Index">Relatório</a></li>
-                        <li><a asp-area="" asp-controller="Usuarios" asp-action="Index">Usuários</a></li>
-                        <li><a asp-area="" asp-controller="Home" asp-action="Logout">Logout</a></li>
+                        if (Perfil == "admin")
+                        {
+                            <li><a asp-area="" asp-controller="Relatorio" asp-action="Index">Relatório</a></li>
+                            <li><a asp-area="" asp-controller="Usuarios" asp-action="Index">Usuários</a></li>
+                        }
+                        <li class="nav-item"><a asp-area="" asp-controller="Home" asp-action="Logout">Logout</a></li>
                     }
                     else
                     {
@@ -56,10 +60,11 @@
                     }
 
                 </ul>
-                @if (Login != null)
-                {
-                    <span class="badge bg-primary">@Login</span>
-                }
+                <span class="badge bg-primary">@Login</span>
+                <!--Colocar menu na direita
+                <ul class="nav navbar-nav navbar-right">
+                </ul>
+                -->
             </div>
         </div>
     </nav>

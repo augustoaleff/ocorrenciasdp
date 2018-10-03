@@ -39,10 +39,10 @@ namespace OcorrenciasDP
             {
 
                 //options.UseSqlServer("Driver={SQL Server Native Client 10.0};Server=tcp:lz72uivirk.database.windows.net,1433;Database=ELETRO_AZURE;Uid=eletro_az@lz72uivirk;Pwd=if360alWK;Encrypt=yes;Connection Timeout=30;");
-                 options.UseSqlServer("Server=tcp:lz72uivirk.database.windows.net,1433;Database=ELETRO_AZURE;Uid=eletro_az@lz72uivirk;Pwd=if360alWK;Encrypt=yes;Connection Timeout=30;");
+                options.UseSqlServer("Server=tcp:lz72uivirk.database.windows.net,1433;Database=ELETRO_AZURE;Uid=eletro_az@lz72uivirk;Pwd=if360alWK;Encrypt=yes;Connection Timeout=30;");
                 options.EnableSensitiveDataLogging(true);
-               
-    });
+
+            });
 
             services.AddSingleton<IFileProvider>(
                 new PhysicalFileProvider(

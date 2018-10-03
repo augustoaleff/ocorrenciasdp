@@ -6,6 +6,11 @@
     string nome_login = Context.Session.GetString("Login");
     string setor_login = Context.Session.GetString("Setor");
 }
+@{ 
+    string update;
+
+    update = "false";
+}
 
 
 @if (TempData["MsgOcorrenciaOK"] != null)
@@ -30,23 +35,19 @@
 @if (TempData["MsgOcorrenciaNotOK"] != null)
 {
     <div class="alert alert-warning" role="alert">
-        @TempData["MsgOcorrenciaNotOK"], <button id="botaoupdate" onclick="return btnEnviar.click();" class="alert-link">Clique aqui</button> para enviar outra ocorrência.
-        @{
-            ViewBag.UpdateOcor = "true";
-        }
+        @TempData["MsgOcorrenciaNotOK"],<button type="button" class="btn btn-warning" onclick="return mudarVariavel();">Clique aqui</button> se  confirma o envio (<span class="glyphicon glyphicon-info-sign"></span>Você deverá inserir o anexo novamente).
     </div>
 }
-else
 
-{
-    ViewBag.UpdateOcor = "false";
-}
 
 <h2>Inclusão de Ocorrência</h2>
 <br />
 
 <form method="post" action="\ocorrencia\index\" enctype="multipart/form-data">
+
+    <input type="hidden" id="update" name="update" value="@update" />
     <input type="hidden" name="id" value="@ViewBag.Ocorrencia.Id" />
+
     <div class="form-row">
         <div class="form-group col-md-auto">
             <label for="nome">Nome</label>
@@ -57,49 +58,39 @@ else
             <input type="text" name="setor" class="form-control" id="setor" value="@setor_login" placeholder="" readonly>
         </div>
     </div>
+
     <div class="form-group">
         <label for="data">Data</label>
         <input type="date" name="data" value="@data1" class="form-control" id="data">
-        @Html.ValidationMessage("data")
+        <strong style="color:#FF0000">@Html.ValidationMessage("data")</strong>
     </div>
 
     <div class="form-group">
         <label for="descricao">Ocorrência</label>
         <textarea class="form-control" name="descricao" id="descricao" rows="5">@ViewBag.Ocorrencia.Descricao</textarea>
-        @Html.ValidationMessage("descricao")
+        <strong style="color:#FF0000">@Html.ValidationMessage("descricao")</strong>
     </div>
 
     <div class="custom-file">
-        <input type="file" class="custom-file-input" value="@ViewBag.Ocorrencia.Anexo" name="anexo" id="anexo" lang="pt-br">
+        <input type="file" class="custom-file-input"  value="@ViewBag.Anexo" name="anexo" id="anexo" lang="pt-br">
         <label class="custom-file-label" for="anexo">Selecionar Arquivo</label>
-        @Html.ValidationMessage("arquivo")
+        <strong style="color:#FF0000">@Html.ValidationMessage("arquivo")</strong>
     </div>
+
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
+
 </form>
 
 @section Scripts{
     <script language="javascript">
-    
-    var btnUpdate = document.getElementById("botaoupdate");
-    var btnEnviar = document.getElementById("botaoenviar");
 
-    function MudarVariavel() {
-        var vbUpdate;
+        function mudarVariavel() {
 
-        if (vbUpdate == "false" || vbUpdate == null) {
-        
-           vbUpdate == "true"
-           btnEnviar.click();
-        
-        } else {
-        
+            document.getElementById("update").setAttribute("value", "true"); //Altera o value para true
+            document.getElementById("botaoenviar").click();  //Enviar a ocorrencia
+
         }
-        @(ViewBag.Update) == vbUpdate;
-    
-    }
-    
-    btnUpdate.onclick(MudarVariavel());
-    
+
     </script>
 
 }

@@ -2,6 +2,13 @@
     ViewData["Title"] = "Início";
 }
 <!--Banner-->
+@if (TempData["MensagemErroAdmin"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        <span class="glyphicon glyphicon-info-sign"></span>@TempData["MensagemErroAdmin"]
+    </div>
+}
+
 
 <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
     <ol class="carousel-indicators">

@@ -141,7 +141,7 @@
                 @if (ocor.Anexo != null)
                 {
                     <td>
-                        <a href="\Relatorio\Download?filename=@string.Concat(ocor.Id.ToString(),"_",ocor.Anexo)" type="button" class="btn btn-default btn-sm">
+                        <a href="\Relatorio\Download?filename=@string.Concat(ocor.Id.ToString(),"_",ocor.Anexo)" alt="download" type="button" class="btn btn-default btn-sm">
                             <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
                         </a>
                     </td>
@@ -151,12 +151,13 @@
                     <td></td>
                 }
                 <td>
-                    <a href="/Relatorio/Detalhar/@ocor.Id" class="btn btn-default btn-sm">
+                    <a href="/Relatorio/Detalhar/@ocor.Id" alt="detalhar" class="btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                     </a>
                 </td>
+
                 <td>
-                    <a href="/Relatorio/Excluir/@ocor.Id" onclick="return confirmaApagar();" class="btn btn-default btn-sm">
+                    <a href="/Relatorio/Excluir/@ocor.Id" alt="excluir" onclick="return confirmaApagar();" class="btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                     </a>
                 </td>
@@ -179,9 +180,12 @@ else
 }
 
 @section Scripts{
+
     <script language="javascript">
         function confirmaApagar() {
+
             return confirm("Confirma Exclusão?");
+
         }
     </script>
 }

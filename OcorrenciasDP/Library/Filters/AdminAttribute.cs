@@ -8,26 +8,24 @@ using System.Threading.Tasks;
 
 namespace OcorrenciasDP.Library.Filters
 {
-    public class LoginAttribute : ActionFilterAttribute
+    public class AdminAttribute : ActionFilterAttribute
     {
+
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (context.HttpContext.Session.GetString("Login") == null)
+            if (context.HttpContext.Session.GetString("Perfil") != "admin")
             {
 
                 if (context.Controller != null)
                 {
                     Controller controlador = context.Controller as Controller;
-                    controlador.TempData["MensagemErro"] = "Efetue o login para acessar a página";
+                    controlador.TempData["MensagemErroAdmin"] = "Você não tem permissão para acessar esta página";
                 }
 
-                context.Result = new RedirectToActionResult("Index", "Home", null);
+                context.Result = new RedirectToActionResult("Inicio", "Home", null);
 
             }
 
         }
-
     }
-
 }
-

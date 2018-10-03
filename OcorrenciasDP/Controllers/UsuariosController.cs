@@ -11,7 +11,9 @@ using X.PagedList;
 
 namespace OcorrenciasDP.Controllers
 {
+    
     [Login]
+    [Admin]
     public class UsuariosController : Controller
     {
         private DatabaseContext _db;
@@ -36,6 +38,7 @@ namespace OcorrenciasDP.Controllers
 
             var query = _db.Int_Dp_Usuarios
                 .Join(_db.Int_DP_Setores, u => u.Setor.Id, o => o.Id, (u,o) => new { u, o })
+                .Where(u => u.u.Ativo == 1)
                 .AsQueryable();
 
             if(nome != null)
@@ -95,6 +98,7 @@ namespace OcorrenciasDP.Controllers
 
             var relat = _db.Int_Dp_Usuarios
                 .Join(_db.Int_DP_Setores, a => a.Setor.Id, b => b.Id, (a, b) => new { a, b })
+                .Where(u => u.a.Ativo == 1)
                 .OrderBy(o => o.a.Nome)
                 .Select(s => new
                 {
@@ -129,11 +133,15 @@ namespace OcorrenciasDP.Controllers
         [HttpGet]
         public ActionResult Excluir(int id)
         {
+            
             var usuario = _db.Int_Dp_Usuarios.Find(id);
-            _db.Int_Dp_Usuarios.Remove(usuario);
+            string usuario_temp = usuario.Login;
+            usuario.Ativo = 0;
+            usuario.Login = string.Concat(usuario.Login,DateTime.Now.Day.ToString(),DateTime.Now.Second.ToString(),DateTime.Now.Minute.ToString());
+            //_db.Int_Dp_Usuarios.Remove(usuario);
             _db.SaveChanges();
 
-            TempData["UsuarioExcluido"] = "O usuário '" + usuario.Login + "' foi excluido!";
+            TempData["UsuarioExcluido"] = "O usuário '" + usuario_temp + "' foi excluido!";
 
             return RedirectToAction("Index");
         }

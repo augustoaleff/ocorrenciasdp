@@ -29,6 +29,7 @@ namespace OcorrenciasDP.Controllers
         {
             ViewBag.Ocorrencia = new Ocorrencia();
             ViewBag.Ocorrencia.Data = DateTime.Now;
+            ViewBag.Anexo = "";
 
             return View(new Ocorrencia());
         }
@@ -70,8 +71,9 @@ namespace OcorrenciasDP.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index([FromForm]Ocorrencia ocorrencia, IFormFile anexo)
+        public ActionResult Index([FromForm]Ocorrencia ocorrencia, IFormFile anexo, string update)
         {
+
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
 
             Usuario usuario = _db.Int_Dp_Usuarios.Find(id_notnull);
@@ -85,22 +87,27 @@ namespace OcorrenciasDP.Controllers
                 var vOcorrencia = _db.Int_DP_Ocorrencias.Where(o => o.Data.Equals(ocorrencia.Data) && (o.Usuario.Id == ocorrencia.Usuario.Id)).FirstOrDefault();
 
                 //Se for igual a null, não há nenhuma ocorrencia lançada com a data informada
-                if (vOcorrencia == null || ViewBag.Update == true)
+                if (vOcorrencia == null || update == "true")
                 {
                     ViewBag.Ocorrencia = new Ocorrencia();
                     ViewBag.Ocorrencia.Data = DateTime.Now;
-                    ViewBag.Ocorrencia.Anexo = anexo.FileName;
 
-                    if(anexo != null) { 
-                    ocorrencia.Anexo = anexo.FileName;
+                    if(anexo != null) {
+                        ViewBag.Ocorrencia.Anexo = anexo.FileName;
+                        ocorrencia.Anexo = anexo.FileName;
+                        ViewBag.Anexo = anexo;
                     }
                     _db.Int_DP_Ocorrencias.Add(ocorrencia);
                     _db.SaveChanges();
 
                     idOcorrencia = ocorrencia.Id.ToString() + "_";
-                    UploadFile(anexo);
-                    TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
 
+                    if(anexo != null)
+                    {
+                        UploadFile(anexo);
+                    }
+
+                    TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
                     return View("Index", ocorrencia);
                 }
                 else
@@ -117,12 +124,17 @@ namespace OcorrenciasDP.Controllers
                     return View("Index", ocorrencia);
                 }
             }
-            
+
+            ViewBag.Ocorrencia = ocorrencia;
+            if (anexo != null)
+            {
+                ViewBag.Ocorrencia.Anexo = anexo.FileName;
+            }
+
             return View();
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult ConsultarBanco([FromForm]Ocorrencia ocorrencia)
         {
             if (ModelState.IsValid)
@@ -140,8 +152,8 @@ namespace OcorrenciasDP.Controllers
 
                     ViewBag.Ocorrencia = new Ocorrencia();
                     ViewBag.Ocorrencia.Data = DateTime.Now;
-
                     return RedirectToAction("Incluir", ocorrencia);
+
                 }
                 else
                 {
@@ -170,7 +182,7 @@ namespace OcorrenciasDP.Controllers
                 {
                     await file.CopyToAsync(stream);
                 }
-
+              
             }
 
         }

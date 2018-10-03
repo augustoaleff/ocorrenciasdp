@@ -29,7 +29,7 @@ namespace OcorrenciasDP.Controllers
 
         }
 
-        
+        [Login]
         public IActionResult Inicio()
         {
             var usuarios = _db.Int_Dp_Usuarios.ToList();
@@ -45,7 +45,6 @@ namespace OcorrenciasDP.Controllers
         }
 
         [HttpPost]
-
         public ActionResult Index([FromForm]Usuario usuario)
         {
 
@@ -70,6 +69,7 @@ namespace OcorrenciasDP.Controllers
                             HttpContext.Session.SetString("Login", vLogin.Nome);
                             HttpContext.Session.SetString("Acesso", vLogin.Perfil);
                             HttpContext.Session.SetString("Setor", vLogin.Setor.Nome);
+                            HttpContext.Session.SetString("Perfil", vLogin.Perfil);
                             HttpContext.Session.SetInt32("ID", vLogin.Id);
 
                             return RedirectToAction("Inicio", "Home"); //Vai para a página de Início
