@@ -60,7 +60,6 @@ namespace OcorrenciasDP.Controllers
                    Setor = s.b.Nome,
                }).FirstOrDefault();
 
-
             OcorrenciaViewModel detalhes = new OcorrenciaViewModel
             {
                 Id = relat.Id,
@@ -73,7 +72,6 @@ namespace OcorrenciasDP.Controllers
 
             return View(detalhes);
         }
-
 
         [HttpGet]
         public ActionResult Filtrar(DateTime? datainicio, DateTime? datafim, string setor, int? page)
@@ -220,7 +218,6 @@ namespace OcorrenciasDP.Controllers
 
             if (System.IO.File.Exists(path)) //Se o arquivo existir
             {
-
 
                 var memory = new MemoryStream();
                 using (var stream = new FileStream(path, FileMode.Open))

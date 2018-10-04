@@ -63,7 +63,6 @@ namespace OcorrenciasDP.Controllers
 
             }).ToList();
 
-
             foreach (var user in relat)
             {
                 UsuariosViewModel userVM = new UsuariosViewModel
@@ -243,8 +242,6 @@ namespace OcorrenciasDP.Controllers
 
         }
 
-
-
         [HttpPost]
         public ActionResult Cadastrar([FromForm]Usuario usuario)
         {
@@ -263,6 +260,7 @@ namespace OcorrenciasDP.Controllers
                 {
                     usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
                     usuario.Senha = usuario.Senha.ToLower(); //Passa para minúsculo a Senha
+                    usuario.UltimoLogin = DateTime.Now;
 
                     _db.Int_Dp_Usuarios.Add(usuario);
                     _db.SaveChanges();

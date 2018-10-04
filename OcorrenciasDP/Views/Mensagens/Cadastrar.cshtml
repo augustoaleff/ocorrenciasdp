@@ -1,0 +1,29 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewData["title"] = "Nova Mensagem";
+}
+
+
+
+
+<form method="post">
+    <input type="hidden" name="id" value="" />
+    <!--Conteúdo da Mensagem-->
+    <div class="form-group col-md-auto">
+        <label for="conteudo">Mensagem</label>
+        <textarea class="form-control" name="conteudo" id="conteudo" placeholder="Digite sua mensagem aqui..." rows="5"></textarea>
+    </div>
+    @Html.ValidationMessage("login")
+
+    <!--Destinatários-->
+    <div class="form-group col-md-auto">
+        <label for="destinatario">Destinátário</label>
+        <input type="text" name="destinatario" value="" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
+
+</form>

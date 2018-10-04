@@ -1,6 +1,22 @@
-﻿@{
+﻿@model List<OcorrenciasDP.Models.OcorrenciaViewModel>
+
+@{
     ViewData["Title"] = "Início";
 }
+@{
+    string conteudo;
+
+    if (ViewBag.MsgDetalhe != null)
+    {
+
+        conteudo = ViewBag.MsgDetalhe.Conteudo;
+    }
+    else
+    {
+        conteudo = "";
+    }
+}
+
 <!--Banner-->
 @if (TempData["MensagemErroAdmin"] != null)
 {
@@ -53,13 +69,124 @@
     </div>
     <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
         <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
+        <span class="sr-only">Anterior</span>
     </a>
     <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
         <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
+        <span class="sr-only">Próximo</span>
     </a>
 </div>
+
+<h3> <span class="glyphicon glyphicon-envelope"></span>  Mensagens</h3>
+<table class="table table-hover" style="padding-top: 15px">
+    <thead>
+        <tr>
+            <th scope="col">Data</th>
+            <th scope="col">Mensagem</th>
+            <th scope="col">Detalhar</th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var msg in ViewBag.Msgs)
+        {
+            <tr>
+                <th scope="row">@msg.Data.Date.ToString("dd/MM/yyyy")</th>
+                @if (msg.Conteudo.Length >= 100)
+                {
+                    <td>@msg.Conteudo.Substring(0, 100)</td>
+                }
+                else
+                {
+                    <td>@msg.Conteudo</td>
+                }
+                <td>
+                    <a href="/Mensagens/Detalhar/@msg.Id" type="button" data-toggle="modal" data-target="#modalDetalharMensagem" alt="detalhar" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3> <span class="glyphicon glyphicon-ok"></span>  Últimas Ocorrencias Enviadas</h3>
+
+<table class="table table-hover" style="padding-top: 15px">
+    <thead class="">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Data</th>
+            <th scope="col">Descrição</th>
+            <th scope="col">Anexo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ocor in Model)
+        {
+            <tr>
+                <th scope="row">@ocor.Id</th>
+                <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
+                @if (ocor.Descricao.Length >= 100)
+                {
+                    <td>@ocor.Descricao.Substring(0, 100)</td>
+                }
+                else
+                {
+                    <td>@ocor.Descricao</td>
+                }
+
+                @if (ocor.Anexo != null)
+                {
+                    <td>
+                        <a href="\Home\Download?filename=@string.Concat(ocor.Id.ToString(), "_", ocor.Anexo)" alt="download" type="button" class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
+                        </a>
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalDetalharMensagem" tabindex="-1" role="dialog" aria-labelledby="modalDetalharMensagemTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDetalharMensagemTitulo">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @conteudo
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section  Scripts{ 
+    <script language="javascript">
+
+       var modal1 = document.getElementById("modalDetalharMensagem");
+        document.addEventListener("modal");
+        $('#modalDetalharMensagem').modal('toggle');
+        
+    </script>
+
+}
+
+<!--
 
 <div class="row">
     <div class="col-md-3">
@@ -100,3 +227,4 @@
         </ul>
     </div>
 </div>
+    -->

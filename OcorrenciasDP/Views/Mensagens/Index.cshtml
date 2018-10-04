@@ -1,0 +1,57 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewData["Title"] = "Mensagens";
+}
+
+@if (TempData["MensagemEnviada"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["MensagemEnviada"]
+    </div>
+}
+
+@if (TempData["MensagemNaoEnviada"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["MensagemNaoEnviada"]
+    </div>
+}
+
+<h2>Mensagens</h2>
+<button type="button" data-toggle="modal" data-target="#modalNovaMensagem" class="btn-primary btn-sm" style="justify-content:flex-end">Enviar Mensagem   <span class="glyphicon glyphicon-send"></span></button>
+
+<div class="modal fade" id="modalNovaMensagem" tabindex="-1" role="dialog" aria-labelledby="modalNovaMensagemTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalNovaMensagem">Enviar Mensagem</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="\Mensagens\Cadastrar\">
+                    <!-- <input type="hidden" name="id" value="" />-->
+                    <!--Conteúdo da Mensagem-->
+                    <div class="form-group col-md-auto">
+                        <label for="conteudo">Mensagem</label>
+                        <textarea class="form-control" name="conteudo" id="conteudo" placeholder="Digite sua mensagem aqui..." rows="5"></textarea>
+                    </div>
+                    @Html.ValidationMessage("login")
+
+                    <div class="modal-footer">
+
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

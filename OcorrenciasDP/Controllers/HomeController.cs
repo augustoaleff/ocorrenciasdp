@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +12,7 @@ using OcorrenciasDP.Models;
 
 namespace OcorrenciasDP.Controllers
 {
-  
+
     public class HomeController : Controller
     {
 
@@ -33,7 +34,55 @@ namespace OcorrenciasDP.Controllers
         public IActionResult Inicio()
         {
             var usuarios = _db.Int_Dp_Usuarios.ToList();
-            return View(usuarios);
+
+            int userID = HttpContext.Session.GetInt32("ID") ?? 0;
+
+            var relat = _db.Int_DP_Ocorrencias
+                .Where(a => a.Usuario.Id == userID)
+                .OrderByDescending(b => b.Data)
+                .Take(5)
+                .ToList();
+
+
+            List<OcorrenciaViewModel> ocorVM = new List<OcorrenciaViewModel>();
+
+            foreach (var ocor in relat)
+            {
+                OcorrenciaViewModel ocorrenciasVM = new OcorrenciaViewModel
+                {
+                    Id = ocor.Id,
+                    Descricao = ocor.Descricao,
+                    Data = ocor.Data,
+                    Anexo = ocor.Anexo
+
+                };
+
+                ocorVM.Add(ocorrenciasVM);
+            }
+
+            var relat2 = _db.Int_DP_Mensagens
+                        .OrderByDescending(b => b.Data)
+                        .Take(5)
+                        .ToList();
+
+            List<Mensagem> msgVM = new List<Mensagem>();
+
+            foreach(var msg in relat2)
+            {
+                Mensagem mensagem = new Mensagem
+                {
+                    Conteudo = msg.Conteudo,
+                    Data = msg.Data,
+                    Id = msg.Id,
+                    Remetente = msg.Remetente
+                };
+
+            msgVM.Add(mensagem);
+            }
+
+            ViewBag.Msgs = msgVM;
+
+            return View(ocorVM);
         }
 
         [HttpGet]
@@ -54,10 +103,11 @@ namespace OcorrenciasDP.Controllers
                 var vLogin = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
 
                 //Se existir ele entra no if
-                if (vLogin != null) {
+                if (vLogin != null)
+                {
 
-                   // var vSetor = _db.Int_DP_Setores.Find(vLogin.Setor.Id);
-                   // vLogin.Setor = vSetor;
+                    // var vSetor = _db.Int_DP_Setores.Find(vLogin.Setor.Id);
+                    // vLogin.Setor = vSetor;
 
                     //Verifica se está ativo
                     if (vLogin.Ativo == 1)
@@ -72,6 +122,8 @@ namespace OcorrenciasDP.Controllers
                             HttpContext.Session.SetString("Perfil", vLogin.Perfil);
                             HttpContext.Session.SetInt32("ID", vLogin.Id);
 
+                            vLogin.UltimoLogin = DateTime.Now;
+                            _db.SaveChanges();
                             return RedirectToAction("Inicio", "Home"); //Vai para a página de Início
 
                         }
@@ -87,7 +139,9 @@ namespace OcorrenciasDP.Controllers
                         return View(usuario);
                     }
 
-                } else {
+                }
+                else
+                {
                     TempData["MensagemErro"] = "Usuário não Encontrado";
                     return View(usuario);
                 }
@@ -119,6 +173,67 @@ namespace OcorrenciasDP.Controllers
             return View();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Download(string filename)
+        {
+            if (filename == null)
+            {
+                TempData["ErroAnexo"] = "O arquivo não foi encontrado!";
+                return View("Index");
+            }
+
+
+            var path = Path.Combine(
+                           Directory.GetCurrentDirectory(),
+                           "wwwroot", filename);
+
+            if (System.IO.File.Exists(path)) //Se o arquivo existir
+            {
+
+
+                var memory = new MemoryStream();
+                using (var stream = new FileStream(path, FileMode.Open))
+                {
+
+                    await stream.CopyToAsync(memory);
+
+                }
+                memory.Position = 0;
+                return File(memory, GetContentType(path), Path.GetFileName(path));
+
+            }
+            else // Se o arquivo não existir
+            {
+                TempData["ErroAnexo"] = "O Arquivo não foi encontrado!";
+                return RedirectToAction("Index");
+            }
+        }
+
+        private string GetContentType(string path)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return types[ext];
+        }
+
+        private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -126,11 +241,11 @@ namespace OcorrenciasDP.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        
+
         public ActionResult Logout()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

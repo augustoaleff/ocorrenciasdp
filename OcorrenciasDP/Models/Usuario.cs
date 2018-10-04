@@ -25,6 +25,7 @@ namespace OcorrenciasDP.Models
         public string Nome { get; set; }
         public string Perfil { get; set; }
         public Setor Setor { get; set; }
+        public DateTime UltimoLogin { get; set; } // o Último login Efetuado
 
     }
 }
