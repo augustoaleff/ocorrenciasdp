@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using OcorrenciasDP.Database;
 using OcorrenciasDP.Library.Filters;
 using OcorrenciasDP.Models;
+using X.PagedList;
 
 namespace OcorrenciasDP.Controllers
 {
@@ -22,26 +23,82 @@ namespace OcorrenciasDP.Controllers
             _db = db;
         }
 
-        public IActionResult Index()
-        {
+        public List<Mensagem> ConsultarMensagens() {
+            var relat2 = _db.Int_DP_Mensagens
+                       .OrderByDescending(b => b.Data)
+                       .ToList();
 
-            
-            return View();
+        List<Mensagem> msgVM = new List<Mensagem>();
+
+            foreach (var msg in relat2)
+            {
+                Mensagem mensagem = new Mensagem
+                {
+
+                    Conteudo = msg.Conteudo,
+                    Data = msg.Data,
+                    Id = msg.Id,
+                    Remetente = msg.Remetente
+                };
+
+
+                if (msg.Titulo != null)
+                {
+                    mensagem.Titulo = msg.Titulo;
+
+                }
+                else
+                {
+                    mensagem.Titulo = "Sem Título";
+                }
+
+                    msgVM.Add(mensagem);
+
+            }
+                ViewBag.Msgs = msgVM;
+
+            return msgVM;
         }
 
         [HttpGet]
-        public ActionResult Detalhar(long? id)
+        public IActionResult Index(int? page)
         {
-            var vMensagem = _db.Int_DP_Mensagens.Find(id);
-            ViewBag.MsgDetalhe = vMensagem;
-            return View(vMensagem.Conteudo);
+            int pageNumber = page ?? 1;
+
+            List<Mensagem> msgVM = ConsultarMensagens();
+
+            var resultadoPaginado = msgVM.ToPagedList(pageNumber, 10);
+            return View("Index", resultadoPaginado);
+
         }
+
+
+        [HttpGet]
+        public ActionResult DetalharMsg(long? id, int? page)
+        {
+            int pageNumber = page ?? 1;
+
+            var vMensagem = _db.Int_DP_Mensagens.Find(id);
+            if (vMensagem.Titulo == null)
+            {
+                vMensagem.Titulo = "Sem Título";
+            }
+
+            ViewBag.DetalheMsg = vMensagem;
+
+            List<Mensagem> msgVM = ConsultarMensagens();
+
+            var resultadoPaginado = msgVM.ToPagedList(pageNumber, 10);
+            return View("Index", resultadoPaginado);
+
+        }
+
 
         [HttpGet]
         public ActionResult Cadastrar()
         {
 
-            return View("Index");
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -62,13 +119,13 @@ namespace OcorrenciasDP.Controllers
 
                 TempData["MensagemEnviada"] = "Mesnagem enviada com sucesso!";
 
-                return View("Index");
+                return RedirectToAction("Index");
 
             }
             else
             {
                 TempData["MensagemNaoEnviada"] = "Ocorreu um erro ao enviar a mensagem, por favor, envie novamente!";
-                return View("Index");
+                return RedirectToAction("Index");
 
             }
 

@@ -59,7 +59,8 @@ namespace OcorrenciasDP.Controllers
                 s.u.Nome,
                 Setor = s.o.Nome,
                 s.u.Perfil,
-                s.u.Ativo
+                s.u.Ativo,
+                s.u.UltimoLogin
 
             }).ToList();
 
@@ -72,7 +73,8 @@ namespace OcorrenciasDP.Controllers
                     Nome = user.Nome,
                     Perfil = user.Perfil,
                     Ativo = user.Ativo,
-                    Setor = user.Setor
+                    Setor = user.Setor,
+                    UltimoAcesso = user.UltimoLogin
                 };
                 usuariosVM.Add(userVM);
             }
@@ -106,7 +108,8 @@ namespace OcorrenciasDP.Controllers
                     s.a.Nome,
                     s.a.Perfil,
                     s.a.Ativo,
-                    Setor = s.a.Setor.Nome
+                    Setor = s.a.Setor.Nome,
+                    s.a.UltimoLogin
                 }).ToList();
 
             foreach (var user in relat)
@@ -118,7 +121,9 @@ namespace OcorrenciasDP.Controllers
                     Nome = user.Nome,
                     Perfil = user.Perfil,
                     Ativo = user.Ativo,
-                    Setor = user.Setor
+                    Setor = user.Setor,
+                    UltimoAcesso = user.UltimoLogin
+                    
                 };
                 usuariosVM.Add(userVM);
             }

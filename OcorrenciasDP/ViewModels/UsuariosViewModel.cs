@@ -18,6 +18,8 @@ namespace OcorrenciasDP.ViewModels
         public string Perfil { get; set; }
 
         public byte Ativo { get; set; }
+
+        public DateTime UltimoAcesso { get; set; }
        
     }
 }

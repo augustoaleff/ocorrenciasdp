@@ -95,7 +95,7 @@
             <th scope="col">Nome</th>
             <th scope="col">Setor</th>
             <th scope="col">Perfil</th>
-            <th scope="col">Ativo</th>
+            <th scope="col">Último Acesso</th>
             <th scope="col">Ações</th>
         </tr>
     </thead>
@@ -121,15 +121,7 @@
                     <td>@user.Perfil</td>
                 }
 
-
-                @if (user.Ativo == 0)
-                {
-                    <td>Inativo</td>
-                }
-                else
-                {
-                    <td>Ativo</td>
-                }
+                <td>@user.UltimoAcesso.ToString("dd/MM/yyyy HH:mm:ss")</td>
 
                 <td>
                     <a href="/Usuarios/Atualizar/@user.Id/" class="btn btn-warning btn-sm">

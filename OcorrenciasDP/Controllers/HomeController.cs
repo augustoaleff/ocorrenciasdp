@@ -30,8 +30,7 @@ namespace OcorrenciasDP.Controllers
 
         }
 
-        [Login]
-        public IActionResult Inicio()
+        public List<OcorrenciaViewModel> CarregarOcorrencias()
         {
             var usuarios = _db.Int_Dp_Usuarios.ToList();
 
@@ -42,7 +41,6 @@ namespace OcorrenciasDP.Controllers
                 .OrderByDescending(b => b.Data)
                 .Take(5)
                 .ToList();
-
 
             List<OcorrenciaViewModel> ocorVM = new List<OcorrenciaViewModel>();
 
@@ -60,33 +58,92 @@ namespace OcorrenciasDP.Controllers
                 ocorVM.Add(ocorrenciasVM);
             }
 
+            return ocorVM;
+        }
+
+        public void ProcurarMensagens()
+        {
             var relat2 = _db.Int_DP_Mensagens
-                        .OrderByDescending(b => b.Data)
-                        .Take(5)
-                        .ToList();
+                       .OrderByDescending(b => b.Data)
+                       .Take(5)
+                       .ToList();
 
             List<Mensagem> msgVM = new List<Mensagem>();
 
-            foreach(var msg in relat2)
+            foreach (var msg in relat2)
             {
                 Mensagem mensagem = new Mensagem
                 {
+
                     Conteudo = msg.Conteudo,
                     Data = msg.Data,
                     Id = msg.Id,
                     Remetente = msg.Remetente
                 };
 
-            msgVM.Add(mensagem);
-            }
 
-            ViewBag.Msgs = msgVM;
+                if (msg.Titulo != null)
+                {
+                    mensagem.Titulo = msg.Titulo;
+
+                }
+                else
+                {
+                    mensagem.Titulo = "Sem Título";
+                }
+
+                msgVM.Add(mensagem);
+
+
+                ViewBag.Msgs = msgVM;
+            }
+        }
+
+        public void VerificarMensagensNovas()
+        {
+
+
+
+                int userId = HttpContext.Session.GetInt32("ID") ?? 0;
+
+                var dataUltimoAcesso = _db.Int_Dp_Usuarios
+                                       .Where(a => a.Id == userId)
+                                       .Select(s => s.UltimoLogin)
+                                       .FirstOrDefault();
+
+                var mensagem = _db.Int_DP_Mensagens
+                                .Where(a => a.Data >= dataUltimoAcesso)
+                                .OrderByDescending(b => b.Data)
+                                .ToList();
+
+                if (mensagem.Count > 0)
+                {
+                    ViewBag.NovaMensagem = mensagem;
+                }
+
+                HttpContext.Session.SetString("Visualizado", "false");
+
+        }
+
+        [Login]
+        public IActionResult Inicio()
+        {
+            List<OcorrenciaViewModel> ocorVM = CarregarOcorrencias();
+
+            ProcurarMensagens();
+
+            //DateTime dataUltimoAcesso = DateTime.Parse(HttpContext.Session.GetString("UltimoAcesso"));
+
+            if(HttpContext.Session.GetString("Visualizado") == "false")
+            {
+
+                VerificarMensagensNovas();
+            }
 
             return View(ocorVM);
         }
 
         [HttpGet]
-
         public ActionResult Index()
         {
             ViewBag.Usuario = new Usuario();
@@ -121,9 +178,13 @@ namespace OcorrenciasDP.Controllers
                             HttpContext.Session.SetString("Setor", vLogin.Setor.Nome);
                             HttpContext.Session.SetString("Perfil", vLogin.Perfil);
                             HttpContext.Session.SetInt32("ID", vLogin.Id);
-
+                            HttpContext.Session.SetString("UltimoAcesso", vLogin.UltimoLogin.ToString());
+                            HttpContext.Session.SetString("Visualizado", "false");
                             vLogin.UltimoLogin = DateTime.Now;
                             _db.SaveChanges();
+
+
+
                             return RedirectToAction("Inicio", "Home"); //Vai para a página de Início
 
                         }
@@ -187,6 +248,8 @@ namespace OcorrenciasDP.Controllers
                            Directory.GetCurrentDirectory(),
                            "wwwroot", filename);
 
+            Request.ToString();
+
             if (System.IO.File.Exists(path)) //Se o arquivo existir
             {
 
@@ -241,6 +304,20 @@ namespace OcorrenciasDP.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
+        [HttpGet]
+        public ActionResult DetalharMsg(long? id)
+        {
+            var vMensagem = _db.Int_DP_Mensagens.Find(id);
+            if (vMensagem.Titulo == null)
+            {
+                vMensagem.Titulo = "Sem Título";
+            }
+
+            ViewBag.MsgDetalhe = vMensagem;
+            ProcurarMensagens();
+            List<OcorrenciaViewModel> ocorVM = CarregarOcorrencias();
+            return View("Inicio", ocorVM);
+        }
 
         public ActionResult Logout()
         {

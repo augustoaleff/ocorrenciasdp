@@ -1,6 +1,14 @@
-﻿
+﻿@model X.PagedList.IPagedList<OcorrenciasDP.Models.Mensagem>
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    int pagina = Model.PageNumber;  //Retorna a página que está o relatório
 }
 
 @{
@@ -23,6 +31,75 @@
 
 <h2>Mensagens</h2>
 <button type="button" data-toggle="modal" data-target="#modalNovaMensagem" class="btn-primary btn-sm" style="justify-content:flex-end">Enviar Mensagem   <span class="glyphicon glyphicon-send"></span></button>
+<br />
+<div style=" display: flex;justify-content:flex-end">
+    <b>Total de Resultados: </b> @Model.TotalItemCount
+</div>
+<table class="table table-hover" style="padding-top: 15px">
+    <thead>
+        <tr>
+            <th scope="col">Data</th>
+            <th scope="col">Título</th>
+            <th scope="col">Mensagem</th>
+            <th scope="col">Detalhar</th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var msg in Model)
+        {
+            <tr>
+                <th scope="row">@msg.Data.Date.ToString("dd/MM/yyyy")</th>
+                <td>@msg.Titulo</td>
+                @if (msg.Conteudo.Length >= 100)
+                {
+                    <td>@msg.Conteudo.Substring(0, 100)</td>
+                }
+                else
+                {
+                    <td>@msg.Conteudo</td>
+                }
+
+                <td>
+                    <!--data-toggle="modal" data-target="#modalDetalharMensagem" onclick="return detalharMsg(this.getAttribute('value'));"-->
+                    <a href="/Mensagens/DetalharMsg?id=@msg.Id&page=@pagina" onabort="" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar" data-valormodal="false" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (ViewBag.DetalheMsg != null)
+{
+
+    <div class="modal fade" id="modalDetalharMensagem" tabindex="-1" role="dialog" aria-labelledby="modalDetalharMensagemTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalDetalharMensagemTitulo">@ViewBag.DetalheMsg.Titulo</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <b>Data: </b>
+                    @ViewBag.DetalheMsg.Data
+                    <br />
+                    <br />
+                    <b>Mensagem: </b>
+                    <br />
+                    @ViewBag.DetalheMsg.Conteudo
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 <div class="modal fade" id="modalNovaMensagem" tabindex="-1" role="dialog" aria-labelledby="modalNovaMensagemTitulo" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -35,7 +112,13 @@
             </div>
             <div class="modal-body">
                 <form method="post" action="\Mensagens\Cadastrar\">
-                    <!-- <input type="hidden" name="id" value="" />-->
+                    <!-- <input type="hidden" name="id" value="" /> -->
+                    <!--Título da Mensagem-->
+                    <div class="form-group col-md-auto">
+                        <label for="titulo">Título</label>
+                        <input type="text" name="titulo" class="form-control" id="usuario" placeholder="Digite o Título...">
+                    </div>
+
                     <!--Conteúdo da Mensagem-->
                     <div class="form-group col-md-auto">
                         <label for="conteudo">Mensagem</label>
@@ -55,3 +138,16 @@
         </div>
     </div>
 </div>
+
+@Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page }))
+
+@section Scripts{
+
+    <script type="text/javascript" language="javascript">
+
+        $(document).ready(function () {
+            $('#modalDetalharMensagem').modal('show');
+        });
+    </script>
+
+}

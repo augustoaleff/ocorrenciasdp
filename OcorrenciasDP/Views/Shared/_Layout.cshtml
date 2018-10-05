@@ -3,6 +3,7 @@
 @{
     string Login = Context.Session.GetString("Login");
     string Perfil = Context.Session.GetString("Perfil");
+    string UltimoLogin = Context.Session.GetString("UltimoAcesso");
 }
 
 <!DOCTYPE html>
@@ -87,8 +88,17 @@
     <div class="container body-content">
         @RenderBody()
         <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - OcorrenciasDP</p>
+        <footer style="display:flex;justify-content:space-between">
+                <div>
+                    <p>&copy; @DateTime.Now.Year - OcorrenciasDP</p>
+                </div>
+                @if (UltimoLogin != null)
+                {
+                    <div>
+                        <p><strong>Último Acesso:</strong> @UltimoLogin</p>
+                    </div>
+
+                }
         </footer>
     </div>
 

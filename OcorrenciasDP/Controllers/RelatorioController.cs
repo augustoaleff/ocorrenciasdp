@@ -115,8 +115,6 @@ namespace OcorrenciasDP.Controllers
                 Setor = s.a.u.Setor.Nome
             }).ToList();
 
-
-
             foreach (var linha in relat)
             {
                 OcorrenciaViewModel ocorVM = new OcorrenciaViewModel
@@ -142,13 +140,14 @@ namespace OcorrenciasDP.Controllers
                 ViewBag.NomeSetor = "*Todos*";
             }
 
-
-
+            
             ViewBag.Pesquisa = pesquisa;
             var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
             return View("Index", resultadoPaginado);
 
         }
+
+
 
         [HttpGet]
         public IActionResult Index(int? page)
