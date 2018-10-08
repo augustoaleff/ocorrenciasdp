@@ -4,8 +4,51 @@
     ViewData["Title"] = "Detalhar Ocorrência";
 }
 
+@{
+    string datafim, datainico;
+    string setor, pagina;
+
+    if(ViewBag.PaginaRelat != null)
+    {
+        pagina = "page=" + ViewBag.PaginaRelat;
+    }
+    else
+    {
+        pagina = "page=1";
+    }
+
+    if (ViewBag.SetorRelat != null)
+    {
+        setor = "&setor=" + ViewBag.SetorRelat;
+    }
+    else
+    {
+        setor = "&setor=0";
+    }
+
+
+    if (ViewBag.DataInicioRelat != null)
+    {
+        datainico = "&datainicio=" + ViewBag.DataInicioRelat.Date.ToString("yyyy-MM-dd");
+    }
+    else
+    {
+        datainico = "";
+    }
+
+    if (ViewBag.DataFimRelat != null)
+    {
+        datafim = "&datafim=" + ViewBag.DataFimRelat.Date.ToString("yyyy-MM-dd");
+    }
+    else
+    {
+        datafim = "";
+    }
+
+}
+
 <div>
-    <a asp-area="" asp-controller="Relatorio" asp-action="Index" class="btn btn-default btn-lg">
+    <a href="/Relatorio/Filtrar?@pagina@setor@datafim@datainico" class="btn btn-default btn-lg">
         <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
     </a>
 </div>

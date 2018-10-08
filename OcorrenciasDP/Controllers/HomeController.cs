@@ -111,8 +111,10 @@ namespace OcorrenciasDP.Controllers
                                        .Select(s => s.UltimoLogin)
                                        .FirstOrDefault();
 
+            DateTime dataUltimoAcesso2 = DateTime.Parse(HttpContext.Session.GetString("UltimoAcesso"));
+                
                 var mensagem = _db.Int_DP_Mensagens
-                                .Where(a => a.Data >= dataUltimoAcesso)
+                                .Where(a => a.Data >= dataUltimoAcesso2)
                                 .OrderByDescending(b => b.Data)
                                 .ToList();
 
@@ -121,7 +123,7 @@ namespace OcorrenciasDP.Controllers
                     ViewBag.NovaMensagem = mensagem;
                 }
 
-                HttpContext.Session.SetString("Visualizado", "false");
+                HttpContext.Session.SetString("Visualizado", "true");
 
         }
 
@@ -136,7 +138,6 @@ namespace OcorrenciasDP.Controllers
 
             if(HttpContext.Session.GetString("Visualizado") == "false")
             {
-
                 VerificarMensagensNovas();
             }
 
@@ -174,7 +175,6 @@ namespace OcorrenciasDP.Controllers
                         {
                             //Envia para a página
                             HttpContext.Session.SetString("Login", vLogin.Nome);
-                            HttpContext.Session.SetString("Acesso", vLogin.Perfil);
                             HttpContext.Session.SetString("Setor", vLogin.Setor.Nome);
                             HttpContext.Session.SetString("Perfil", vLogin.Perfil);
                             HttpContext.Session.SetInt32("ID", vLogin.Id);
@@ -182,8 +182,6 @@ namespace OcorrenciasDP.Controllers
                             HttpContext.Session.SetString("Visualizado", "false");
                             vLogin.UltimoLogin = DateTime.Now;
                             _db.SaveChanges();
-
-
 
                             return RedirectToAction("Inicio", "Home"); //Vai para a página de Início
 
@@ -206,29 +204,7 @@ namespace OcorrenciasDP.Controllers
                     TempData["MensagemErro"] = "Usuário não Encontrado";
                     return View(usuario);
                 }
-                /*
-
-                if (usuario.Login.ToLower() == "aleff" && usuario.Senha.ToLower() == "123456")
-                {
-                   // HttpContext.Session.SetString(SessionName, "aleff");
-                    //HttpContext.Session.SetInt32(SessionID, 123);
-
-                    HttpContext.Session.SetString("Login", "true");
-                    return RedirectToAction("Inicio","Home"); //Vai para a página de Início
-
-                }
-                else
-                {
-                    //ViewBag.Mensagem = "Os dados informados são inválidos!";
-                    TempData["MensagemErro"] = "Os dados informados são inválidos!";
-                    return View();
-                }
-            }
-            else
-            {
-                return View();
-            }
-            */
+                
             }
 
             return View();
@@ -314,6 +290,8 @@ namespace OcorrenciasDP.Controllers
             }
 
             ViewBag.MsgDetalhe = vMensagem;
+            //ViewBag.MsgDetalhe.Conteudo = vMensagem.Conteudo.Replace("\r\n", " <br /> ");
+            ViewBag.MsgConteudo = vMensagem.Conteudo.Replace("\r\n", " <br /> ");
             ProcurarMensagens();
             List<OcorrenciaViewModel> ocorVM = CarregarOcorrencias();
             return View("Inicio", ocorVM);

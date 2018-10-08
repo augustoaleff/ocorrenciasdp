@@ -159,6 +159,7 @@ namespace OcorrenciasDP.Controllers
             usuario.Login = usuario.Login.ToLower();
 
             ViewBag.User = usuario;
+            ViewBag.ConfirmaSenha = usuario.Senha;
             ViewBag.Setores2 = setores2;
 
             return View("Cadastrar");
@@ -166,7 +167,7 @@ namespace OcorrenciasDP.Controllers
 
 
         [HttpPost]
-        public ActionResult Atualizar([FromForm]Usuario usuario)
+        public ActionResult Atualizar([FromForm]Usuario usuario, string confirmasenha)
         {
             var vSetor = _db.Int_DP_Setores.Find(usuario.Setor.Id);
             usuario.Setor = vSetor;
@@ -180,13 +181,16 @@ namespace OcorrenciasDP.Controllers
                 var vUsuario = _db.Int_Dp_Usuarios.Find(usuario.Id);
                 if (vUsuario.Login.ToLower() != usuario.Login.ToLower())
                 {
-
                     var vUsuario2 = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
 
                     if (vUsuario2 == null)
                     {
                         usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
                         usuario.Senha = usuario.Senha.ToLower(); //Passa para minúsculo a Senha
+                        confirmasenha = confirmasenha.ToLower(); //Passa para minúsculo a Confirmação da Senha
+                        usuario.Email = usuario.Email.ToLower();
+
+                        if(usuario.Senha == confirmasenha) { 
 
                         var vUpdate = _db.Int_Dp_Usuarios.Find(usuario.Id);
 
@@ -196,11 +200,18 @@ namespace OcorrenciasDP.Controllers
                         vUpdate.Senha = usuario.Senha;
                         vUpdate.Setor = usuario.Setor;
                         vUpdate.Ativo = usuario.Ativo;
-
-                        _db.SaveChanges();
+                        vUpdate.Email = usuario.Email;
+                        
                         _db.SaveChanges();
                         TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi atualizado com sucesso!";
                         return RedirectToAction("Index");
+                        }
+                        else
+                        {
+                            TempData["SenhaNaoConfere"] = "Senhas não conferem!";
+                            ViewBag.User = usuario;
+                            return View("Cadastrar");
+                        }
                     }
                     else
                     {
@@ -214,22 +225,33 @@ namespace OcorrenciasDP.Controllers
                 {
                     usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
                     usuario.Senha = usuario.Senha.ToLower(); //Passa para minúsculo a Senha
+                    confirmasenha = confirmasenha.ToLower(); //Passa para minúsculo a Confirmação da Senha
 
-                    var vUpdate =_db.Int_Dp_Usuarios.Find(usuario.Id);
+                    if (usuario.Senha == confirmasenha)
+                    {
 
-                    vUpdate.Login = usuario.Login;
-                    vUpdate.Nome = usuario.Nome;
-                    vUpdate.Perfil = usuario.Perfil;
-                    vUpdate.Senha = usuario.Senha;
-                    vUpdate.Setor = usuario.Setor;
-                    vUpdate.Ativo = usuario.Ativo;
+                        var vUpdate = _db.Int_Dp_Usuarios.Find(usuario.Id);
 
-                    _db.SaveChanges();
+                        vUpdate.Login = usuario.Login;
+                        vUpdate.Nome = usuario.Nome;
+                        vUpdate.Perfil = usuario.Perfil;
+                        vUpdate.Senha = usuario.Senha;
+                        vUpdate.Setor = usuario.Setor;
+                        vUpdate.Ativo = usuario.Ativo;
+                        vUpdate.Email = usuario.Email;
 
-                    TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi atualizado com sucesso!";
-                    return RedirectToAction("Index");
+                        _db.SaveChanges();
+
+                        TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi atualizado com sucesso!";
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        TempData["SenhaNaoConfere"] = "Senhas não conferem!";
+                        ViewBag.User = usuario;
+                        return View("Cadastrar");
+                    }
                 }
-
             }
 
             return View("Cadastrar");
@@ -248,7 +270,7 @@ namespace OcorrenciasDP.Controllers
         }
 
         [HttpPost]
-        public ActionResult Cadastrar([FromForm]Usuario usuario)
+        public ActionResult Cadastrar([FromForm]Usuario usuario, string confirmasenha)
         {
 
             var vSetor = _db.Int_DP_Setores.Find(usuario.Setor.Id);
@@ -265,12 +287,25 @@ namespace OcorrenciasDP.Controllers
                 {
                     usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
                     usuario.Senha = usuario.Senha.ToLower(); //Passa para minúsculo a Senha
+                    confirmasenha = confirmasenha.ToLower(); //Passa para minúsculo a Confirmação da Senha
+                    usuario.Email = usuario.Email.ToLower();
                     usuario.UltimoLogin = DateTime.Now;
+
+                    if(usuario.Senha == confirmasenha) { 
 
                     _db.Int_Dp_Usuarios.Add(usuario);
                     _db.SaveChanges();
                     TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi cadastrado com sucesso!";
                     return RedirectToAction("Index");
+
+                    }
+                    else
+                    {
+                        TempData["SenhaNaoConfere"] = "Senhas não conferem!";
+                        ViewBag.User = usuario;
+                        return View();
+                    }
+                
                 }
                 else
                 {

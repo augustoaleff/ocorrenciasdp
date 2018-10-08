@@ -29,8 +29,27 @@
     </div>
 }
 
+@if (TempData["LembreteOK"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["LembreteOK"]
+    </div>
+}
+
+@if (TempData["LembreteNotOK"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["LembreteNotOK"]
+    </div>
+}
+
+
+
 <h2>Mensagens</h2>
-<button type="button" data-toggle="modal" data-target="#modalNovaMensagem" class="btn-primary btn-sm" style="justify-content:flex-end">Enviar Mensagem   <span class="glyphicon glyphicon-send"></span></button>
+<div style="display:flex;justify-content:space-between">
+    <button type="button" data-toggle="modal" data-target="#modalNovaMensagem" class="btn-primary btn-sm">Enviar Nova Mensagem   <span class="glyphicon glyphicon-send"></span></button>
+    <button type="button" data-toggle="modal" data-target="#modalNovoLembrete" class="btn-success btn-sm">Enviar Lembrete  <span class="glyphicon glyphicon-refresh"></span></button>
+</div>
 <br />
 <div style=" display: flex;justify-content:flex-end">
     <b>Total de Resultados: </b> @Model.TotalItemCount
@@ -91,7 +110,8 @@
                     <br />
                     <b>Mensagem: </b>
                     <br />
-                    @ViewBag.DetalheMsg.Conteudo
+                    <br />
+                    @Html.Raw(ViewBag.MsgConteudo2)
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
@@ -125,6 +145,36 @@
                         <textarea class="form-control" name="conteudo" id="conteudo" placeholder="Digite sua mensagem aqui..." rows="5"></textarea>
                     </div>
                     @Html.ValidationMessage("login")
+
+                    <div class="modal-footer">
+
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNovoLembrete" tabindex="-1" role="dialog" aria-labelledby="modalNovoLembreteTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalNovoLembreteTitulo">Enviar Lembrete</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="\Mensagens\Lembrete\">
+
+                    <div class="form-group col-md-auto">
+                        <label for="dias">Quantidade de Dias sem enviar: </label>
+                        <input type="text" name="dias" class="form-control" id="usuario">
+                    </div>
 
                     <div class="modal-footer">
 

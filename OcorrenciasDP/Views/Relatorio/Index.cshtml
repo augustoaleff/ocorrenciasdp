@@ -1,6 +1,7 @@
 ﻿@model X.PagedList.IPagedList<OcorrenciasDP.Models.OcorrenciaViewModel>
 @using X.PagedList;
 @using X.PagedList.Mvc.Core;
+@using Microsoft.AspNetCore.Http;
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -123,7 +124,22 @@
     <tbody>
         @foreach (var ocor in Model)
         {
-            <tr>
+
+
+            string classeLinha;
+
+            DateTime ultimoAcesso = DateTime.Parse(Context.Session.GetString("UltimoAcesso"));
+
+        if (ocor.Data.Date >= ultimoAcesso.Date) //Verifica se tem novas ocorrencias desde o último acesso
+            {
+                classeLinha = "success";  //Linha verde
+            }
+            else
+            {
+                classeLinha = "";  //Linha sem cor
+            }
+
+            <tr class="@classeLinha">
                 <th scope="row">@ocor.Id</th>
                 <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
                 @if (ocor.Descricao.Length >= 20)
@@ -151,7 +167,7 @@
                     <td></td>
                 }
                 <td>
-                    <a href="/Relatorio/Detalhar/@ocor.Id" alt="detalhar" class="btn btn-default btn-sm">
+                    <a href="/Relatorio/Detalhar?id=@ocor.Id&page=@Model.PageNumber&datafim=@datafim&datainicio=@datainicio&setor=@setor" alt="detalhar" class="btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                     </a>
                 </td>

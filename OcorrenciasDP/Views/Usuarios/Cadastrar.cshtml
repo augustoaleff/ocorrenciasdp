@@ -44,6 +44,13 @@
         <input type="text" name="nome" class="form-control" id="nome" value="@ViewBag.User.Nome" placeholder="" required>
     </div>
     @Html.ValidationMessage("nome")
+
+    <!--Email-->
+    <div class="form-group col-md-auto">
+        <label for="email">E-mail</label>
+        <input type="email" name="email" class="form-control" id="email" value="@ViewBag.User.Email" placeholder="">
+    </div>
+    @Html.ValidationMessage("email")
     <!--Senha-->
 
     <div class="form-group col-md-auto">
@@ -52,12 +59,16 @@
     </div>
     @Html.ValidationMessage("senha")
 
-    <!--Confirmar Senha
+    <!--Confirmar Senha-->
     <div class="form-group col-md-auto">
-        <label for="confirmarsenha">Confirmar Senha</label>
-        <input type="password" class="form-control" id="confirmarsenha" value="" placeholder="" required>
+        <label for="confirmasenha">Confime a Senha</label>
+        <input type="password" name="confirmasenha" class="form-control" id="confirmasenha" value="@ViewBag.ConfirmaSenha" onkeydown="return document.getElementById('conferencia').hidden = true; " placeholder="" required>
     </div>
-        -->
+    @if (@TempData["SenhaNaoConfere"] != null)
+    {
+        <b id="conferencia" style="color:red">@TempData["SenhaNaoConfere"]  </b>
+    }
+
     <!--Perfil-->
     <div class="form-group col-md-auto">
         <label for="perfil">Perfil</label>

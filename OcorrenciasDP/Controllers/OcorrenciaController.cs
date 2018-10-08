@@ -114,6 +114,8 @@ namespace OcorrenciasDP.Controllers
                 {
                     ViewBag.Ocorrencia = ocorrencia;
 
+                    
+
                     if(anexo != null) { 
                     ViewBag.Ocorrencia.Anexo = anexo.FileName;
                     }

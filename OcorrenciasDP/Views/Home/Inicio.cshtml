@@ -4,6 +4,7 @@
     ViewData["Title"] = "Início";
 }
 
+
 <!--Banner-->
 @if (TempData["MensagemErroAdmin"] != null)
 {
@@ -72,8 +73,6 @@
             <th scope="col">Título</th>
             <th scope="col">Mensagem</th>
             <th scope="col">Detalhar</th>
-
-
         </tr>
     </thead>
     <tbody>
@@ -161,12 +160,15 @@
                 </div>
                 <div class="modal-body">
                     <strong>Data: </strong>
+
                     @ViewBag.MsgDetalhe.Data
                     <br />
                     <br />
                     <strong>Mensagem: </strong>
                     <br />
-                    @ViewBag.MsgDetalhe.Conteudo
+                    <br />
+                    @Html.Raw(ViewBag.MsgConteudo)
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
@@ -197,8 +199,15 @@
                     <br />
                     <br />
                     <strong>Mensagem: </strong>
+                    @{
+                        string conteudo = msg.Conteudo.Replace("\r\n", " <br /> ");
+                        //string conteudo = msg.Conteudo;
+
+                    }
                     <br />
-                    @msg.Conteudo
+                    <br />
+                    @Html.Raw(conteudo) <!--Para dar quebra de linha-->
+                    <br />
                 </div>
                 }
                 <div class="modal-footer">

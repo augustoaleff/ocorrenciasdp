@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OcorrenciasDP.Database;
 using OcorrenciasDP.Library.Filters;
+using OcorrenciasDP.Library.Mail;
 using OcorrenciasDP.Models;
 using X.PagedList;
 
@@ -60,6 +61,57 @@ namespace OcorrenciasDP.Controllers
             return msgVM;
         }
 
+        [HttpPost]
+        public ActionResult Lembrete(int dias)
+        {
+            if(dias > 0)
+            {
+                var vUsuariosSemEnvio = _db.Int_DP_Ocorrencias
+                                       .Where(a => a.Data >= (DateTime.Today.Date.AddDays(dias * (-1))) && a.Data <= DateTime.Today.Date)
+                                       .GroupBy(g => g.Usuario.Id)
+                                       .Select(s => s.Key)
+                                       .ToList();
+
+                var vUsuarios = _db.Int_Dp_Usuarios
+                                .Where(a => a.Ativo == 1)
+                                .Select(s => s.Id)
+                                .ToList();
+
+                var lista2 = vUsuarios.Except(vUsuariosSemEnvio).ToList();
+
+                if (lista2.Count > 0)
+                {
+
+                    List<string> vEmails = new List<string>();
+
+                    foreach (var id in lista2)
+                    {
+
+                        var email = _db.Int_Dp_Usuarios
+                                     .Where(a => a.Id == id)
+                                     .Select(s => s.Email)
+                                     .FirstOrDefault();
+
+                        vEmails.Add(email);
+
+                    }
+                    
+                    EnviarLembrete.EnviarMsgLembrete(dias, vEmails);
+
+                    TempData["LembreteOK"] = "Lembrete Enviado!";
+                    return RedirectToAction("Index");
+
+                }
+                else
+                {
+                    TempData["LembreteNotOK"] = "Todos os usuários já enviaram email no periodo solicitado!";
+                    return RedirectToAction("Index");
+                }
+            }
+
+            return RedirectToAction("Index");
+        }
+
         [HttpGet]
         public IActionResult Index(int? page)
         {
@@ -85,6 +137,7 @@ namespace OcorrenciasDP.Controllers
             }
 
             ViewBag.DetalheMsg = vMensagem;
+            ViewBag.MsgConteudo2 = vMensagem.Conteudo.Replace("\r\n", " <br /> ");
 
             List<Mensagem> msgVM = ConsultarMensagens();
 

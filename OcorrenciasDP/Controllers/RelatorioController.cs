@@ -41,8 +41,13 @@ namespace OcorrenciasDP.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult Detalhar(Int64 id)
+        public ActionResult Detalhar(Int64 id,int? page,DateTime? datainicio, DateTime? datafim, string setor)
         {
+            ViewBag.PaginaRelat = page ?? 1;
+            ViewBag.DataInicioRelat = datainicio;
+            ViewBag.DataFimRelat = datafim;
+            ViewBag.SetorRelat = setor;
+
             ViewBag.Setor = setores;
             var ocorrencia = _db.Int_DP_Ocorrencias.Find(id);
 
