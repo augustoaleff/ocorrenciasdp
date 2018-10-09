@@ -65,11 +65,27 @@ namespace OcorrenciasDP.Controllers
         {
             if(dias > 0)
             {
-                var vUsuariosSemEnvio = _db.Int_DP_Ocorrencias
-                                       .Where(a => a.Data >= (DateTime.Today.Date.AddDays(dias * (-1))) && a.Data <= DateTime.Today.Date)
+
+                List<int> vUsuariosSemEnvio = new List<int>();
+
+                try {
+
+                    DateTime datainicio = (DateTime.Today.Date.AddDays(dias * (-1)));
+
+                    vUsuariosSemEnvio = _db.Int_DP_Ocorrencias
+                                       .Where(a => a.Data >= datainicio && a.Data <= DateTime.Today.Date)
                                        .GroupBy(g => g.Usuario.Id)
                                        .Select(s => s.Key)
                                        .ToList();
+
+                }catch (InvalidOperationException)
+                {
+                    TempData["LembreteNotOK"] = "Todos os usuários já enviaram as ocorrências no periodo solicitado!";
+                    return RedirectToAction("Index");
+                }
+               
+
+
 
                 var vUsuarios = _db.Int_Dp_Usuarios
                                 .Where(a => a.Ativo == 1)
@@ -77,6 +93,7 @@ namespace OcorrenciasDP.Controllers
                                 .ToList();
 
                 var lista2 = vUsuarios.Except(vUsuariosSemEnvio).ToList();
+
 
                 if (lista2.Count > 0)
                 {
@@ -90,10 +107,16 @@ namespace OcorrenciasDP.Controllers
                                      .FirstOrDefault();
 
                         vEmails.Add(email);
+                    }
+
+
+                    vEmails.RemoveAll(item => item == null); //remove os valores nulos da lista
+                    
+                    if(vEmails.Count > 0) { 
+
+                    EnviarLembrete.EnviarMsgLembrete(dias, vEmails);
 
                     }
-                    
-                    EnviarLembrete.EnviarMsgLembrete(dias, vEmails);
 
                     TempData["LembreteOK"] = "Lembrete Enviado!";
                     return RedirectToAction("Index");

@@ -132,7 +132,7 @@
 
         if (ocor.Data.Date >= ultimoAcesso.Date) //Verifica se tem novas ocorrencias desde o último acesso
             {
-                classeLinha = "success";  //Linha verde
+                classeLinha = "success";   //Linha verde
             }
             else
             {
@@ -157,7 +157,7 @@
                 @if (ocor.Anexo != null)
                 {
                     <td>
-                        <a href="\Relatorio\Download?filename=@string.Concat(ocor.Id.ToString(),"_",ocor.Anexo)" alt="download" type="button" class="btn btn-default btn-sm">
+                        <a href="/Relatorio/Download?filename=@string.Concat(ocor.Id.ToString(),"_",ocor.Anexo)" alt="download" type="button" class="btn btn-default btn-sm">
                             <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
                         </a>
                     </td>
@@ -182,6 +182,12 @@
     </tbody>
 </table>
 
+<a href="/Relatorio/Filtrar?pdf=true&setor=0">Gerar relatório em PDF</a>
+
+@{
+    ViewBag.PDFModel = Model;
+}
+
 @if (datafim != null || datainicio != null || setor != 0)
 {
 
@@ -201,7 +207,6 @@ else
         function confirmaApagar() {
 
             return confirm("Confirma Exclusão?");
-
         }
     </script>
 }

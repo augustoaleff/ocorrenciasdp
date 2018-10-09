@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using OcorrenciasDP.Database;
+using Rotativa.AspNetCore;
 
 namespace OcorrenciasDP
 {
@@ -79,6 +80,8 @@ namespace OcorrenciasDP
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            RotativaConfiguration.Setup(env);
         }
     }
 }

@@ -14,15 +14,15 @@ namespace OcorrenciasDP.Library.Mail
 
             string saudacao;
 
-            if(DateTime.Now.Hour >= 3 && DateTime.Now.Hour <= 12)
+            if(DateTime.Now.Hour >= 3 && DateTime.Now.Hour <= 11) //Entre 3h e meio-dia ==> Bom Dia
             {
                 saudacao = "Bom Dia <br />";
             }
-            else if(DateTime.Now.Hour >= 12 && DateTime.Now.Hour <= 18)
+            else if(DateTime.Now.Hour >= 12 && DateTime.Now.Hour <= 17) //Entre meio-dia e 18h ==> Boa Tarde
             {
                 saudacao = "Boa Tarde <br />";
             }
-            else
+            else //Entre 18h e 3h ==> Boa Noite
             {
                 saudacao = "Boa Noite <br />";
             }
@@ -39,11 +39,12 @@ namespace OcorrenciasDP.Library.Mail
 
             MailMessage mensagem = new MailMessage
             {
-                From = new MailAddress("no-reply@eletroleste.com.br"),
+                From = new MailAddress("no-reply@eletroleste.com.br","Eletroleste"),
                 Subject = "Lembrete",
                 IsBodyHtml = true,
-                Body = "<h1>Lembrete</h1>" + saudacao + conteudo + "<br /><br /><a href='http://www.eletroleste.com.br/OcorrenciasDP/'>Clique aqui para enviar</a>"
-        };
+                Body = "<h2>Lembrete</h2>" + saudacao + conteudo + "<br /><br /><a href='http://www.eletroleste.com.br/OcorrenciasDP/'>Clique aqui para enviar</a>"
+
+            };
 
             foreach (var email in emails)
             {
@@ -51,17 +52,23 @@ namespace OcorrenciasDP.Library.Mail
                 {
                     mensagem.Bcc.Add(email);
                 }
+
+                
             }
 
+
             smtp.Send(mensagem);
+
+
+
 
             //mensagem.Subject = "Lembrete";
 
             //mensagem.IsBodyHtml = true;
             //mensagem.Body = "<h1>Lembrete</h1>" + saudacao + conteudo;
-            
 
-            
+
+
 
 
 

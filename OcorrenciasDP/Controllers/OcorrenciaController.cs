@@ -97,8 +97,17 @@ namespace OcorrenciasDP.Controllers
                         ocorrencia.Anexo = anexo.FileName;
                         ViewBag.Anexo = anexo;
                     }
-                    _db.Int_DP_Ocorrencias.Add(ocorrencia);
-                    _db.SaveChanges();
+                    
+                    try {
+
+                        _db.Int_DP_Ocorrencias.Add(ocorrencia);
+                        _db.SaveChanges();
+
+                    }catch(Exception)
+                    {
+                        TempData["MsgOcorrenciaNotOK2"] = "Ocorreu um erro ao enviar, por favor, tente novamente...";
+                        return View("Index", ocorrencia);
+                    }
 
                     idOcorrencia = ocorrencia.Id.ToString() + "_";
 

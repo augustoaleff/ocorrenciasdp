@@ -8,6 +8,7 @@ using OcorrenciasDP.Database;
 using OcorrenciasDP.Library.Filters;
 using OcorrenciasDP.Models;
 using OcorrenciasDP.ViewModels;
+using Rotativa.AspNetCore;
 using X.PagedList;
 
 namespace OcorrenciasDP.Controllers
@@ -30,6 +31,7 @@ namespace OcorrenciasDP.Controllers
             setores.Add(new Setor() { Id = 0, Nome = "*Todos*" });
         }
 
+
         public ActionResult Excluir(Int64 id)
         {
             ViewBag.Setor = setores;
@@ -40,6 +42,8 @@ namespace OcorrenciasDP.Controllers
             TempData["OcorrenciaExcluir"] = "Ocorrencia #" + id + " excluida!";
             return RedirectToAction("Index");
         }
+
+        
 
         public ActionResult Detalhar(Int64 id,int? page,DateTime? datainicio, DateTime? datafim, string setor)
         {
@@ -79,7 +83,7 @@ namespace OcorrenciasDP.Controllers
         }
 
         [HttpGet]
-        public ActionResult Filtrar(DateTime? datainicio, DateTime? datafim, string setor, int? page)
+        public ActionResult Filtrar(DateTime? datainicio, DateTime? datafim, string setor, int? page, Boolean? pdf)
         {
             FiltrarPesquisaRelatViewModel pesquisa = new FiltrarPesquisaRelatViewModel() { DataInicio = datainicio, DataFim = datafim, Setor = setor };
 
@@ -145,15 +149,36 @@ namespace OcorrenciasDP.Controllers
                 ViewBag.NomeSetor = "*Todos*";
             }
 
-            
-            ViewBag.Pesquisa = pesquisa;
-            var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
-            return View("Index", resultadoPaginado);
-
+            if (pdf != true)
+            {
+                ViewBag.Pesquisa = pesquisa;
+                var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
+                return View("Index", resultadoPaginado);
+            }
+            else
+            {
+                return RedirectToAction("GerarPDF",relatorioVM);
+            }
+  
         }
 
+        public IActionResult GerarPDF(List<OcorrenciaViewModel> relatorioVM2)
+        {
+            int pagNumero = 1;
+            var relatorioPDF = new ViewAsPdf
+            {
+                ViewName = "RelatorioPedidos",
+                IsGrayScale = true,
+                Model = relatorioVM.ToPagedList(pagNumero, relatorioVM2.Count)
+            };
+            return new ViewAsPdf("VisualizarComoPDF",relatorioVM2);
+        }
 
-
+        public IActionResult VisualizarComoPDF()
+        {
+            var model = ViewBag.PDFModel;
+            return new ViewAsPdf("VisualizarComoPDF", model);
+        }
         [HttpGet]
         public IActionResult Index(int? page)
         {
@@ -171,7 +196,6 @@ namespace OcorrenciasDP.Controllers
 
             if (relatorioVM.Count == 0)
             {
-
                 var relat = _db.Int_DP_Ocorrencias
                    .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
                    .Join(_db.Int_DP_Setores, r => r.u.Setor.Id, s => s.Id, (r, s) => new { r, s })
@@ -262,8 +286,13 @@ namespace OcorrenciasDP.Controllers
                 {".jpg", "image/jpeg"},
                 {".jpeg", "image/jpeg"},
                 {".gif", "image/gif"},
-                {".csv", "text/csv"}
+                {".csv", "text/csv"},
+                {".mp3", "audio/mpeg"},
+                {".mp4", "video/mp4"},
+                {".tif", "image/tiff"},
+                {".tiff", "image/tiff"},
             };
         }
+
     }
 }

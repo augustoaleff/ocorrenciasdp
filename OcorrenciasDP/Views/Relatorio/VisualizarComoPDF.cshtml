@@ -1,0 +1,69 @@
+﻿@model List<OcorrenciasDP.Models.OcorrenciaViewModel>
+@{
+    Layout = null;
+}
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Gerar PDF</title>
+</head>
+<body>
+    <header>
+        <h1>Pedido</h1>
+        <address>
+            <p>Jose Carlos Macoratti</p>
+            <p>Rua Projetada , 100 - Centro<br>São Paulo - 03254-850</p>
+            <p>Telefone - (011) 555-1234</p>
+        </address>
+        <span>
+            <img src="~/images/maco10.gif" />
+        </span>
+    </header>
+    <article>
+        <address>
+            <p>JcmSoft<br> a/c - Macoratti</p>
+        </address>
+
+        <!--Tabela-->
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Descrição</th>
+                    <th scope="col">Usuário</th>
+                    <th scope="col">Setor</th>
+                    <th scope="col">Anexo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ocor in Model)
+                {
+                <tr>
+                    <th scope="row">@ocor.Id</th>
+                    @if (ocor.Descricao.Length >= 50)
+                    {
+                        <td>@ocor.Descricao.Substring(0, 50)</td>
+                    }
+                    else
+                    {
+                        <td>@ocor.Descricao</td>
+                    }
+                    <td>@ocor.Nome</td>
+                    <td>@ocor.Setor</td>
+                    <td>@ocor.Anexo</td>
+                </tr>
+                }
+            </tbody>
+
+        </table>
+
+    </article>
+    <aside>
+        <h1><span>Notas Adicionais</span></h1>
+        <div>
+            <p>Macoratti .net - Quase tudo para .NET</p>
+        </div>
+    </aside>
+</body>
+</html>  

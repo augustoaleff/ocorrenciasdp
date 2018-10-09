@@ -6,7 +6,7 @@
     string nome_login = Context.Session.GetString("Login");
     string setor_login = Context.Session.GetString("Setor");
 }
-@{ 
+@{
     string update;
 
     update = "false";
@@ -36,6 +36,12 @@
 {
     <div class="alert alert-warning" role="alert">
         @TempData["MsgOcorrenciaNotOK"],<button type="button" class="btn btn-warning" onclick="return mudarVariavel();">Clique aqui</button> se  confirma o envio (<span class="glyphicon glyphicon-info-sign"></span>Você deverá inserir o anexo novamente).
+    </div>
+}
+@if (TempData["MsgOcorrenciaNotOK2"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["MsgOcorrenciaNotOK2"]
     </div>
 }
 
@@ -72,13 +78,12 @@
     </div>
 
     <div class="custom-file">
-        <input type="file" class="custom-file-input"  value="@ViewBag.Anexo" name="anexo" id="anexo" lang="pt-br">
+        <input type="file" class="custom-file-input" value="@ViewBag.Anexo" name="anexo" id="anexo" lang="pt-br">
         <label class="custom-file-label" for="anexo">Selecionar Arquivo</label>
         <strong style="color:#FF0000">@Html.ValidationMessage("arquivo")</strong>
     </div>
 
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
-
 </form>
 
 @section Scripts{

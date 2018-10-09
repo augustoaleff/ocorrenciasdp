@@ -295,6 +295,7 @@ namespace OcorrenciasDP.Controllers
 
                     _db.Int_Dp_Usuarios.Add(usuario);
                     _db.SaveChanges();
+
                     TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi cadastrado com sucesso!";
                     return RedirectToAction("Index");
 
@@ -305,7 +306,6 @@ namespace OcorrenciasDP.Controllers
                         ViewBag.User = usuario;
                         return View();
                     }
-                
                 }
                 else
                 {
