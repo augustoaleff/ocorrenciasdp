@@ -186,8 +186,8 @@ namespace OcorrenciasDP.Controllers
                     if (vUsuario2 == null)
                     {
                         usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
-                        usuario.Senha = usuario.Senha.ToLower(); //Passa para minúsculo a Senha
-                        confirmasenha = confirmasenha.ToLower(); //Passa para minúsculo a Confirmação da Senha
+                        usuario.Senha = usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Senha
+                        confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
                         usuario.Email = usuario.Email.ToLower();
 
                         if(usuario.Senha == confirmasenha) { 
@@ -224,8 +224,8 @@ namespace OcorrenciasDP.Controllers
                 else
                 {
                     usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
-                    usuario.Senha = usuario.Senha.ToLower(); //Passa para minúsculo a Senha
-                    confirmasenha = confirmasenha.ToLower(); //Passa para minúsculo a Confirmação da Senha
+                    usuario.Senha = usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Senha
+                    confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
 
                     if (usuario.Senha == confirmasenha)
                     {
@@ -286,8 +286,8 @@ namespace OcorrenciasDP.Controllers
                 if (vUsuario == null)
                 {
                     usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
-                    usuario.Senha = usuario.Senha.ToLower(); //Passa para minúsculo a Senha
-                    confirmasenha = confirmasenha.ToLower(); //Passa para minúsculo a Confirmação da Senha
+                    usuario.Senha = usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Senha
+                    confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
                     usuario.Email = usuario.Email.ToLower();
                     usuario.UltimoLogin = DateTime.Now;
 

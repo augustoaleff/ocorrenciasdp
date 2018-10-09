@@ -35,7 +35,6 @@ namespace OcorrenciasDP.Controllers
             {
                 Mensagem mensagem = new Mensagem
                 {
-
                     Conteudo = msg.Conteudo,
                     Data = msg.Data,
                     Id = msg.Id,
@@ -81,12 +80,10 @@ namespace OcorrenciasDP.Controllers
 
                 if (lista2.Count > 0)
                 {
-
                     List<string> vEmails = new List<string>();
 
                     foreach (var id in lista2)
                     {
-
                         var email = _db.Int_Dp_Usuarios
                                      .Where(a => a.Id == id)
                                      .Select(s => s.Email)

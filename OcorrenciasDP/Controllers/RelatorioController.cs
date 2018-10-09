@@ -218,7 +218,7 @@ namespace OcorrenciasDP.Controllers
 
             var path = Path.Combine(
                            Directory.GetCurrentDirectory(),
-                           "wwwroot", filename);
+                           "wwwroot","uploads", filename);
 
             if (System.IO.File.Exists(path)) //Se o arquivo existir
             {

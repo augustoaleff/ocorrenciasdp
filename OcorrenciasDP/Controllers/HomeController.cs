@@ -171,7 +171,7 @@ namespace OcorrenciasDP.Controllers
                     if (vLogin.Ativo == 1)
                     {
                         //Verifica se a senha está correta
-                        if (Equals(vLogin.Senha, usuario.Senha.ToLower()))
+                        if (Equals(vLogin.Senha, usuario.Senha.Replace(";","").Replace(",","").Replace(".","").ToLower()))
                         {
                             //Envia para a página
                             HttpContext.Session.SetString("Login", vLogin.Nome);
@@ -180,6 +180,7 @@ namespace OcorrenciasDP.Controllers
                             HttpContext.Session.SetInt32("ID", vLogin.Id);
                             HttpContext.Session.SetString("UltimoAcesso", vLogin.UltimoLogin.ToString());
                             HttpContext.Session.SetString("Visualizado", "false");
+
                             vLogin.UltimoLogin = DateTime.Now;
                             _db.SaveChanges();
 
@@ -222,7 +223,7 @@ namespace OcorrenciasDP.Controllers
 
             var path = Path.Combine(
                            Directory.GetCurrentDirectory(),
-                           "wwwroot", filename);
+                           "wwwroot","uploads", filename);
 
             Request.ToString();
 

@@ -114,8 +114,6 @@ namespace OcorrenciasDP.Controllers
                 {
                     ViewBag.Ocorrencia = ocorrencia;
 
-                    
-
                     if(anexo != null) { 
                     ViewBag.Ocorrencia.Anexo = anexo.FileName;
                     }
@@ -124,6 +122,7 @@ namespace OcorrenciasDP.Controllers
                     TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrencia cadastrada para esta data!";
                     //Retorna o valor como Objeto Ocorrencia para a View
                     return View("Index", ocorrencia);
+
                 }
             }
 
@@ -177,7 +176,7 @@ namespace OcorrenciasDP.Controllers
             {
 
                 var path = Path.Combine(
-                            Directory.GetCurrentDirectory(), "wwwroot",
+                            Directory.GetCurrentDirectory(), "wwwroot/uploads",
                             string.Concat(idOcorrencia,file.FileName));
 
                 using (var stream = new FileStream(path, FileMode.Create))
