@@ -83,9 +83,6 @@ namespace OcorrenciasDP.Controllers
                     TempData["LembreteNotOK"] = "Todos os usuários já enviaram as ocorrências no periodo solicitado!";
                     return RedirectToAction("Index");
                 }
-               
-
-
 
                 var vUsuarios = _db.Int_Dp_Usuarios
                                 .Where(a => a.Ativo == 1)
@@ -106,15 +103,19 @@ namespace OcorrenciasDP.Controllers
                                      .Select(s => s.Email)
                                      .FirstOrDefault();
 
+                        if (!vEmails.Contains(email)) { //Para não entrar duplicado
                         vEmails.Add(email);
+                        
+                        }
                     }
 
 
                     vEmails.RemoveAll(item => item == null); //remove os valores nulos da lista
+
                     
                     if(vEmails.Count > 0) { 
 
-                    EnviarLembrete.EnviarMsgLembrete(dias, vEmails);
+                        EnviarLembrete.EnviarMsgLembrete(dias, vEmails);
 
                     }
 
@@ -141,9 +142,7 @@ namespace OcorrenciasDP.Controllers
 
             var resultadoPaginado = msgVM.ToPagedList(pageNumber, 10);
             return View("Index", resultadoPaginado);
-
         }
-
 
         [HttpGet]
         public ActionResult DetalharMsg(long? id, int? page)
@@ -170,7 +169,6 @@ namespace OcorrenciasDP.Controllers
         [HttpGet]
         public ActionResult Cadastrar()
         {
-
             return RedirectToAction("Index");
         }
 
@@ -199,7 +197,6 @@ namespace OcorrenciasDP.Controllers
             {
                 TempData["MensagemNaoEnviada"] = "Ocorreu um erro ao enviar a mensagem, por favor, envie novamente!";
                 return RedirectToAction("Index");
-
             }
 
 

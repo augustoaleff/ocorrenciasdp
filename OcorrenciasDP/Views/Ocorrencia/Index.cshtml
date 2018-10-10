@@ -86,14 +86,21 @@
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
 </form>
 
+
+
 @section Scripts{
     <script language="javascript">
 
         function mudarVariavel() {
-
             document.getElementById("update").setAttribute("value", "true"); //Altera o value para true
             document.getElementById("botaoenviar").click();  //Enviar a ocorrencia
         }
+
+        function incluirCalendario() {
+            var calend = document.getElementById("calendario");
+        }
+
+        //Usar Calendário DataPicker com JavaScript para adicionar eventos
 
     </script>
 

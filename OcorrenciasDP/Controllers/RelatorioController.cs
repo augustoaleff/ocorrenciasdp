@@ -43,8 +43,6 @@ namespace OcorrenciasDP.Controllers
             return RedirectToAction("Index");
         }
 
-        
-
         public ActionResult Detalhar(Int64 id,int? page,DateTime? datainicio, DateTime? datafim, string setor)
         {
             ViewBag.PaginaRelat = page ?? 1;
@@ -73,7 +71,7 @@ namespace OcorrenciasDP.Controllers
             {
                 Id = relat.Id,
                 Data = relat.Data,
-                Descricao = relat.Descricao,
+                Descricao = relat.Descricao.Replace("\r\n", "<br />"),
                 Nome = relat.Nome,
                 Setor = relat.Setor,
                 Anexo = relat.Anexo
@@ -171,7 +169,16 @@ namespace OcorrenciasDP.Controllers
                 IsGrayScale = true,
                 Model = relatorioVM.ToPagedList(pagNumero, relatorioVM2.Count)
             };
-            return new ViewAsPdf("VisualizarComoPDF",relatorioVM2);
+
+            try
+            {
+
+                return new ViewAsPdf("VisualizarComoPDF", relatorioVM2);
+            }
+            catch(Exception)
+            {
+                return View("~/Views/Shared/Error");
+            }
         }
 
         public IActionResult VisualizarComoPDF()
@@ -179,6 +186,7 @@ namespace OcorrenciasDP.Controllers
             var model = ViewBag.PDFModel;
             return new ViewAsPdf("VisualizarComoPDF", model);
         }
+
         [HttpGet]
         public IActionResult Index(int? page)
         {
@@ -239,24 +247,20 @@ namespace OcorrenciasDP.Controllers
                 return View("Index");
             }
 
-
             var path = Path.Combine(
                            Directory.GetCurrentDirectory(),
                            "wwwroot","uploads", filename);
 
             if (System.IO.File.Exists(path)) //Se o arquivo existir
             {
-
                 var memory = new MemoryStream();
                 using (var stream = new FileStream(path, FileMode.Open))
                 {
-
                     await stream.CopyToAsync(memory);
-
                 }
+
                 memory.Position = 0;
                 return File(memory, GetContentType(path), Path.GetFileName(path));
-
             }
             else // Se o arquivo não existir
             {
@@ -287,12 +291,15 @@ namespace OcorrenciasDP.Controllers
                 {".jpeg", "image/jpeg"},
                 {".gif", "image/gif"},
                 {".csv", "text/csv"},
+                {".wmv", "audio/wave"},
                 {".mp3", "audio/mpeg"},
                 {".mp4", "video/mp4"},
                 {".tif", "image/tiff"},
                 {".tiff", "image/tiff"},
+                {".zip", "application/zip"},
+                {".wav", "audio/wav"},
+                { ".wav", "audio/x-wav"},
             };
         }
-
     }
 }

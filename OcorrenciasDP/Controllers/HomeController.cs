@@ -102,8 +102,6 @@ namespace OcorrenciasDP.Controllers
         public void VerificarMensagensNovas()
         {
 
-
-
                 int userId = HttpContext.Session.GetInt32("ID") ?? 0;
 
                 var dataUltimoAcesso = _db.Int_Dp_Usuarios

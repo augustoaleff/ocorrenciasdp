@@ -5,6 +5,7 @@
 }
 
 
+
 <!--Banner-->
 @if (TempData["MensagemErroAdmin"] != null)
 {
@@ -12,7 +13,6 @@
         <span class="glyphicon glyphicon-info-sign"></span>@TempData["MensagemErroAdmin"]
     </div>
 }
-
 
 <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
     <ol class="carousel-indicators">
@@ -64,6 +64,7 @@
         <span class="sr-only">Próximo</span>
     </a>
 </div>
+
 
 <h3> <span class="glyphicon glyphicon-envelope"></span>  Mensagens</h3>
 <table class="table table-hover" style="padding-top: 15px">
@@ -145,10 +146,9 @@
 </table>
 
 
-<!-- Modal -->
+<!-- Modal Detalhar Mensagem -->
 @if (ViewBag.MsgDetalhe != null)
 {
-
     <div class="modal fade" id="modalDetalharMensagem" tabindex="-1" role="dialog" aria-labelledby="modalDetalharMensagemTitulo" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -178,8 +178,8 @@
     </div>
 
 }
-
-@if(ViewBag.NovaMensagem != null)
+<!-- Modal Nova Mensagem -->
+@if (ViewBag.NovaMensagem != null)
 {
     <div class="modal fade" id="modalNovaMensagem" tabindex="-1" role="dialog" aria-labelledby="modalNovaMensagemTitulo" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -187,28 +187,28 @@
                 @foreach (var msg in ViewBag.NovaMensagem)
                 {
 
-                <div class="modal-header">
-                    <h3 class="modal-title" id="modalNovaMensagemTitulo">@msg.Titulo</h3>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <strong>Data: </strong>
-                    @msg.Data
-                    <br />
-                    <br />
-                    <strong>Mensagem: </strong>
-                    @{
-                        string conteudo = msg.Conteudo.Replace("\r\n", " <br /> ");
-                        //string conteudo = msg.Conteudo;
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="modalNovaMensagemTitulo">@msg.Titulo</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <strong>Data: </strong>
+                        @msg.Data
+                        <br />
+                        <br />
+                        <strong>Mensagem: </strong>
+                        @{
+                            string conteudo = msg.Conteudo.Replace("\r\n", " <br /> ");
+                            //string conteudo = msg.Conteudo;
 
-                    }
-                    <br />
-                    <br />
-                    @Html.Raw(conteudo) <!--Para dar quebra de linha-->
-                    <br />
-                </div>
+                        }
+                        <br />
+                        <br />
+                        @Html.Raw(conteudo) <!--Para dar quebra de linha-->
+                        <br />
+                    </div>
                 }
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
@@ -219,6 +219,8 @@
 
 }
 
+
+
 @section Scripts{
     <script type="text/javascript" language="javascript">
 
@@ -227,10 +229,7 @@
             $('#modalNovaMensagem').modal('show');
         });
 
-        
-
     </script>
-
 }
 
 <!--
