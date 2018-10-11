@@ -297,7 +297,6 @@ namespace OcorrenciasDP.Controllers
                 {".tif", "image/tiff"},
                 {".tiff", "image/tiff"},
                 {".zip", "application/zip"},
-                {".wav", "audio/wav"},
                 { ".wav", "audio/x-wav"},
             };
         }

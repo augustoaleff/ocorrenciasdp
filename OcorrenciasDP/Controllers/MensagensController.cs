@@ -68,6 +68,7 @@ namespace OcorrenciasDP.Controllers
 
                 List<int> vUsuariosSemEnvio = new List<int>();
 
+
                 try {
 
                     DateTime datainicio = (DateTime.Today.Date.AddDays(dias * (-1)));
@@ -91,7 +92,6 @@ namespace OcorrenciasDP.Controllers
 
                 var lista2 = vUsuarios.Except(vUsuariosSemEnvio).ToList();
 
-
                 if (lista2.Count > 0)
                 {
                     List<string> vEmails = new List<string>();
@@ -109,9 +109,7 @@ namespace OcorrenciasDP.Controllers
                         }
                     }
 
-
                     vEmails.RemoveAll(item => item == null); //remove os valores nulos da lista
-
                     
                     if(vEmails.Count > 0) { 
 
@@ -124,7 +122,7 @@ namespace OcorrenciasDP.Controllers
 
                 }
                 else
-                {
+                { 
                     TempData["LembreteNotOK"] = "Todos os usuários já enviaram email no periodo solicitado!";
                     return RedirectToAction("Index");
                 }

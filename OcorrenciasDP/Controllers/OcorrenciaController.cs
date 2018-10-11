@@ -77,7 +77,7 @@ namespace OcorrenciasDP.Controllers
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
 
             Usuario usuario = _db.Int_Dp_Usuarios.Find(id_notnull);
-             
+            
             ocorrencia.Usuario = usuario;
 
             if (ModelState.IsValid)

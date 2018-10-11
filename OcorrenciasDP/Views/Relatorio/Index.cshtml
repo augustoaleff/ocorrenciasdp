@@ -113,9 +113,9 @@
         <tr>
             <th scope="col">#</th>
             <th scope="col">Data</th>
-            <th scope="col">Descrição</th>
             <th scope="col">Usuario</th>
             <th scope="col">Setor</th>
+            <th scope="col">Ocorrência</th>
             <th scope="col">Anexo</th>
             <th scope="col">Detalhar</th>
             <th scope="col">Excluir</th>
@@ -139,45 +139,46 @@
                 classeLinha = "";  //Linha sem cor
             }
 
-            <tr class="@classeLinha">
-                <th scope="row">@ocor.Id</th>
-                <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
-                @if (ocor.Descricao.Length >= 20)
-                {
-                    <td>@ocor.Descricao.Substring(0, 20)</td>
-                }
-                else
-                {
-                    <td>@ocor.Descricao</td>
-                }
+        <tr class="@classeLinha">
+            <th scope="row">@ocor.Id</th>
+            <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
+            <td>@ocor.Nome</td>
+            <td>@ocor.Setor</td>
+            @if (ocor.Descricao.Length >= 20)
+            {
+                <td>@ocor.Descricao.Substring(0, 20)</td>
+            }
+            else
+            {
+                <td>@ocor.Descricao</td>
+            }
 
-                <td>@ocor.Nome</td>
-                <td>@ocor.Setor</td>
 
-                @if (ocor.Anexo != null)
-                {
-                    <td>
-                        <a href="/Relatorio/Download?filename=@string.Concat(ocor.Id.ToString(),"_",ocor.Anexo)" alt="download" type="button" class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
-                        </a>
-                    </td>
-                }
-                else
-                {
-                    <td></td>  
-                }
+
+            @if (ocor.Anexo != null)
+            {
                 <td>
-                    <a href="/Relatorio/Detalhar?id=@ocor.Id&page=@Model.PageNumber&datafim=@datafim&datainicio=@datainicio&setor=@setor" alt="detalhar" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    <a href="/Relatorio/Download?filename=@string.Concat(ocor.Id.ToString(),"_",ocor.Anexo)" alt="download" type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
                     </a>
                 </td>
+            }
+            else
+            {
+                <td></td>
+            }
+            <td>
+                <a href="/Relatorio/Detalhar?id=@ocor.Id&page=@Model.PageNumber&datafim=@datafim&datainicio=@datainicio&setor=@setor" alt="detalhar" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </a>
+            </td>
 
-                <td>
-                    <a href="/Relatorio/Excluir/@ocor.Id" alt="excluir" onclick="return confirmaApagar();" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                    </a>
-                </td>
-            </tr>
+            <td>
+                <a href="/Relatorio/Excluir/@ocor.Id" alt="excluir" onclick="return confirmaApagar();" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>
