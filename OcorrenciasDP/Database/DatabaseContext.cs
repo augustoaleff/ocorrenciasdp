@@ -13,6 +13,8 @@ namespace OcorrenciasDP.Database
         public DbSet<Ocorrencia> Int_DP_Ocorrencias { get; set; }
         public DbSet<Setor> Int_DP_Setores { get; set; }
         public DbSet<Mensagem> Int_DP_Mensagens { get; set; }
+        public DbSet<LogTipos> Int_DP_Logs_Tipos { get; set; }
+        public DbSet<Log> Int_DP_Logs { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {

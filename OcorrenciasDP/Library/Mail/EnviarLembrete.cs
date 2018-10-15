@@ -42,7 +42,10 @@ namespace OcorrenciasDP.Library.Mail
                 From = new MailAddress("no-reply@eletroleste.com.br","Eletroleste"),
                 Subject = "Lembrete",
                 IsBodyHtml = true,
-                Body = "<h2>Lembrete</h2>" + saudacao + conteudo + "<br /><br /><a href='http://www.eletroleste.com.br/OcorrenciasDP/'>Clique aqui para enviar</a>"
+
+                Body = "<h2>Lembrete</h2>" + saudacao +
+                conteudo + "<br /><br />" +
+                "<a href='http://www.eletroleste.com.br/OcorrenciasDP/'>Clique aqui para enviar</a>"
 
             };
 
@@ -55,23 +58,9 @@ namespace OcorrenciasDP.Library.Mail
 
                 
             }
-
-
+            
             smtp.Send(mensagem);
-
-
-
-
-            //mensagem.Subject = "Lembrete";
-
-            //mensagem.IsBodyHtml = true;
-            //mensagem.Body = "<h1>Lembrete</h1>" + saudacao + conteudo;
-
-
-
-
-
-
+            
         }
 
 

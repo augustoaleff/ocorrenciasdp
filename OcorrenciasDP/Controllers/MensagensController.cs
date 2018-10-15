@@ -111,13 +111,40 @@ namespace OcorrenciasDP.Controllers
 
                     vEmails.RemoveAll(item => item == null); //remove os valores nulos da lista
                     
-                    if(vEmails.Count > 0) { 
+                    if(vEmails.Count > 0) {
 
-                        EnviarLembrete.EnviarMsgLembrete(dias, vEmails);
+                        Log log = new Log();
+                        int id_user = HttpContext.Session.GetInt32("ID") ?? 0;
 
+                        try
+                        {
+
+                            EnviarLembrete.EnviarMsgLembrete(dias, vEmails);
+                            TempData["LembreteOK"] = "Lembrete Enviado!";
+
+                            log.LembreteEnviado(id_user, vEmails.Count);
+                            _db.Int_DP_Logs.Add(log);
+
+                        }catch(Exception exp)
+                        {
+                            log.LembreteEnviado_Erro(id_user, exp);
+                            _db.Int_DP_Logs.Add(log);
+
+                            TempData["LembreteNotOK"] = "Ocorreu um erro ao tentar enviar o lembrete, por favor, tente novamente!";
+
+                        }
+                        finally
+                        {
+                            _db.SaveChanges();
+                        }
+                        
+                    }
+                    else
+                    {
+                        TempData["LembreteNotOK"] = "Não há e-mails cadastrados para envio";
                     }
 
-                    TempData["LembreteOK"] = "Lembrete Enviado!";
+                    
                     return RedirectToAction("Index");
 
                 }
@@ -182,11 +209,35 @@ namespace OcorrenciasDP.Controllers
             
             if(ModelState.IsValid == true)
             {
+                Log log = new Log();
 
-                _db.Int_DP_Mensagens.Add(mensagem);
-                _db.SaveChanges();
+                try
+                {
 
-                TempData["MensagemEnviada"] = "Mesnagem enviada com sucesso!";
+                    _db.Int_DP_Mensagens.Add(mensagem);
+                    _db.SaveChanges();
+
+                    log.MensagemEnviada(idNotNull, mensagem.Id);
+                    _db.Int_DP_Logs.Add(log);
+
+                    TempData["MensagemEnviada"] = "Mesnagem enviada com sucesso!";
+
+                }
+                catch(Exception exp)
+                {
+                    
+                    log.MensagemEnviada_Erro(idNotNull, exp);
+                    _db.Int_DP_Logs.Add(log);
+
+                    TempData["MensagemNaoEnviada"] = "Ocorreu um erro ao enviar a mensagem, por favor, envie novamente!";
+
+                }
+                finally
+                {
+                    _db.SaveChanges();
+                }
+
+                
 
                 return RedirectToAction("Index");
 

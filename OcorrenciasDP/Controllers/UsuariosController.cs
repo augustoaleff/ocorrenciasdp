@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OcorrenciasDP.Database;
 using OcorrenciasDP.Library.Filters;
@@ -11,7 +12,7 @@ using X.PagedList;
 
 namespace OcorrenciasDP.Controllers
 {
-    
+
     [Login]
     [Admin]
     public class UsuariosController : Controller
@@ -20,6 +21,8 @@ namespace OcorrenciasDP.Controllers
         readonly List<Setor> setores = new List<Setor>();
         readonly List<Setor> setores2 = new List<Setor>(); //Lista sem o "*Todos*"
         List<UsuariosViewModel> usuariosVM = new List<UsuariosViewModel>();
+
+
 
         public UsuariosController(DatabaseContext db)
         {
@@ -37,16 +40,16 @@ namespace OcorrenciasDP.Controllers
             var pageNumber = page ?? 1;
 
             var query = _db.Int_Dp_Usuarios
-                .Join(_db.Int_DP_Setores, u => u.Setor.Id, o => o.Id, (u,o) => new { u, o })
+                .Join(_db.Int_DP_Setores, u => u.Setor.Id, o => o.Id, (u, o) => new { u, o })
                 .Where(u => u.u.Ativo == 1)
                 .AsQueryable();
 
-            if(nome != null)
+            if (nome != null)
             {
                 query = query.Where(a => a.u.Nome.ToLower().Contains(nome.ToLower()));
             }
 
-            if(setor != null && setor != "0")
+            if (setor != null && setor != "0")
             {
                 query = query.Where(a => a.u.Setor.Id == int.Parse(setor));
 
@@ -85,7 +88,7 @@ namespace OcorrenciasDP.Controllers
             var resultadoPaginado = usuariosVM.ToPagedList(pageNumber, 5);
 
 
-            return View("Index",resultadoPaginado);
+            return View("Index", resultadoPaginado);
 
         }
 
@@ -123,7 +126,7 @@ namespace OcorrenciasDP.Controllers
                     Ativo = user.Ativo,
                     Setor = user.Setor,
                     UltimoAcesso = user.UltimoLogin
-                    
+
                 };
                 usuariosVM.Add(userVM);
             }
@@ -137,19 +140,41 @@ namespace OcorrenciasDP.Controllers
         [HttpGet]
         public ActionResult Excluir(int id)
         {
-            
-            var usuario = _db.Int_Dp_Usuarios.Find(id);
-            string usuario_temp = usuario.Login;
-            usuario.Ativo = 0;
-            usuario.Login = string.Concat(usuario.Login,DateTime.Now.Day.ToString(),DateTime.Now.Second.ToString(),DateTime.Now.Minute.ToString());
-            //_db.Int_Dp_Usuarios.Remove(usuario);
-            _db.SaveChanges();
+            Log log = new Log();
+            int user_id = HttpContext.Session.GetInt32("ID") ?? 0;
 
-            TempData["UsuarioExcluido"] = "O usuário '" + usuario_temp + "' foi excluido!";
+            try
+            {
+
+                var usuario = _db.Int_Dp_Usuarios.Find(id);
+                string usuario_temp = usuario.Login;
+                usuario.Ativo = 0;
+                usuario.Login = string.Concat(usuario.Login, DateTime.Now.Day.ToString(), DateTime.Now.Second.ToString(), DateTime.Now.Minute.ToString());
+                //_db.Int_Dp_Usuarios.Remove(usuario);
+                _db.SaveChanges();
+                TempData["UsuarioExcluido"] = "O usuário '" + usuario_temp + "' foi excluido!";
+
+                log.ExcluirUsuario(user_id, id);
+                _db.Int_DP_Logs.Add(log);
+
+
+            }
+            catch (Exception exp)
+            {
+
+                TempData["UsuarioErro"] = "Ocorreu um erro ao tentar excluir o usuário";
+
+                log.ExcluirUsuario_Erro(user_id, id, exp);
+                _db.Int_DP_Logs.Add(log);
+
+            }
+            finally
+            {
+                _db.SaveChanges();
+            }
 
             return RedirectToAction("Index");
         }
-
 
         [HttpGet]
         public ActionResult Atualizar(int id)
@@ -169,6 +194,7 @@ namespace OcorrenciasDP.Controllers
         [HttpPost]
         public ActionResult Atualizar([FromForm]Usuario usuario, string confirmasenha)
         {
+            int user_id = HttpContext.Session.GetInt32("ID") ?? 0;
             var vSetor = _db.Int_DP_Setores.Find(usuario.Setor.Id);
             usuario.Setor = vSetor;
 
@@ -190,21 +216,57 @@ namespace OcorrenciasDP.Controllers
                         confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
                         usuario.Email = usuario.Email.ToLower();
 
-                        if(usuario.Senha == confirmasenha) { 
+                        if (usuario.Senha == confirmasenha)
+                        {
 
-                        var vUpdate = _db.Int_Dp_Usuarios.Find(usuario.Id);
+                            var vUpdate = _db.Int_Dp_Usuarios.Find(usuario.Id);
 
-                        vUpdate.Login = usuario.Login;
-                        vUpdate.Nome = usuario.Nome;
-                        vUpdate.Perfil = usuario.Perfil;
-                        vUpdate.Senha = usuario.Senha;
-                        vUpdate.Setor = usuario.Setor;
-                        vUpdate.Ativo = usuario.Ativo;
-                        vUpdate.Email = usuario.Email;
-                        
-                        _db.SaveChanges();
-                        TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi atualizado com sucesso!";
-                        return RedirectToAction("Index");
+                            Log log = new Log();
+                            bool perfil;
+
+
+                                if (vUpdate.Perfil != usuario.Perfil)
+                                {
+                                    perfil = true;
+                                }
+                                else
+                                {
+                                    perfil = false;
+                                }
+
+                                vUpdate.Login = usuario.Login;
+                                vUpdate.Nome = usuario.Nome;
+                                vUpdate.Perfil = usuario.Perfil;
+                                vUpdate.Senha = usuario.Senha;
+                                vUpdate.Setor = usuario.Setor;
+                                vUpdate.Ativo = usuario.Ativo;
+                                vUpdate.Email = usuario.Email;
+
+                            try
+                            {
+                               
+                                _db.SaveChanges();
+                                TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi atualizado com sucesso!";
+
+                                log.AlterarUsuario(user_id, usuario.Id, perfil, usuario.Perfil);
+                                _db.Int_DP_Logs.Add(log);
+                               
+                            }
+                            catch (Exception exp)
+                            {
+                                log.AlterarUsuario_Erro(user_id, usuario.Id, perfil, usuario.Perfil, exp);
+                                _db.Int_DP_Logs.Add(log);
+
+                                TempData["UsuarioErro"] = "Ocorreu um erro ao tentar alterar o usuário!";
+
+                            }
+                            finally
+                            {
+                                _db.SaveChanges();
+                            }
+
+
+                            return RedirectToAction("Index");
                         }
                         else
                         {
@@ -229,8 +291,18 @@ namespace OcorrenciasDP.Controllers
 
                     if (usuario.Senha == confirmasenha)
                     {
+                        bool perfil;
 
                         var vUpdate = _db.Int_Dp_Usuarios.Find(usuario.Id);
+
+                        if(vUpdate.Perfil != usuario.Perfil)
+                        {
+                            perfil = true;
+                        }
+                        else
+                        {
+                            perfil = false;
+                        }
 
                         vUpdate.Login = usuario.Login;
                         vUpdate.Nome = usuario.Nome;
@@ -240,9 +312,33 @@ namespace OcorrenciasDP.Controllers
                         vUpdate.Ativo = usuario.Ativo;
                         vUpdate.Email = usuario.Email;
 
-                        _db.SaveChanges();
+                        Log log = new Log();
 
+
+                        try { 
+
+                        _db.SaveChanges();
                         TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi atualizado com sucesso!";
+
+                            log.AlterarUsuario(user_id, usuario.Id, perfil, usuario.Perfil);
+                            _db.Int_DP_Logs.Add(log);
+
+
+                        }
+                        catch(Exception exp)
+                        {
+
+                            log.AlterarUsuario_Erro(user_id, usuario.Id, perfil, usuario.Perfil, exp);
+                            _db.Int_DP_Logs.Add(log);
+                            TempData["UsuarioErro"] = "Erro ao tentar atualizar o usuário!";
+
+                        }
+                        finally
+                        {
+                            _db.SaveChanges();
+                        }
+                        
+
                         return RedirectToAction("Index");
                     }
                     else
@@ -291,13 +387,36 @@ namespace OcorrenciasDP.Controllers
                     usuario.Email = usuario.Email.ToLower();
                     usuario.UltimoLogin = DateTime.Now;
 
-                    if(usuario.Senha == confirmasenha) { 
+                    if (usuario.Senha == confirmasenha)
+                    {
 
-                    _db.Int_Dp_Usuarios.Add(usuario);
-                    _db.SaveChanges();
+                        int id_user = HttpContext.Session.GetInt32("ID") ?? 0;
 
-                    TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi cadastrado com sucesso!";
-                    return RedirectToAction("Index");
+                        try
+                        {
+                            _db.Int_Dp_Usuarios.Add(usuario);
+                            _db.SaveChanges();
+
+                            Log log = new Log();
+                            log.CadastrarUsuario(id_user, usuario.Id);
+                            _db.Int_DP_Logs.Add(log);
+
+                            TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi cadastrado com sucesso!";
+
+                        }
+                        catch (Exception exp)
+                        {
+                            Log log = new Log();
+                            log.CadastrarUsuario_Erro(id_user, usuario.Login, exp);
+                            _db.Int_DP_Logs.Add(log);
+                            TempData["CadastroUserNotOK"] = "Erro ao cadastrar o usuário!";
+                        }
+                        finally
+                        {
+                            _db.SaveChanges();
+                        }
+
+                        return RedirectToAction("Index");
 
                     }
                     else

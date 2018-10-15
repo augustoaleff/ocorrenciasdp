@@ -48,6 +48,18 @@
         @TempData["UsuarioExcluido"]
     </div>
 }
+@if (TempData["UsuarioErro"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["UsuarioErro"]
+    </div>
+}
+@if (TempData["CadastroUserNotOK"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["CadastroUserNotOK"]
+    </div>
+}
 
 <h2>Usuários</h2>
 <br />

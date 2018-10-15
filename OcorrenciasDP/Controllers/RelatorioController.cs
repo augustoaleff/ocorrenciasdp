@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OcorrenciasDP.Database;
 using OcorrenciasDP.Library.Filters;
@@ -32,14 +33,40 @@ namespace OcorrenciasDP.Controllers
         }
 
 
-        public ActionResult Excluir(Int64 id)
+        public ActionResult Excluir(long id)
         {
             ViewBag.Setor = setores;
+            int user_id = HttpContext.Session.GetInt32("ID") ?? 0;
             var ocorrencia = _db.Int_DP_Ocorrencias.Find(id);
-            _db.Int_DP_Ocorrencias.Remove(ocorrencia);
-            _db.SaveChanges();
 
-            TempData["OcorrenciaExcluir"] = "Ocorrencia #" + id + " excluida!";
+            Log log = new Log();
+
+            try
+            {
+
+                _db.Int_DP_Ocorrencias.Remove(ocorrencia);
+                _db.SaveChanges();
+
+                TempData["OcorrenciaExcluir"] = "Ocorrencia #" + id + " excluida!";
+
+                log.ExcluirOcorrencia(user_id, id);
+                _db.Int_DP_Logs.Add(log);
+
+            }
+            catch(Exception exp)
+            {
+                log.ExcluirOcorrencia_Erro(user_id, id, exp);
+                _db.Int_DP_Logs.Add(log);
+
+                TempData["OcorrenciaExcluir"] = "Ocorreu um erro ao tentar excluir o registro!";
+
+            }
+            finally
+            {
+                _db.SaveChanges();
+            }
+
+           
             return RedirectToAction("Index");
         }
 

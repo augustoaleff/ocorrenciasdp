@@ -43,7 +43,7 @@ namespace OcorrenciasDP.Controllers
 
             //Ocorrencia ocorrencia = new Ocorrencia();
 
-            ocorrencia.Data = DateTime.Parse(Request.Form["data"]);
+            ocorrencia.Data = DateTime.Parse(Request .Form["data"]);
             ocorrencia.Descricao = Request.Form["descricao"];
             ocorrencia.Anexo = Request.Form["anexo"];
 
@@ -68,6 +68,7 @@ namespace OcorrenciasDP.Controllers
             }
 
             return View();
+
         }
 
         [HttpPost]
@@ -91,6 +92,7 @@ namespace OcorrenciasDP.Controllers
                 {
                     ViewBag.Ocorrencia = new Ocorrencia();
                     ViewBag.Ocorrencia.Data = DateTime.Now;
+                    Log log = new Log();
 
                     if(anexo != null) {
                         ViewBag.Ocorrencia.Anexo = anexo.FileName;
@@ -99,14 +101,25 @@ namespace OcorrenciasDP.Controllers
                     }
                     
                     try {
-
+                        
                         _db.Int_DP_Ocorrencias.Add(ocorrencia);
                         _db.SaveChanges();
 
-                    }catch(Exception)
+                        log.IncluirOcorrencia(ocorrencia.Usuario.Id, ocorrencia.Id);
+                        _db.Int_DP_Logs.Add(log);
+
+                    }catch(Exception exp)
                     {
+
+                        log.IncluirOcorrencia_Erro(id_notnull, exp);
+                        _db.Int_DP_Logs.Add(log);
+
                         TempData["MsgOcorrenciaNotOK2"] = "Ocorreu um erro ao enviar, por favor, tente novamente...";
                         return View("Index", ocorrencia);
+                    }
+                    finally
+                    {
+                        _db.SaveChanges();
                     }
 
                     idOcorrencia = ocorrencia.Id.ToString() + "_";
@@ -131,7 +144,6 @@ namespace OcorrenciasDP.Controllers
                     TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrencia cadastrada para esta data!";
                     //Retorna o valor como Objeto Ocorrencia para a View
                     return View("Index", ocorrencia);
-
                 }
             }
 

@@ -102,26 +102,26 @@ namespace OcorrenciasDP.Controllers
         public void VerificarMensagensNovas()
         {
 
-                int userId = HttpContext.Session.GetInt32("ID") ?? 0;
+            int userId = HttpContext.Session.GetInt32("ID") ?? 0;
 
-                var dataUltimoAcesso = _db.Int_Dp_Usuarios
-                                       .Where(a => a.Id == userId)
-                                       .Select(s => s.UltimoLogin)
-                                       .FirstOrDefault();
+            var dataUltimoAcesso = _db.Int_Dp_Usuarios
+                                   .Where(a => a.Id == userId)
+                                   .Select(s => s.UltimoLogin)
+                                   .FirstOrDefault();
 
             DateTime dataUltimoAcesso2 = DateTime.Parse(HttpContext.Session.GetString("UltimoAcesso"));
-                
-                var mensagem = _db.Int_DP_Mensagens
-                                .Where(a => a.Data >= dataUltimoAcesso2)
-                                .OrderByDescending(b => b.Data)
-                                .ToList();
 
-                if (mensagem.Count > 0)
-                {
-                    ViewBag.NovaMensagem = mensagem;
-                }
+            var mensagem = _db.Int_DP_Mensagens
+                            .Where(a => a.Data >= dataUltimoAcesso2)
+                            .OrderByDescending(b => b.Data)
+                            .ToList();
 
-                HttpContext.Session.SetString("Visualizado", "true");
+            if (mensagem.Count > 0)
+            {
+                ViewBag.NovaMensagem = mensagem;
+            }
+
+            HttpContext.Session.SetString("Visualizado", "true");
 
         }
 
@@ -134,7 +134,7 @@ namespace OcorrenciasDP.Controllers
 
             //DateTime dataUltimoAcesso = DateTime.Parse(HttpContext.Session.GetString("UltimoAcesso"));
 
-            if(HttpContext.Session.GetString("Visualizado") == "false")
+            if (HttpContext.Session.GetString("Visualizado") == "false")
             {
                 VerificarMensagensNovas();
             }
@@ -169,21 +169,40 @@ namespace OcorrenciasDP.Controllers
                     if (vLogin.Ativo == 1)
                     {
                         //Verifica se a senha está correta
-                        if (Equals(vLogin.Senha, usuario.Senha.Replace(";","").Replace(",","").Replace(".","").ToLower()))
+                        if (Equals(vLogin.Senha, usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower()))
                         {
-                            //Envia para a página
-                            HttpContext.Session.SetString("Login", vLogin.Nome);
-                            HttpContext.Session.SetString("Setor", vLogin.Setor.Nome);
-                            HttpContext.Session.SetString("Perfil", vLogin.Perfil);
-                            HttpContext.Session.SetInt32("ID", vLogin.Id);
-                            HttpContext.Session.SetString("UltimoAcesso", vLogin.UltimoLogin.ToString());
-                            HttpContext.Session.SetString("Visualizado", "false");
+                            try
+                            {
+                                //Envia para a página
+                                HttpContext.Session.SetString("Login", vLogin.Nome);
+                                HttpContext.Session.SetString("Setor", vLogin.Setor.Nome);
+                                HttpContext.Session.SetString("Perfil", vLogin.Perfil);
+                                HttpContext.Session.SetInt32("ID", vLogin.Id);
+                                HttpContext.Session.SetString("UltimoAcesso", vLogin.UltimoLogin.ToString());
+                                HttpContext.Session.SetString("Visualizado", "false");
 
-                            vLogin.UltimoLogin = DateTime.Now;
-                            _db.SaveChanges();
+                                vLogin.UltimoLogin = DateTime.Now;
 
-                            return RedirectToAction("Inicio", "Home"); //Vai para a página de Início
+                                Log log = new Log();
+                                log.LogIn(vLogin.Id);
+                                _db.Int_DP_Logs.Add(log);
 
+                                _db.SaveChanges();
+
+                                return RedirectToAction("Inicio", "Home"); //Vai para a página de Início
+
+                            }
+                            catch (Exception exp)
+                            {
+                                Log log = new Log();
+                                log.LogIn_Erro(vLogin.Id, exp);
+                                _db.Int_DP_Logs.Add(log);
+
+                                _db.SaveChanges();
+                                HttpContext.Session.Clear();
+
+                                return RedirectToAction("Index", "Home");
+                            }
                         }
                         else
                         {
@@ -203,7 +222,7 @@ namespace OcorrenciasDP.Controllers
                     TempData["MensagemErro"] = "Usuário não Encontrado";
                     return View(usuario);
                 }
-                
+
             }
 
             return View();
@@ -221,7 +240,7 @@ namespace OcorrenciasDP.Controllers
 
             var path = Path.Combine(
                            Directory.GetCurrentDirectory(),
-                           "wwwroot","uploads", filename);
+                           "wwwroot", "uploads", filename);
 
             Request.ToString();
 
@@ -298,8 +317,31 @@ namespace OcorrenciasDP.Controllers
 
         public ActionResult Logout()
         {
-            HttpContext.Session.Clear();
+            Log log = new Log();
+            int id = HttpContext.Session.GetInt32("ID") ?? 0;
+
+            try
+            {
+                _db.Int_DP_Logs.Add(log);
+                log.LogOut(id);
+            }
+            catch (Exception exp)
+            {
+
+                log.LogOut_ERRO(id, exp);
+                _db.Int_DP_Logs.Add(log);
+
+            }
+            finally
+            {
+
+                _db.SaveChanges();
+                HttpContext.Session.Clear();
+            }
+
             return RedirectToAction("Index", "Home");
+
+
         }
     }
 }
