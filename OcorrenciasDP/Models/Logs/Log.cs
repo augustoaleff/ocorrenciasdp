@@ -39,7 +39,7 @@ namespace OcorrenciasDP.Models
             this.Tipo = 4; //Logout efetuado com Sucesso
         }
 
-        public void LogOut_ERRO(int usuario, Exception exp)
+        public void LogOut_Erro(int usuario, Exception exp)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
@@ -100,6 +100,7 @@ namespace OcorrenciasDP.Models
 
         public void AlterarUsuario_Erro(int usuario, int usuarioAlterado, bool alteraPerfil, string perfil, Exception exp)
         {
+
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.UsuarioAlterado = usuarioAlterado;
@@ -151,7 +152,7 @@ namespace OcorrenciasDP.Models
 
         }
 
-        public void LembreteEnviado(int usuario, int total)
+        public void EnviarLembrete(int usuario, int total)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
@@ -159,7 +160,7 @@ namespace OcorrenciasDP.Models
             this.Obs = "Enviado " + total + " emails com sucesso";
         }
 
-        public void LembreteEnviado_Erro(int usuario, Exception exp)
+        public void EnviarLembrete_Erro(int usuario, Exception exp)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
@@ -167,7 +168,7 @@ namespace OcorrenciasDP.Models
             this.Obs = "ERRO: " + exp.Message;
         }
 
-        public void MensagemEnviada(int usuario, long mensagem)
+        public void EnviarMensagem(int usuario, long mensagem)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
@@ -175,7 +176,7 @@ namespace OcorrenciasDP.Models
             this.Mensagem = mensagem;
         }
 
-        public void MensagemEnviada_Erro(int usuario, Exception exp)
+        public void EnviarMensagem_Erro(int usuario, Exception exp)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
@@ -195,7 +196,7 @@ namespace OcorrenciasDP.Models
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
-            this.Tipo = 901; // Outro(Erro)
+            this.Tipo = 901; // Outro (Erro)
             this.Obs = "ERRO: " + exp.Message + ", " + log;
         }
     }

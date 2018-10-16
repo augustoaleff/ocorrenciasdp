@@ -328,7 +328,7 @@ namespace OcorrenciasDP.Controllers
             catch (Exception exp)
             {
 
-                log.LogOut_ERRO(id, exp);
+                log.LogOut_Erro(id, exp);
                 _db.Int_DP_Logs.Add(log);
 
             }

@@ -55,27 +55,230 @@
     <input type="hidden" name="id" value="@ViewBag.Ocorrencia.Id" />
 
     <div class="form-row">
-        <div class="form-group col-md-auto">
+        <div class="form-group col-md-auto" style="width:50%">
             <label for="nome">Nome</label>
             <input type="text" name="nome" class="form-control" id="usuario" value="@nome_login" readonly>
         </div>
-        <div class="form-group col-md-auto">
+        <div class="form-group col-md-auto" style="width:50%">
             <label for="setor">Setor</label>
             <input type="text" name="setor" class="form-control" id="setor" value="@setor_login" readonly>
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" style="width:50%">
         <label for="data">Data</label>
-        <input type="date" name="data" value="@data1" class="form-control" id="data">
+        <input type="date" name="data" value="@data1" class="form-control" id="data" >
         <strong style="color:#FF0000">@Html.ValidationMessage("data")</strong>
     </div>
 
-    <div class="form-group">
+    <br />
+    <div style="display:flex;flex-direction:row;align-items:flex-start;">
+        <div style="width:40%;">
+            <label>
+                Algum colaborador chegou atrasado?
+            </label>
+        </div>
+
+        <div style="display:flex;justify-content:space-around;width:25%;align-items:flex-start">
+            @if (ViewBag.Ocorrencia.Atrasado == 1)
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="atrasado" id="atrasado_sim" value="1" checked required onclick="return mostrarTextArea();">
+                    <label class="form-check-label" for="atrasado_sim">Sim</label>
+                </div>
+            }
+            else
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="atrasado" id="atrasado_sim" value="1" required onclick="return mostrarTextArea();">
+                    <label class="form-check-label" for="atrasado_sim">Sim</label>
+                </div>
+            }
+            @if (ViewBag.Ocorrencia.Atrasado == 0)
+            {
+
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="atrasado" id="atrasado_nao" value="0" checked onclick="return esconderTextArea();">
+                    <label class="form-check-label" for="atrasado_nao">Não</label>
+                </div>
+            }
+            else
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="atrasado" id="atrasado_nao" value="0" onclick="return esconderTextArea();">
+                    <label class="form-check-label" for="atrasado_nao">Não</label>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div style="display:flex;flex-direction:row;align-items:flex-start;">
+        <div style="width:40%;">
+            <label>
+                Algum colaborador saiu mais cedo?
+            </label>
+        </div>
+
+        <div style="display:flex;justify-content:space-around;width:25%;align-items:flex-start">
+            @if (ViewBag.Ocorrencia.Cedo == 1)
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="cedo" id="cedo_sim" value="1" checked required onclick="return mostrarTextArea();">
+                    <label class="form-check-label" for="cedo_sim">Sim</label>
+                </div>
+            }
+            else
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="cedo" id="cedo_sim" value="1"  required onclick="return mostrarTextArea();">
+                    <label class="form-check-label" for="cedo_sim">Sim</label>
+                </div>
+            }
+            @if (ViewBag.Ocorrencia.Cedo == 0)
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="cedo" id="cedo_nao" value="0" checked onclick="return esconderTextArea();">
+                    <label class="form-check-label" for="cedo_nao">Não</label>
+                </div>
+            }
+            else
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="cedo" id="cedo_nao" value="0" onclick="return esconderTextArea();">
+                    <label class="form-check-label" for="cedo_nao">Não</label>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div style="display:flex;flex-direction:row;align-items:flex-start;">
+        <div style="width:40%;">
+            <label>
+                Algum colaborador foi advertido verbalmente?
+            </label>
+        </div>
+
+        <div style="display:flex;justify-content:space-around;width:25%;align-items:flex-start">
+            @if (ViewBag.Ocorrencia.Advertencia == 1)
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="advertencia" id="advertencia_sim" checked required value="1" onclick="return mostrarTextArea();">
+                    <label class="form-check-label" for="advertencia_sim">Sim</label>
+                </div>
+            }
+            else
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="advertencia" id="advertencia_sim" required value="1" onclick="return mostrarTextArea();">
+                    <label class="form-check-label" for="advertencia_sim">Sim</label>
+                </div>
+            }
+
+            @if (ViewBag.Ocorrencia.Advertencia == 0)
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="advertencia" id="advertencia_nao" checked value="0" onclick="return esconderTextArea();">
+                    <label class="form-check-label" for="advertencia_nao">Não</label>
+                </div>
+            }
+            else
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="advertencia" id="advertencia_nao" value="0" onclick="return esconderTextArea();">
+                    <label class="form-check-label" for="advertencia_nao">Não</label>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div style="display:flex;flex-direction:row;align-items:flex-start;">
+        <div style="width:40%;">
+            <label>
+                Algum colaborador se acidentou durante o trabalho?
+            </label>
+        </div>
+
+        <div style="display:flex;justify-content:space-around;width:25%;align-items:flex-start">
+            @if (ViewBag.Ocorrencia.Acidente == 1)
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="acidente" id="acidente_sim" required value="1" checked onclick="return mostrarTextArea();">
+                    <label class="form-check-label" for="acidente_sim">Sim</label>
+                </div>
+            }
+            else
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="acidente" id="acidente_sim" required value="1" onclick="return mostrarTextArea();">
+                    <label class="form-check-label" for="acidente_sim">Sim</label>
+                </div>
+            }
+
+            @if (ViewBag.Ocorrencia.Acidente == 0)
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="acidente" id="acidente_nao" value="0" checked onclick="return esconderTextArea();">
+                    <label class="form-check-label" for="acidente_nao">Não</label>
+                </div>
+            }
+            else
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="acidente" id="acidente_nao" value="0" onclick="return esconderTextArea();">
+                    <label class="form-check-label" for="acidente_nao">Não</label>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div style="display:flex;flex-direction:row;align-items:flex-start;">
+        <div style="width:40%;">
+            <label>
+                Deseja adicionar alguma ocorrência?
+            </label>
+        </div>
+
+        <div style="display:flex;justify-content:space-around;width:25%;align-items:flex-start">
+
+            @if (ViewBag.Ocorrencia.Outro == 1)
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="outro" id="outra_sim" value="1" checked required onclick="return mostrarTextArea();">
+                    <label class="form-check-label" for="outra_sim">Sim</label>
+                </div>
+            }
+            else
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="outro" id="outra_sim" value="1" required onclick="return mostrarTextArea();">
+                    <label class="form-check-label" for="outra_sim">Sim</label>
+                </div>
+            }
+
+            @if (ViewBag.Ocorrencia.Outro == 0)
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="outro" id="outra_nao" value="0" checked onclick="return esconderTextArea();">
+                    <label class="form-check-label" for="outra_nao">Não</label>
+                </div>
+            }
+            else
+            {
+                <div class="form-check input-group">
+                    <input class="form-check-input" type="radio" name="outro" id="outra_nao" value="0" onclick="return esconderTextArea();">
+                    <label class="form-check-label" for="outra_nao">Não</label>
+                </div>
+            }
+        </div>
+    </div>
+
+    <br />
+    <div class="form-group" id="textarea_descricao" hidden>
         <label for="descricao">Ocorrência</label>
-        <textarea class="form-control" name="descricao" id="descricao" rows="5">@ViewBag.Ocorrencia.Descricao</textarea>
+        <textarea class="form-control" name="descricao" id="descricao" rows="5" placeholder="Descreva a ocorrência aqui...">@ViewBag.Ocorrencia.Descricao</textarea>
         <strong style="color:#FF0000">@Html.ValidationMessage("descricao")</strong>
     </div>
+
 
     <div class="custom-file">
         <input type="file" class="custom-file-input" value="@ViewBag.Anexo" name="anexo" id="anexo" lang="pt-br">
@@ -84,6 +287,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
+
 </form>
 
 @section Scripts{
@@ -94,12 +298,40 @@
             document.getElementById("botaoenviar").click();  //Enviar a ocorrencia
         }
 
+          //Usar Calendário DataPicker com JavaScript para adicionar eventos
         function incluirCalendario() {
             var calend = document.getElementById("calendario");
         }
 
-        //Usar Calendário DataPicker com JavaScript para adicionar eventos
-    
+        var descricao = document.getElementById("textarea_descricao");
+        var descricao_text = document.getElementById("descricao");
+
+        var atrasado = document.getElementById("atrasado_sim");
+        var cedo = document.getElementById("cedo_sim");
+        var advertencia = document.getElementById("advertencia_sim");
+        var acidente = document.getElementById("acidente_sim");
+        var outra = document.getElementById("outra_sim");
+
+        var atrasado2 = document.getElementById("atrasado_nao");
+        var cedo2 = document.getElementById("cedo_nao");
+        var advertencia2 = document.getElementById("advertencia_nao");
+        var acidente2 = document.getElementById("acidente_nao");
+        var outra2 = document.getElementById("outra_nao");
+
+        function mostrarTextArea() {
+            if (atrasado.checked == true || cedo.checked == true || advertencia.checked == true || acidente.checked == true || outra.checked == true) {
+                descricao.hidden = false;
+                descricao_text.required = true;
+            }
+        }
+
+        function esconderTextArea() {
+            if (atrasado2.checked == true && cedo2.checked == true && advertencia2.checked == true && acidente2.checked == true && outra2.checked == true) {
+                descricao.hidden = true;
+                descricao_text.required = false;
+            }
+        }
+
     </script>
 
 }

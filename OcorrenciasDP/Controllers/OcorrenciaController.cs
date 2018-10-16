@@ -75,6 +75,11 @@ namespace OcorrenciasDP.Controllers
         public ActionResult Index([FromForm]Ocorrencia ocorrencia, IFormFile anexo, string update)
         {
 
+            if(ocorrencia.Descricao == null)
+            {
+                ocorrencia.Descricao = "Não houve ocorrências";
+            } 
+
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
 
             Usuario usuario = _db.Int_Dp_Usuarios.Find(id_notnull);

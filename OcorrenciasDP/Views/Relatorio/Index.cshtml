@@ -130,7 +130,7 @@
 
             DateTime ultimoAcesso = DateTime.Parse(Context.Session.GetString("UltimoAcesso"));
 
-            if (ocor.Data.Date >= ultimoAcesso.Date) //Verifica se tem novas ocorrencias desde o último acesso
+            if (ocor.Data.Date >= ultimoAcesso.Date) //Verifica se tem novas ocorrencias desde a data do último acesso
             {
                 classeLinha = "success";   //Linha verde
             }

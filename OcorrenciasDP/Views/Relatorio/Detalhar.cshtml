@@ -7,8 +7,9 @@
 @{
     string datafim, datainico;
     string setor, pagina;
+    string acidente, atrasado, cedo, outro, advertencia;
 
-    if(ViewBag.PaginaRelat != null)
+    if (ViewBag.PaginaRelat != null)
     {
         pagina = "page=" + ViewBag.PaginaRelat;
     }
@@ -45,6 +46,52 @@
         datafim = "";
     }
 
+    if(Model.Atrasado == 1)
+    {
+        atrasado = "<font color='red'><b> Sim</b></font>";
+    }
+    else
+    {
+        atrasado = " Não";
+    }
+
+    if (Model.Advertencia == 1)
+    {
+        advertencia = "<font color='red'><b> Sim</b></font>";
+    }
+    else
+    {
+        advertencia = " Não";
+    }
+
+    if (Model.Acidente == 1)
+    {
+        acidente = "<font color='red'><b> Sim</b></font>";
+    }
+    else
+    {
+        acidente = " Não";
+    }
+
+    if (Model.Cedo == 1)
+    {
+        cedo = "<font color='red'><b> Sim</b></font>";
+    }
+    else
+    {
+        cedo = " Não";
+    }
+
+    if (Model.Outro == 1)
+    {
+        outro = "<font color='red'><b> Sim</b></font>";
+    }
+    else
+    {
+        outro = " Não";
+    }
+
+
 }
 
 <div>
@@ -80,14 +127,55 @@
 </div>
 <br />
 
-<div >
+<div>
+    <strong>
+        Algum colaborador chegou atrasado?
+    </strong>
+    @Html.Raw(atrasado)
+</div>
+
+<br />
+<div>
+    <strong>
+        Algum colaborador saiu mais cedo?
+    </strong>
+    @Html.Raw(cedo)
+</div>
+
+<br />
+<div>
+    <strong>
+        Algum colaborador foi advertido verbalmente?
+    </strong>
+    @Html.Raw(advertencia)
+</div>
+
+<br />
+<div>
+    <strong>
+        Algum colaborador se acidentou durante o trabalho?
+    </strong>
+    @Html.Raw(acidente)
+</div>
+
+<br />
+<div>
+    <strong>
+        Deseja adicionar alguma ocorrência?
+    </strong>
+    @Html.Raw(outro)
+</div>
+
+<br />
+
+<div>
     <strong>Descrição: </strong>
     @Html.Raw(Model.Descricao)
 </div>
 
 <br />
 
-<div >
+<div>
     <strong>Anexo: </strong>
     <a href="\Relatorio\Download?filename=@string.Concat(Model.Id.ToString(),"_",Model.Anexo)">@Model.Anexo</a>
 </div>

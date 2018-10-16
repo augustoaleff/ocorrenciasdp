@@ -92,6 +92,11 @@ namespace OcorrenciasDP.Controllers
                    s.a.o.Anexo,
                    s.a.u.Nome,
                    Setor = s.b.Nome,
+                   s.a.o.Acidente,
+                   s.a.o.Advertencia,
+                   s.a.o.Cedo,
+                   s.a.o.Atrasado,
+                   s.a.o.Outro
                }).FirstOrDefault();
 
             OcorrenciaViewModel detalhes = new OcorrenciaViewModel
@@ -101,7 +106,12 @@ namespace OcorrenciasDP.Controllers
                 Descricao = relat.Descricao.Replace("\r\n", "<br />"),
                 Nome = relat.Nome,
                 Setor = relat.Setor,
-                Anexo = relat.Anexo
+                Anexo = relat.Anexo,
+                Advertencia = relat.Advertencia,
+                Acidente = relat.Acidente,
+                Cedo = relat.Cedo,
+                Atrasado = relat.Atrasado,
+                Outro = relat.Outro
             };
 
             return View(detalhes);
@@ -199,7 +209,6 @@ namespace OcorrenciasDP.Controllers
 
             try
             {
-
                 return new ViewAsPdf("VisualizarComoPDF", relatorioVM2);
             }
             catch(Exception)

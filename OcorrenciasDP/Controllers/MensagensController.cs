@@ -65,10 +65,9 @@ namespace OcorrenciasDP.Controllers
         {
             if(dias > 0)
             {
-
+        
                 List<int> vUsuariosSemEnvio = new List<int>();
-
-
+        
                 try {
 
                     DateTime datainicio = (DateTime.Today.Date.AddDays(dias * (-1)));
@@ -94,7 +93,7 @@ namespace OcorrenciasDP.Controllers
 
                 if (lista2.Count > 0)
                 {
-                    List<string> vEmails = new List<string>();
+                    List<string> vEmails = new List<string>(); 
 
                     foreach (var id in lista2)
                     {
@@ -109,7 +108,7 @@ namespace OcorrenciasDP.Controllers
                         }
                     }
 
-                    vEmails.RemoveAll(item => item == null); //remove os valores nulos da lista
+                    vEmails.RemoveAll(item => item == null); //Remove os valores nulos da lista
                     
                     if(vEmails.Count > 0) {
 
@@ -118,26 +117,24 @@ namespace OcorrenciasDP.Controllers
 
                         try
                         {
-
                             EnviarLembrete.EnviarMsgLembrete(dias, vEmails);
                             TempData["LembreteOK"] = "Lembrete Enviado!";
 
-                            log.LembreteEnviado(id_user, vEmails.Count);
+                            log.EnviarLembrete(id_user, vEmails.Count);
                             _db.Int_DP_Logs.Add(log);
-
-                        }catch(Exception exp)
+                        }
+                        catch(Exception exp)
                         {
-                            log.LembreteEnviado_Erro(id_user, exp);
+                            log.EnviarLembrete_Erro(id_user, exp);
                             _db.Int_DP_Logs.Add(log);
 
                             TempData["LembreteNotOK"] = "Ocorreu um erro ao tentar enviar o lembrete, por favor, tente novamente!";
-
                         }
                         finally
                         {
                             _db.SaveChanges();
                         }
-                        
+                       
                     }
                     else
                     {
@@ -217,7 +214,7 @@ namespace OcorrenciasDP.Controllers
                     _db.Int_DP_Mensagens.Add(mensagem);
                     _db.SaveChanges();
 
-                    log.MensagemEnviada(idNotNull, mensagem.Id);
+                    log.EnviarMensagem(idNotNull, mensagem.Id);
                     _db.Int_DP_Logs.Add(log);
 
                     TempData["MensagemEnviada"] = "Mesnagem enviada com sucesso!";
@@ -226,7 +223,7 @@ namespace OcorrenciasDP.Controllers
                 catch(Exception exp)
                 {
                     
-                    log.MensagemEnviada_Erro(idNotNull, exp);
+                    log.EnviarMensagem_Erro(idNotNull, exp);
                     _db.Int_DP_Logs.Add(log);
 
                     TempData["MensagemNaoEnviada"] = "Ocorreu um erro ao enviar a mensagem, por favor, envie novamente!";
