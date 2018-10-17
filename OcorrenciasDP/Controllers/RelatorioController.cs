@@ -43,7 +43,6 @@ namespace OcorrenciasDP.Controllers
 
             try
             {
-
                 _db.Int_DP_Ocorrencias.Remove(ocorrencia);
                 _db.SaveChanges();
 
@@ -118,7 +117,7 @@ namespace OcorrenciasDP.Controllers
         }
 
         [HttpGet]
-        public ActionResult Filtrar(DateTime? datainicio, DateTime? datafim, string setor, int? page, Boolean? pdf)
+        public IActionResult Filtrar(DateTime? datainicio, DateTime? datafim, string setor, int? page, bool? pdf)
         {
             FiltrarPesquisaRelatViewModel pesquisa = new FiltrarPesquisaRelatViewModel() { DataInicio = datainicio, DataFim = datafim, Setor = setor };
 
@@ -129,6 +128,7 @@ namespace OcorrenciasDP.Controllers
                        .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
                        .Join(_db.Int_DP_Setores, a => a.u.Setor.Id, b => b.Id, (a, b) => new { a, b })
                        .OrderByDescending(c => c.a.o.Data)
+                       .ThenByDescending(a => a.a.o.Id)
                        .AsQueryable();
 
             if (pesquisa.DataInicio != null)
@@ -136,7 +136,6 @@ namespace OcorrenciasDP.Controllers
                 if (pesquisa.DataFim != null)
                 {
                     query = query.Where(a => a.a.o.Data >= pesquisa.DataInicio && a.a.o.Data <= pesquisa.DataFim);
-
                 }
                 else
                 {
@@ -184,6 +183,46 @@ namespace OcorrenciasDP.Controllers
                 ViewBag.NomeSetor = "*Todos*";
             }
 
+            string filtros = "";
+
+            if (datainicio != null)
+            {
+                if (filtros == "")
+                {
+                    filtros += "Data Início: " + pesquisa.DataInicio.ToString();
+                }
+                else
+                {
+                    filtros += ", Data Início: " + pesquisa.DataInicio.ToString();
+                }
+            }
+
+            if (datafim != null)
+            {
+                if (filtros == "")
+                {
+                    filtros += "Data Fim: " + pesquisa.DataFim.ToString();
+                }
+                else
+                {
+                    filtros += ", Data Fim: " + pesquisa.DataFim.ToString();
+                }
+            }
+
+            if (setor != null)
+            {
+                if (filtros == "")
+                {
+                    filtros += "Setor: " + pesquisa.Setor;
+                }
+                else
+                {
+                    filtros += ", Setor: " + pesquisa.Setor;
+                }
+            }
+
+            TempData["FiltrosPDF"] = filtros;
+
             if (pdf != true)
             {
                 ViewBag.Pesquisa = pesquisa;
@@ -192,35 +231,54 @@ namespace OcorrenciasDP.Controllers
             }
             else
             {
-                return RedirectToAction("GerarPDF",relatorioVM);
+                //ViewBag.PDF = relatorioVM;
+                // return RedirectToAction("GerarPDF",relatorioVM);
+
+                var relatorioPDF = new ViewAsPdf
+                {
+                    WkhtmlPath = "~/wwwroot/Rotativa",
+                    ViewName = "VisualizarComoPDF",
+                    IsGrayScale = true,
+                    Model = relatorioVM,
+                    PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+                    CustomSwitches = "--page-offset 0 --footer-left " + DateTime.Now.Date.ToShortDateString() + " --footer-right [page]/[toPage] --footer-font-size 8",
+                    PageSize = Rotativa.AspNetCore.Options.Size.A4
+
+                };
+
+                
+
+                return relatorioPDF;
+
             }
-  
         }
 
-        public IActionResult GerarPDF(List<OcorrenciaViewModel> relatorioVM2)
+        public ViewAsPdf GerarPDF(List<OcorrenciaViewModel> relatorioVM2)
         {
-            int pagNumero = 1;
             var relatorioPDF = new ViewAsPdf
             {
-                ViewName = "RelatorioPedidos",
+                WkhtmlPath = "~/wwwroot/Rotativa",
+                ViewName = "VisualizarComoPDF",
                 IsGrayScale = true,
-                Model = relatorioVM.ToPagedList(pagNumero, relatorioVM2.Count)
+                Model = ViewBag.PDF
             };
-
-            try
-            {
-                return new ViewAsPdf("VisualizarComoPDF", relatorioVM2);
-            }
-            catch(Exception)
-            {
-                return View("~/Views/Shared/Error");
-            }
+                return relatorioPDF;
         }
 
         public IActionResult VisualizarComoPDF()
         {
+            var relatorioPDF = new ViewAsPdf
+            {   
+                ViewName = "Relatorio/VisualizarComoPDF",
+                IsGrayScale = false,
+                FileName = "RelatorioClientesPDF",
+                Model = ViewBag.PDFModel
+            };
+            return relatorioPDF;
+
+            /*
             var model = ViewBag.PDFModel;
-            return new ViewAsPdf("VisualizarComoPDF", model);
+            return new ViewAsPdf("VisualizarComoPDF", model) { FileName = "TestViewAsPdf.pdf" };*/
         }
 
         [HttpGet]
@@ -230,7 +288,6 @@ namespace OcorrenciasDP.Controllers
             ViewBag.Setores = setores;
             ViewBag.Pesquisa = new FiltrarPesquisaRelatViewModel();
             var pageNumber = page ?? 1;
-
 
             /*  SELECT O.DATA,O.DESCRICAO,O.ID,U.NOME,R.SETOR
              *  FROM INT_DP_OCORRENCIAS AS O 
@@ -244,6 +301,7 @@ namespace OcorrenciasDP.Controllers
                    .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
                    .Join(_db.Int_DP_Setores, r => r.u.Setor.Id, s => s.Id, (r, s) => new { r, s })
                    .OrderByDescending(a => a.r.o.Data)
+                   .ThenByDescending(a => a.r.o.Id)
                    .Select(s => new
                    {
                        s.r.o.Data,

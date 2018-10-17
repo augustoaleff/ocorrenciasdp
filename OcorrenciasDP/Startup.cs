@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using OcorrenciasDP.Database;
 using Rotativa.AspNetCore;
@@ -53,6 +54,8 @@ namespace OcorrenciasDP
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1); //Adiciona o serviço do MVC
             services.AddDistributedMemoryCache();
             services.AddSession();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddProgressiveWebApp();
             //services.AddProgressiveWebApp();
         }
 

@@ -183,11 +183,9 @@
     </tbody>
 </table>
 
-<a href="/Relatorio/Filtrar?pdf=true&setor=0">Gerar relatório em PDF</a>
+<a href="/Relatorio/Filtrar?pdf=true&setor=@setor&datainicio=@datainicio&datafim=@datafim">Gerar relatório em PDF</a>
 <!--<input type="button" onclick="cont();" value="Imprimir Div separadamente">-->
-@{ 
-    ViewBag.PDFModel = Model;
-}
+
 
 @if (datafim != null || datainicio != null || setor != 0)
 {

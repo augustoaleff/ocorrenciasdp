@@ -303,8 +303,10 @@
             var calend = document.getElementById("calendario");
         }
 
-        var descricao = document.getElementById("textarea_descricao");
-        var descricao_text = document.getElementById("descricao");
+        //Controle das Opções do Questionário
+
+        var descricao = document.getElementById("textarea_descricao"); //Div
+        var descricao_text = document.getElementById("descricao"); //Input Text Area
 
         var atrasado = document.getElementById("atrasado_sim");
         var cedo = document.getElementById("cedo_sim");
@@ -320,15 +322,15 @@
 
         function mostrarTextArea() {
             if (atrasado.checked == true || cedo.checked == true || advertencia.checked == true || acidente.checked == true || outra.checked == true) {
-                descricao.hidden = false;
-                descricao_text.required = true;
+                descricao.hidden = false; //Mostra a Div
+                descricao_text.required = true; //Deixa como Obrigatório
             }
         }
 
         function esconderTextArea() {
             if (atrasado2.checked == true && cedo2.checked == true && advertencia2.checked == true && acidente2.checked == true && outra2.checked == true) {
-                descricao.hidden = true;
-                descricao_text.required = false;
+                descricao.hidden = true; //Esconde a Div
+                descricao_text.required = false; //Deixa como não Obrigatório
             }
         }
 

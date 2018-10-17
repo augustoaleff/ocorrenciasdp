@@ -22,8 +22,6 @@ namespace OcorrenciasDP.Controllers
         readonly List<Setor> setores2 = new List<Setor>(); //Lista sem o "*Todos*"
         List<UsuariosViewModel> usuariosVM = new List<UsuariosViewModel>();
 
-
-
         public UsuariosController(DatabaseContext db)
         {
             _db = db;

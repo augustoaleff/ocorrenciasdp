@@ -28,6 +28,15 @@
 
 <h2>Cadastro de Usuário</h2>
 <br />
+
+<!--Voltar a página-->
+<div>
+    <a href="javascript:window.history.go(-1)" class="btn btn-default btn-lg">
+        <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+    </a>
+</div>
+
+<br />
 <form method="post" style="width:50%">
     <input type="hidden" name="id" value="@ViewBag.User.Id" />
     <input type="hidden" name="ativo" value="1" />
@@ -101,7 +110,6 @@
                 {
                     <option value="@depto.Id">@depto.Nome</option>
                 }
-
             }
         </select>
     </div>

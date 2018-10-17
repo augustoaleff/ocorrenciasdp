@@ -34,7 +34,6 @@ namespace OcorrenciasDP.Controllers
             return View(new Ocorrencia());
         }
 
-
         public ActionResult Atualizar([FromForm]Ocorrencia ocorrencia)
         {
 
@@ -43,13 +42,9 @@ namespace OcorrenciasDP.Controllers
 
             //Ocorrencia ocorrencia = new Ocorrencia();
 
-            ocorrencia.Data = DateTime.Parse(Request .Form["data"]);
+            ocorrencia.Data = DateTime.Parse(Request.Form["data"]);
             ocorrencia.Descricao = Request.Form["descricao"];
             ocorrencia.Anexo = Request.Form["anexo"];
-
-            //return View("Index", ocorrencia); //retorna para o Index
-
-            //ocorrencia.Id_usuario = HttpContext.Session.GetInt32("ID");
 
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
 
@@ -61,9 +56,31 @@ namespace OcorrenciasDP.Controllers
             {
                 ViewBag.Ocorrencia = new Ocorrencia();
                 ViewBag.Ocorrencia.Data = DateTime.Now;
-                _db.Int_DP_Ocorrencias.Add(ocorrencia);
-                _db.SaveChanges();
-                TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
+
+                Log log = new Log();
+                
+                try
+                {
+                    _db.Int_DP_Ocorrencias.Add(ocorrencia);
+                    _db.SaveChanges();
+                    TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
+
+                    log.IncluirOcorrencia(id_notnull, ocorrencia.Id);
+                    _db.Int_DP_Logs.Add(log);
+
+                }
+                catch(Exception exp)
+                {
+                    TempData["MsgOcorrenciaNotOK2"] = "Ocorreu um erro ao enviar, por favor, tente novamente...";
+
+                    log.IncluirOcorrencia_Erro(id_notnull, exp);
+                    _db.Int_DP_Logs.Add(log);
+                }
+                finally
+                {
+                    _db.SaveChanges();
+                }
+                
                 return View("Index", ocorrencia);
             }
 
@@ -74,11 +91,10 @@ namespace OcorrenciasDP.Controllers
         [HttpPost]
         public ActionResult Index([FromForm]Ocorrencia ocorrencia, IFormFile anexo, string update)
         {
-
             if(ocorrencia.Descricao == null)
             {
                 ocorrencia.Descricao = "Não houve ocorrências";
-            } 
+            }
 
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
 
@@ -90,7 +106,9 @@ namespace OcorrenciasDP.Controllers
             {
                 //SELECT * FROM INT_DP_OCORRENCIAS WHERE DATA = " & Format(Data.Text, 'YYYYMMDD') & ";/
 
-                var vOcorrencia = _db.Int_DP_Ocorrencias.Where(o => o.Data.Equals(ocorrencia.Data) && (o.Usuario.Id == ocorrencia.Usuario.Id)).FirstOrDefault();
+                var vOcorrencia = _db.Int_DP_Ocorrencias
+                                   .Where(o => o.Data.Equals(ocorrencia.Data) && (o.Usuario.Id == ocorrencia.Usuario.Id))
+                                   .FirstOrDefault();
 
                 //Se for igual a null, não há nenhuma ocorrencia lançada com a data informada
                 if (vOcorrencia == null || update == "true")
@@ -100,6 +118,7 @@ namespace OcorrenciasDP.Controllers
                     Log log = new Log();
 
                     if(anexo != null) {
+
                         ViewBag.Ocorrencia.Anexo = anexo.FileName;
                         ocorrencia.Anexo = anexo.FileName;
                         ViewBag.Anexo = anexo;
@@ -113,7 +132,8 @@ namespace OcorrenciasDP.Controllers
                         log.IncluirOcorrencia(ocorrencia.Usuario.Id, ocorrencia.Id);
                         _db.Int_DP_Logs.Add(log);
 
-                    }catch(Exception exp)
+                    }
+                    catch (Exception exp)
                     {
 
                         log.IncluirOcorrencia_Erro(id_notnull, exp);
@@ -141,7 +161,7 @@ namespace OcorrenciasDP.Controllers
                 {
                     ViewBag.Ocorrencia = ocorrencia;
 
-                    if(anexo != null) { 
+                    if(anexo != null) {
                     ViewBag.Ocorrencia.Anexo = anexo.FileName;
                     }
 

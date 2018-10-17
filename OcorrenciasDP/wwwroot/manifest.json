@@ -1,0 +1,17 @@
+{
+  "name": "OcorrenciasDP",
+  "short_name": "DP",
+  "description": "Envio de Ocorrências para o DP",
+  "icons": [
+    {
+      "src": "/images/eletroleste_192.ico",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/eletroleste_512.png",
+      "sizes": "512x512"
+    }
+  ],
+  "display": "standalone",
+  "start_url": "/"
+}
