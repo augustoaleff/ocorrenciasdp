@@ -9,7 +9,9 @@
     },
     {
       "src": "/images/eletroleste_512.png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "type": "image/png"
+
     }
   ],
   "display": "standalone",

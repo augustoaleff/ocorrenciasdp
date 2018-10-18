@@ -10,6 +10,17 @@
     ViewData["Title"] = "Relatório";
 }
 
+
+@{
+    /*string filtro = "";
+
+    if (Model[0].DadosPesquisa != null)
+    {
+        filtro = Model[0].DadosPesquisa;
+    }*/
+
+}
+
 @{
     string datainicio, datafim, inform;
     int setor;
@@ -62,13 +73,28 @@
     </div>
 }
 
+@if (TempData["ErroRelatorioPDF"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErroRelatorioPDF"]
+    </div>
+}
+
+@if (TempData["ErroRelatorio"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErroRelatorio"]
+    </div>
+}
+
 
 @if (inform != "Dados da Pesquisa: ")
 {
     <div class="alert alert-info" role="alert">
-        <strong> @inform </strong>
+        <strong>@inform </strong>
     </div>
 }
+
 <h2>Relatório</h2>
 <br />
 <form class="form-inline" method="get" asp-controller="Relatorio" asp-action="Filtrar">
@@ -107,7 +133,6 @@
 <div>
     <br />
 </div>
-
 <table class="table table-hover" id="tabela" style="padding-top: 15px">
     <thead>
         <tr>
@@ -125,7 +150,6 @@
         @foreach (var ocor in Model)
         {
 
-
             string classeLinha;
 
             DateTime ultimoAcesso = DateTime.Parse(Context.Session.GetString("UltimoAcesso"));
@@ -139,52 +163,52 @@
                 classeLinha = "";  //Linha sem cor
             }
 
-        <tr class="@classeLinha">
-            <th scope="row">@ocor.Id</th>
-            <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
-            <td>@ocor.Nome</td>
-            <td>@ocor.Setor</td>
-            @if (ocor.Descricao.Length >= 20)
-            {
-                <td>@ocor.Descricao.Substring(0, 20)</td>
-            }
-            else
-            {
-                <td>@ocor.Descricao</td>
-            }
+            <tr class="@classeLinha">
+                <th scope="row">@ocor.Id</th>
+                <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
+                <td>@ocor.Nome</td>
+                <td>@ocor.Setor</td>
+                @if (ocor.Descricao.Length >= 20)
+                {
+                    <td>@ocor.Descricao.Substring(0, 20)</td>
+                }
+                else
+                {
+                    <td>@ocor.Descricao</td>
+                }
 
-
-
-            @if (ocor.Anexo != null)
-            {
+                @if (ocor.Anexo != null)
+                {
+                    <td>
+                        <a href="/Relatorio/Download?filename=@string.Concat(ocor.Id.ToString(),"_",ocor.Anexo)" alt="download" type="button"
+                           class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
+                        </a>
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
                 <td>
-                    <a href="/Relatorio/Download?filename=@string.Concat(ocor.Id.ToString(),"_",ocor.Anexo)" alt="download" type="button" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
+                    <a href="/Relatorio/Detalhar?id=@ocor.Id&page=@Model.PageNumber&datafim=@datafim&datainicio=@datainicio&setor=@setor"
+                       alt="detalhar" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                     </a>
                 </td>
-            }
-            else
-            {
-                <td></td>
-            }
-            <td>
-                <a href="/Relatorio/Detalhar?id=@ocor.Id&page=@Model.PageNumber&datafim=@datafim&datainicio=@datainicio&setor=@setor" alt="detalhar" class="btn btn-default btn-sm">
-                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                </a>
-            </td>
 
-            <td>
-                <a href="/Relatorio/Excluir/@ocor.Id" alt="excluir" onclick="return confirmaApagar();" class="btn btn-default btn-sm">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                </a>
-            </td>
-        </tr>
+                <td>
+                    <a href="/Relatorio/Excluir/@ocor.Id" alt="excluir" onclick="return confirmaApagar();" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
 
-<a href="/Relatorio/Filtrar?pdf=true&setor=@setor&datainicio=@datainicio&datafim=@datafim">Gerar relatório em PDF</a>
-<!--<input type="button" onclick="cont();" value="Imprimir Div separadamente">-->
+<a href="/Relatorio/Filtrar?pdf=true&setor=@setor&datainicio=@datainicio&datafim=@datafim" type="button" class="btn-default btn"
+   id="exportarPDF"><span class="glyphicon glyphicon-file"></span>Gerar relatório em PDF</a>
 
 
 @if (datafim != null || datainicio != null || setor != 0)
@@ -200,12 +224,13 @@ else
 
 }
 
-
 @section Scripts{
 
     <script language="javascript">
-        function confirmaApagar() {
 
+        var botaoExportar = document.getElementById("exportarPDF");
+
+        function confirmaApagar() {
             return confirm("Confirma Exclusão?");
         }
 

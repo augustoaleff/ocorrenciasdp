@@ -22,13 +22,15 @@ namespace OcorrenciasDP.Models
          
         public string Descricao { get; set; } //Ocorrência
 
-        public Int64 Id { get; set; } //Ocorrência
+        public long Id { get; set; } //Ocorrência
 
         public string Anexo { get; set; } //Ocorrência
 
         public string Nome { get; set; } //Setor
 
         public string Setor { get; set; } //Setor
+
+        public string DadosPesquisa { get; set; }
 
         public byte Atrasado { get; set; }
         public byte Cedo { get; set; }

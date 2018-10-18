@@ -52,7 +52,7 @@ namespace OcorrenciasDP.Controllers
                 _db.Int_DP_Logs.Add(log);
 
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 log.ExcluirOcorrencia_Erro(user_id, id, exp);
                 _db.Int_DP_Logs.Add(log);
@@ -65,11 +65,11 @@ namespace OcorrenciasDP.Controllers
                 _db.SaveChanges();
             }
 
-           
+
             return RedirectToAction("Index");
         }
 
-        public ActionResult Detalhar(Int64 id,int? page,DateTime? datainicio, DateTime? datafim, string setor)
+        public ActionResult Detalhar(Int64 id, int? page, DateTime? datainicio, DateTime? datafim, string setor)
         {
             ViewBag.PaginaRelat = page ?? 1;
             ViewBag.DataInicioRelat = datainicio;
@@ -119,10 +119,13 @@ namespace OcorrenciasDP.Controllers
         [HttpGet]
         public IActionResult Filtrar(DateTime? datainicio, DateTime? datafim, string setor, int? page, bool? pdf)
         {
+            Log log = new Log();
+            int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
             FiltrarPesquisaRelatViewModel pesquisa = new FiltrarPesquisaRelatViewModel() { DataInicio = datainicio, DataFim = datafim, Setor = setor };
 
             ViewBag.Setores = setores;
             var pageNumber = page ?? 1;
+            string filtros = "";
 
             var query = _db.Int_DP_Ocorrencias
                        .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
@@ -133,6 +136,7 @@ namespace OcorrenciasDP.Controllers
 
             if (pesquisa.DataInicio != null)
             {
+
                 if (pesquisa.DataFim != null)
                 {
                     query = query.Where(a => a.a.o.Data >= pesquisa.DataInicio && a.a.o.Data <= pesquisa.DataFim);
@@ -141,12 +145,18 @@ namespace OcorrenciasDP.Controllers
                 {
                     query = query.Where(a => a.a.o.Data >= pesquisa.DataInicio);
                 }
+
             }
 
             if (pesquisa.Setor != null && pesquisa.Setor != "0")
             {
                 query = query.Where(a => a.a.u.Setor.Id == int.Parse(pesquisa.Setor));
             }
+
+            DateTime datainicio_notnull = pesquisa.DataInicio ?? DateTime.MinValue;
+
+            DateTime datafim_notnull = pesquisa.DataFim ?? DateTime.MaxValue;
+
 
             var relat = query.Select(s => new
             {
@@ -172,6 +182,14 @@ namespace OcorrenciasDP.Controllers
                 relatorioVM.Add(ocorVM);
             }
 
+
+            if (relatorioVM.Count > 0)
+            {
+
+                filtros = GerarFiltros(datainicio_notnull, datafim_notnull, setor);
+                relatorioVM[0].DadosPesquisa = filtros;
+            }
+
             var vPesquisa = _db.Int_DP_Setores.Find(int.Parse(pesquisa.Setor));
 
             if (vPesquisa != null)
@@ -183,102 +201,133 @@ namespace OcorrenciasDP.Controllers
                 ViewBag.NomeSetor = "*Todos*";
             }
 
-            string filtros = "";
-
-            if (datainicio != null)
-            {
-                if (filtros == "")
-                {
-                    filtros += "Data Início: " + pesquisa.DataInicio.ToString();
-                }
-                else
-                {
-                    filtros += ", Data Início: " + pesquisa.DataInicio.ToString();
-                }
-            }
-
-            if (datafim != null)
-            {
-                if (filtros == "")
-                {
-                    filtros += "Data Fim: " + pesquisa.DataFim.ToString();
-                }
-                else
-                {
-                    filtros += ", Data Fim: " + pesquisa.DataFim.ToString();
-                }
-            }
-
-            if (setor != null)
-            {
-                if (filtros == "")
-                {
-                    filtros += "Setor: " + pesquisa.Setor;
-                }
-                else
-                {
-                    filtros += ", Setor: " + pesquisa.Setor;
-                }
-            }
-
-            TempData["FiltrosPDF"] = filtros;
-
             if (pdf != true)
             {
+
                 ViewBag.Pesquisa = pesquisa;
-                var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
-                return View("Index", resultadoPaginado);
+
+                try
+                {
+                    var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
+
+                    log.ConsultarRelatorio(id_notnull, filtros);
+                    _db.Int_DP_Logs.Add(log);
+                    _db.SaveChanges();
+
+                    return View("Index", resultadoPaginado);
+                }
+                catch (Exception exp)
+                {
+
+                    log.ConsultarRelatorio_Erro(id_notnull, filtros, exp);
+                    _db.Int_DP_Logs.Add(log);
+                    _db.SaveChanges();
+
+                    TempData["ErroRelatorio"] = "Ocorreu um erro ao tentar consultar o relatório...";
+
+                    return View("Index");
+
+                }
             }
             else
             {
                 //ViewBag.PDF = relatorioVM;
                 // return RedirectToAction("GerarPDF",relatorioVM);
 
-                var relatorioPDF = new ViewAsPdf
+                try
                 {
-                    WkhtmlPath = "~/wwwroot/Rotativa",
-                    ViewName = "VisualizarComoPDF",
-                    IsGrayScale = true,
-                    Model = relatorioVM,
-                    PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
-                    CustomSwitches = "--page-offset 0 --footer-left " + DateTime.Now.Date.ToShortDateString() + " --footer-right [page]/[toPage] --footer-font-size 8",
-                    PageSize = Rotativa.AspNetCore.Options.Size.A4
 
-                };
+                    string data = string.Concat(DateTime.Now.ToShortDateString(), "_", DateTime.Now.ToShortTimeString());
 
-                
+                    var relatorioPDF = new ViewAsPdf
+                    {
+                        WkhtmlPath = "~/wwwroot/Rotativa",
+                        ViewName = "VisualizarComoPDF",
+                        IsGrayScale = true,
+                        Model = relatorioVM,
+                        PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+                        CustomSwitches = "--page-offset 0 --footer-left " + data + " --footer-right [page]/[toPage] --footer-font-size 8",
+                        PageSize = Rotativa.AspNetCore.Options.Size.A4
+                    };
 
-                return relatorioPDF;
+                    log.ExportarRelatorio(id_notnull, filtros);
+                    _db.Int_DP_Logs.Add(log);
+                    _db.SaveChangesAsync();
 
+                    return relatorioPDF;
+
+                }
+                catch (Exception exp)
+                {
+                    log.ExportarRelatorio_Erro(id_notnull, exp);
+                    _db.Int_DP_Logs.Add(log);
+                    _db.SaveChanges();
+
+                    TempData["ErroRelatorioPDF"] = "Ocorreu um erro ao tentar exportar o relátório, por favor, tente novamente...";
+
+                    return RedirectToAction("Index");
+
+                }
             }
         }
 
-        public ViewAsPdf GerarPDF(List<OcorrenciaViewModel> relatorioVM2)
+        public string GerarFiltros(DateTime datainicio, DateTime datafim, string setor)
         {
-            var relatorioPDF = new ViewAsPdf
+            string filtros = "";
+
+            if (datainicio != null && datainicio != DateTime.MinValue)
             {
-                WkhtmlPath = "~/wwwroot/Rotativa",
-                ViewName = "VisualizarComoPDF",
-                IsGrayScale = true,
-                Model = ViewBag.PDF
-            };
-                return relatorioPDF;
-        }
+                if (filtros == "")
+                {
+                    filtros += "Data Inicial: " + datainicio.ToShortDateString();
+                }
+                else
+                {
+                    filtros += ", Data Inicial: " + datainicio.ToShortDateString();
+                }
+            }
 
-        public IActionResult VisualizarComoPDF()
-        {
-            var relatorioPDF = new ViewAsPdf
-            {   
-                ViewName = "Relatorio/VisualizarComoPDF",
-                IsGrayScale = false,
-                FileName = "RelatorioClientesPDF",
-                Model = ViewBag.PDFModel
-            };
-            return relatorioPDF;
+            if (datafim != null && datafim != DateTime.MaxValue)
+            {
+                if (filtros == "")
+                {
+                    filtros += "Data Final: " + datafim.ToShortDateString();
+                }
+                else
+                {
+                    filtros += ", Data Final: " + datafim.ToShortDateString();
+                }
+            }
 
-            /*
-            var model = ViewBag.PDFModel;
-            return new ViewAsPdf("VisualizarComoPDF", model) { FileName = "TestViewAsPdf.pdf" };*/
+            if (setor != null && setor != "0")
+            {
+
+                var nome_setor = _db.Int_DP_Setores.Find(int.Parse(setor));
+
+                if (filtros == "")
+                {
+                    filtros += "Setor: " + nome_setor.Nome;
+                }
+                else
+                {
+                    filtros += ", Setor: " + nome_setor.Nome;
+                }
+
+            }
+            else
+            {
+                if (filtros == "")
+                {
+                    filtros += "Setor: Todos";
+                }
+                else
+                {
+                    filtros += ", Setor: Todos";
+                }
+            }
+
+
+            return filtros;
         }
 
         [HttpGet]
@@ -288,6 +337,9 @@ namespace OcorrenciasDP.Controllers
             ViewBag.Setores = setores;
             ViewBag.Pesquisa = new FiltrarPesquisaRelatViewModel();
             var pageNumber = page ?? 1;
+            Log log = new Log();
+            int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
+            string filtros = GerarFiltros(DateTime.MinValue, DateTime.MaxValue, "0");
 
             /*  SELECT O.DATA,O.DESCRICAO,O.ID,U.NOME,R.SETOR
              *  FROM INT_DP_OCORRENCIAS AS O 
@@ -295,41 +347,61 @@ namespace OcorrenciasDP.Controllers
              *  INNER JOIN INT_DEP_SETORES AS R ON U.SETORID = R.ID
              *  ORDER BY O.DATA */
 
-            if (relatorioVM.Count == 0)
+            try
             {
-                var relat = _db.Int_DP_Ocorrencias
-                   .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
-                   .Join(_db.Int_DP_Setores, r => r.u.Setor.Id, s => s.Id, (r, s) => new { r, s })
-                   .OrderByDescending(a => a.r.o.Data)
-                   .ThenByDescending(a => a.r.o.Id)
-                   .Select(s => new
-                   {
-                       s.r.o.Data,
-                       s.r.o.Descricao,
-                       s.r.o.Id,
-                       s.r.o.Anexo,
-                       s.r.u.Nome,
-                       Setor = s.r.u.Setor.Nome
-                   }).ToList();
 
-                foreach (var linha in relat)
+                if (relatorioVM.Count == 0)
                 {
-                    OcorrenciaViewModel ocorVM = new OcorrenciaViewModel
+                    var relat = _db.Int_DP_Ocorrencias
+                       .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
+                       .Join(_db.Int_DP_Setores, r => r.u.Setor.Id, s => s.Id, (r, s) => new { r, s })
+                       .OrderByDescending(a => a.r.o.Data)
+                       .ThenByDescending(a => a.r.o.Id)
+                       .Select(s => new
+                       {
+                           s.r.o.Data,
+                           s.r.o.Descricao,
+                           s.r.o.Id,
+                           s.r.o.Anexo,
+                           s.r.u.Nome,
+                           Setor = s.r.u.Setor.Nome
+                       }).ToList();
+
+                    foreach (var linha in relat)
                     {
-                        Nome = linha.Nome,
-                        Setor = linha.Setor,
-                        Descricao = linha.Descricao,
-                        Data = linha.Data,
-                        Id = linha.Id,
-                        Anexo = linha.Anexo
-                    };
-                    relatorioVM.Add(ocorVM);
+                        OcorrenciaViewModel ocorVM = new OcorrenciaViewModel
+                        {
+                            Nome = linha.Nome,
+                            Setor = linha.Setor,
+                            Descricao = linha.Descricao,
+                            Data = linha.Data,
+                            Id = linha.Id,
+                            Anexo = linha.Anexo
+                        };
+                        relatorioVM.Add(ocorVM);
+                    }
                 }
+
+                var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
+
+
+                log.ConsultarRelatorio(id_notnull, filtros);
+                _db.Int_DP_Logs.Add(log);
+                _db.SaveChanges();
+
+                return View(resultadoPaginado);
+
             }
+            catch (Exception exp)
+            {
+                log.ConsultarRelatorio_Erro(id_notnull, filtros, exp);
+                _db.Int_DP_Logs.Add(log);
+                _db.SaveChanges();
 
-            var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
+                TempData["ErroRelatorio"] = "Ocorreu um erro ao tentar consultar o relatório...";
 
-            return View(resultadoPaginado);
+                return View();
+            }
         }
 
         [HttpGet]
@@ -343,7 +415,7 @@ namespace OcorrenciasDP.Controllers
 
             var path = Path.Combine(
                            Directory.GetCurrentDirectory(),
-                           "wwwroot","uploads", filename);
+                           "wwwroot", "uploads", filename);
 
             if (System.IO.File.Exists(path)) //Se o arquivo existir
             {

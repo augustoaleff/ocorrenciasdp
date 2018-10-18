@@ -52,7 +52,6 @@ namespace OcorrenciasDP.Controllers
                     Descricao = ocor.Descricao,
                     Data = ocor.Data,
                     Anexo = ocor.Anexo
-
                 };
 
                 ocorVM.Add(ocorrenciasVM);

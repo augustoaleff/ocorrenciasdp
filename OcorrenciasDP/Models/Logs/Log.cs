@@ -184,20 +184,54 @@ namespace OcorrenciasDP.Models
             this.Obs = "ERRO: " + exp.Message;
         }
 
-        public void Outro_Sucesso(int usuario, string log)
+    
+
+        public void ExportarRelatorio(int usuario, string filtros)
+        {
+            this.Data = DateTime.Now;
+            this.Usuario = usuario;
+            this.Tipo = 502; //Exportação de Relatorio em.pdf com sucesso
+            this.Obs = "Filtros: " + filtros;
+        }
+
+        public void ExportarRelatorio_Erro(int usuario,Exception exp)
+        {
+            this.Data = DateTime.Now;
+            this.Usuario = usuario;
+            this.Tipo = 501; //Exportação de Relatorio em .pdf com erro
+            this.Obs = "ERRO: " + exp.Message;
+        }
+
+        public void ConsultarRelatorio(int usuario, string filtros)
+        {
+            this.Data = DateTime.Now;
+            this.Usuario = usuario;
+            this.Tipo = 504; // Consultar Relatório com sucesso
+            this.Obs = "Filtros: " + filtros;
+        }
+
+        public void ConsultarRelatorio_Erro(int usuario, string filtros, Exception exp)
+        {
+            this.Data = DateTime.Now;
+            this.Usuario = usuario;
+            this.Tipo = 503; //Consultar Relatório com Erro
+            this.Obs = "ERRO: " + exp.Message + ", Filtros: " + filtros;
+        }
+
+        public void Outro_Sucesso(int usuario, string descricao)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.Tipo = 900; //Outro (Sucesso)
-            this.Obs = log;
+            this.Obs = descricao;
         }
 
-        public void Outro_Erro(int usuario, string log, Exception exp)
+        public void Outro_Erro(int usuario, string descricao, Exception exp)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.Tipo = 901; // Outro (Erro)
-            this.Obs = "ERRO: " + exp.Message + ", " + log;
+            this.Obs = "ERRO: " + exp.Message + ", " + descricao;
         }
     }
 }

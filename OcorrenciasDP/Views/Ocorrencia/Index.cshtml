@@ -35,7 +35,7 @@
 @if (TempData["MsgOcorrenciaNotOK"] != null)
 {
     <div class="alert alert-warning" role="alert">
-        @TempData["MsgOcorrenciaNotOK"],<button type="button" class="btn btn-warning" onclick="return mudarVariavel();">Clique aqui</button> se  confirma o envio (<span class="glyphicon glyphicon-info-sign"></span>Você deverá inserir o anexo novamente).
+        <b>@TempData["MsgOcorrenciaNotOK"],<button type="button" class="btn btn-warning" onclick="return mudarVariavel();">Clique aqui</button> se  confirma o envio (<span class="glyphicon glyphicon-info-sign"></span>Você deverá inserir o anexo novamente).</b>
     </div>
 }
 @if (TempData["MsgOcorrenciaNotOK2"] != null)
@@ -67,7 +67,7 @@
 
     <div class="form-group" style="width:50%">
         <label for="data">Data</label>
-        <input type="date" name="data" value="@data1" class="form-control" id="data" >
+        <input type="date" name="data" value="@data1" class="form-control" id="data">
         <strong style="color:#FF0000">@Html.ValidationMessage("data")</strong>
     </div>
 
@@ -130,7 +130,7 @@
             else
             {
                 <div class="form-check input-group">
-                    <input class="form-check-input" type="radio" name="cedo" id="cedo_sim" value="1"  required onclick="return mostrarTextArea();">
+                    <input class="form-check-input" type="radio" name="cedo" id="cedo_sim" value="1" required onclick="return mostrarTextArea();">
                     <label class="form-check-label" for="cedo_sim">Sim</label>
                 </div>
             }
@@ -298,7 +298,7 @@
             document.getElementById("botaoenviar").click();  //Enviar a ocorrencia
         }
 
-          //Usar Calendário DataPicker com JavaScript para adicionar eventos
+        //Usar Calendário DataPicker com JavaScript para adicionar eventos
         function incluirCalendario() {
             var calend = document.getElementById("calendario");
         }

@@ -13,9 +13,9 @@
     string nome;
     int setor;
 
-
     if (ViewBag.PesquisaNome != null)
     {
+
         nome = ViewBag.PesquisaNome;
 
     }
@@ -32,8 +32,6 @@
     {
         setor = 0;
     }
-
-
 
 }
 @if (TempData["CadastroUserOK"] != null)
@@ -158,9 +156,7 @@
 }
 else
 {
-
     @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page }))
-
 }
 
 @section Scripts{

@@ -147,7 +147,7 @@ namespace OcorrenciasDP.Controllers
                 }
                 else
                 { 
-                    TempData["LembreteNotOK"] = "Todos os usuários já enviaram email no periodo solicitado!";
+                    TempData["LembreteNotOK"] = "Todos os usuários já enviaram as ocorrências no período solicitado!";
                     return RedirectToAction("Index");
                 }
             }

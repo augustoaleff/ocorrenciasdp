@@ -1,6 +1,20 @@
 ﻿@model List<OcorrenciasDP.Models.OcorrenciaViewModel>
+@using Microsoft.AspNetCore.Http;
 @{
-    Layout = null; 
+    Layout = null;
+}
+@{
+    string filtros = "";
+
+    if (Model.Count > 0)
+    {
+        filtros = Model[0].DadosPesquisa;
+    }
+    else
+    {
+        filtros = "A Pesquisa não Retornou Valores";
+    }
+
 }
 <html>
 <head>
@@ -11,7 +25,7 @@
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment exclude="Development">
-      
+
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
@@ -21,20 +35,25 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
 </head>
 <body>
-        <h1 style="text-align:center">Relatório de ocorrências</h1>
+
+    <header>
+        <small>Emitido Por: @Context.Session.GetString("Login")</small>
+        <h1 style="text-align:center">Relatório de Ocorrências</h1>
+
+        <h4 style="text-align:center">@filtros</h4>
+
         <br />
         <h4 style="text-align:right"> Encontrado @Model.Count Resultados</h4>
 
         <br />
-        <h4>Filtros: @TempData["FiltrosPDF"]</h4>
-        <br />
+    </header>
+
     <article>
 
         <!--Tabela-->
@@ -51,29 +70,27 @@
             <tbody>
                 @foreach (var ocor in Model)
                 {
-                <tr>
-                    <th scope="row">@ocor.Id</th>
-                    <td>@ocor.Data.ToShortDateString()</td>
-                    <td>@ocor.Nome</td>
-                    <td>@ocor.Setor</td>
-                    @if (ocor.Descricao.Length >= 50)
-                    {
-                        <td>@ocor.Descricao.Substring(0, 50)</td>
-                    }
-                    else
-                    {
-                        <td>@ocor.Descricao</td>
-                    }
+                    <tr>
+                        <th scope="row">@ocor.Id</th>
+                        <td>@ocor.Data.ToShortDateString()</td>
+                        <td>@ocor.Nome</td>
+                        <td>@ocor.Setor</td>
+                        @if (ocor.Descricao.Length >= 50)
+                        {
+                            <td>@ocor.Descricao.Substring(0, 50)</td>
+                        }
+                        else
+                        {
+                            <td>@ocor.Descricao</td>
+                        }
 
-                </tr>
+                    </tr>
                 }
             </tbody>
 
         </table>
 
     </article>
-    <aside>
-        
-    </aside>
+    <aside></aside>
 </body>
 </html>  
