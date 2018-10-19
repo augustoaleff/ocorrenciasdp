@@ -4,16 +4,19 @@
   "description": "Envio de Ocorrências para o DP",
   "icons": [
     {
-      "src": "/images/eletroleste_192.ico",
-      "sizes": "192x192"
+      "src": "/images/192.png",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
-      "src": "/images/eletroleste_512.png",
+      "src": "/images/512.png",
       "sizes": "512x512",
       "type": "image/png"
 
     }
   ],
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
   "display": "standalone",
   "start_url": "/"
 }

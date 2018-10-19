@@ -60,33 +60,12 @@
 
 <link href="/css/PagedList.css" rel="stylesheet" type="text/css" />
 
-@if (TempData["OcorrenciaExcluir"] != null)
+@if (TempData["ErroRelat"] != null)
 {
     <div class="alert alert-danger" role="alert">
-        @TempData["OcorrenciaExcluir"]
+        @TempData["ErroRelat"]
     </div>
 }
-@if (TempData["ErroAnexo"] != null)
-{
-    <div class="alert alert-danger" role="alert">
-        @TempData["ErroAnexo"]
-    </div>
-}
-
-@if (TempData["ErroRelatorioPDF"] != null)
-{
-    <div class="alert alert-danger" role="alert">
-        @TempData["ErroRelatorioPDF"]
-    </div>
-}
-
-@if (TempData["ErroRelatorio"] != null)
-{
-    <div class="alert alert-danger" role="alert">
-        @TempData["ErroRelatorio"]
-    </div>
-}
-
 
 @if (inform != "Dados da Pesquisa: ")
 {

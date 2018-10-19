@@ -186,7 +186,7 @@ namespace OcorrenciasDP.Controllers
                                 log.LogIn(vLogin.Id);
                                 _db.Int_DP_Logs.Add(log);
 
-                                _db.SaveChanges();
+                                _db.SaveChangesAsync(); //Salvar por método assíncrono
 
                                 return RedirectToAction("Inicio", "Home"); //Vai para a página de Início
 
@@ -197,9 +197,9 @@ namespace OcorrenciasDP.Controllers
                                 log.LogIn_Erro(vLogin.Id, exp);
                                 _db.Int_DP_Logs.Add(log);
 
-                                _db.SaveChanges();
-                                HttpContext.Session.Clear();
-
+                                _db.SaveChangesAsync(); //Salvar por método assíncrono
+                                HttpContext.Session.Clear(); //Limpa a sessão para voltar ao início
+                                
                                 return RedirectToAction("Index", "Home");
                             }
                         }
@@ -256,7 +256,6 @@ namespace OcorrenciasDP.Controllers
                 }
                 memory.Position = 0;
                 return File(memory, GetContentType(path), Path.GetFileName(path));
-
             }
             else // Se o arquivo não existir
             {

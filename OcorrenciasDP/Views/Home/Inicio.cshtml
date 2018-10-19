@@ -65,8 +65,6 @@
     </a>
 </div>
 
-
-
 <h3> <span class="glyphicon glyphicon-envelope"></span>  Mensagens</h3>
 <table class="table table-hover" style="padding-top: 15px">
     <thead>
@@ -90,11 +88,10 @@
                 else
                 {
                     <td>@msg.Conteudo</td>
-
                 }
                 <td>
-                    <!--data-toggle="modal" data-target="#modalDetalharMensagem" onclick="return detalharMsg(this.getAttribute('value'));"-->
-                    <a href="/Home/DetalharMsg/@msg.Id" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar" data-valormodal="false" class="btn btn-default btn-sm">
+                    <a href="/Home/DetalharMsg/@msg.Id" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar" 
+                       data-valormodal="false" class="btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                     </a>
                 </td>
@@ -117,35 +114,35 @@
     <tbody>
         @foreach (var ocor in Model)
         {
-            <tr>
-                <th scope="row">@ocor.Id</th>
-                <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
-                @if (ocor.Descricao.Length >= 100)
-                {
-                    <td>@ocor.Descricao.Substring(0, 100)</td>
-                }
-                else
-                {
-                    <td>@ocor.Descricao</td>
-                }
+        <tr>
+            <th scope="row">@ocor.Id</th>
+            <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
+            @if (ocor.Descricao.Length >= 100)
+            {
+                <td>@ocor.Descricao.Substring(0, 100)</td>
+            }
+            else
+            {
+                <td>@ocor.Descricao</td>
+            }
 
-                @if (ocor.Anexo != null)
-                {
-                    <td>
-                        <a href="\Home\Download?filename=@string.Concat(ocor.Id.ToString(), "_", ocor.Anexo)" alt="download" type="button" class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
-                        </a>
-                    </td>
-                }
-                else
-                {
-                    <td></td>
-                }
-            </tr>
+            @if (ocor.Anexo != null)
+            {
+                <td>
+                    <a href="\Home\Download?filename=@string.Concat(ocor.Id.ToString(), "_", ocor.Anexo)" aria-label=""  alt="download" 
+                       type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
+                    </a>
+                </td>
+            }
+            else
+            {
+                <td></td>
+            }
+        </tr>
         }
     </tbody>
 </table>
-
 
 <!-- Modal Detalhar Mensagem -->
 @if (ViewBag.MsgDetalhe != null)
@@ -187,7 +184,6 @@
             <div class="modal-content">
                 @foreach (var msg in ViewBag.NovaMensagem)
                 {
-
                     <div class="modal-header">
                         <h3 class="modal-title" id="modalNovaMensagemTitulo">@msg.Titulo</h3>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -203,7 +199,6 @@
                         @{
                             string conteudo = msg.Conteudo.Replace("\r\n", " <br /> ");
                             //string conteudo = msg.Conteudo;
-
                         }
                         <br />
                         <br />
@@ -219,8 +214,6 @@
     </div>
 
 }
-
-
 
 @section Scripts{
     <script type="text/javascript" language="javascript">

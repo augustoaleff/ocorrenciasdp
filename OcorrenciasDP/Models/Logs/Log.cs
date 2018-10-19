@@ -100,7 +100,6 @@ namespace OcorrenciasDP.Models
 
         public void AlterarUsuario_Erro(int usuario, int usuarioAlterado, bool alteraPerfil, string perfil, Exception exp)
         {
-
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.UsuarioAlterado = usuarioAlterado;

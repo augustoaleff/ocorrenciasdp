@@ -46,22 +46,24 @@ namespace OcorrenciasDP.Controllers
                 _db.Int_DP_Ocorrencias.Remove(ocorrencia);
                 _db.SaveChanges();
 
-                TempData["OcorrenciaExcluir"] = "Ocorrencia #" + id + " excluida!";
+                TempData["ErroRelat"] = "Ocorrencia #" + id + " excluida!";
 
                 log.ExcluirOcorrencia(user_id, id);
                 _db.Int_DP_Logs.Add(log);
 
+    
             }
             catch (Exception exp)
             {
                 log.ExcluirOcorrencia_Erro(user_id, id, exp);
                 _db.Int_DP_Logs.Add(log);
 
-                TempData["OcorrenciaExcluir"] = "Ocorreu um erro ao tentar excluir o registro!";
+                TempData["ErroRelat"] = "Ocorreu um erro ao tentar excluir o registro!";
 
             }
             finally
             {
+
                 _db.SaveChanges();
             }
 
@@ -69,7 +71,7 @@ namespace OcorrenciasDP.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult Detalhar(Int64 id, int? page, DateTime? datainicio, DateTime? datafim, string setor)
+        public ActionResult Detalhar(long id, int? page, DateTime? datainicio, DateTime? datafim, string setor)
         {
             ViewBag.PaginaRelat = page ?? 1;
             ViewBag.DataInicioRelat = datainicio;
@@ -112,7 +114,6 @@ namespace OcorrenciasDP.Controllers
                 Atrasado = relat.Atrasado,
                 Outro = relat.Outro
             };
-
             return View(detalhes);
         }
 
@@ -136,7 +137,6 @@ namespace OcorrenciasDP.Controllers
 
             if (pesquisa.DataInicio != null)
             {
-
                 if (pesquisa.DataFim != null)
                 {
                     query = query.Where(a => a.a.o.Data >= pesquisa.DataInicio && a.a.o.Data <= pesquisa.DataFim);
@@ -156,7 +156,6 @@ namespace OcorrenciasDP.Controllers
             DateTime datainicio_notnull = pesquisa.DataInicio ?? DateTime.MinValue;
 
             DateTime datafim_notnull = pesquisa.DataFim ?? DateTime.MaxValue;
-
 
             var relat = query.Select(s => new
             {
@@ -187,7 +186,7 @@ namespace OcorrenciasDP.Controllers
             {
 
                 filtros = GerarFiltros(datainicio_notnull, datafim_notnull, setor);
-                relatorioVM[0].DadosPesquisa = filtros;
+                relatorioVM[0].DadosPesquisa = filtros; //Armazena os dados que veio do filtro no primeiro index do modelo (.pdf)
             }
 
             var vPesquisa = _db.Int_DP_Setores.Find(int.Parse(pesquisa.Setor));
@@ -218,15 +217,13 @@ namespace OcorrenciasDP.Controllers
                 }
                 catch (Exception exp)
                 {
-
                     log.ConsultarRelatorio_Erro(id_notnull, filtros, exp);
                     _db.Int_DP_Logs.Add(log);
                     _db.SaveChanges();
 
-                    TempData["ErroRelatorio"] = "Ocorreu um erro ao tentar consultar o relatório...";
+                    TempData["ErroRelat"] = "Ocorreu um erro ao tentar consultar o relatório...";
 
                     return View("Index");
-
                 }
             }
             else
@@ -252,7 +249,7 @@ namespace OcorrenciasDP.Controllers
 
                     log.ExportarRelatorio(id_notnull, filtros);
                     _db.Int_DP_Logs.Add(log);
-                    _db.SaveChangesAsync();
+                    _db.SaveChanges();
 
                     return relatorioPDF;
 
@@ -263,7 +260,7 @@ namespace OcorrenciasDP.Controllers
                     _db.Int_DP_Logs.Add(log);
                     _db.SaveChanges();
 
-                    TempData["ErroRelatorioPDF"] = "Ocorreu um erro ao tentar exportar o relátório, por favor, tente novamente...";
+                    TempData["ErroRelat"] = "Ocorreu um erro ao tentar exportar o relátório, por favor, tente novamente...";
 
                     return RedirectToAction("Index");
 
@@ -301,7 +298,6 @@ namespace OcorrenciasDP.Controllers
 
             if (setor != null && setor != "0")
             {
-
                 var nome_setor = _db.Int_DP_Setores.Find(int.Parse(setor));
 
                 if (filtros == "")
@@ -325,8 +321,7 @@ namespace OcorrenciasDP.Controllers
                     filtros += ", Setor: Todos";
                 }
             }
-
-
+            
             return filtros;
         }
 
@@ -349,7 +344,6 @@ namespace OcorrenciasDP.Controllers
 
             try
             {
-
                 if (relatorioVM.Count == 0)
                 {
                     var relat = _db.Int_DP_Ocorrencias
@@ -371,6 +365,7 @@ namespace OcorrenciasDP.Controllers
                     {
                         OcorrenciaViewModel ocorVM = new OcorrenciaViewModel
                         {
+
                             Nome = linha.Nome,
                             Setor = linha.Setor,
                             Descricao = linha.Descricao,
@@ -381,16 +376,14 @@ namespace OcorrenciasDP.Controllers
                         relatorioVM.Add(ocorVM);
                     }
                 }
-
+                
                 var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
-
 
                 log.ConsultarRelatorio(id_notnull, filtros);
                 _db.Int_DP_Logs.Add(log);
                 _db.SaveChanges();
 
                 return View(resultadoPaginado);
-
             }
             catch (Exception exp)
             {
@@ -398,9 +391,10 @@ namespace OcorrenciasDP.Controllers
                 _db.Int_DP_Logs.Add(log);
                 _db.SaveChanges();
 
-                TempData["ErroRelatorio"] = "Ocorreu um erro ao tentar consultar o relatório...";
+                TempData["ErroRelat"] = "Ocorreu um erro ao tentar consultar o relatório...";
 
                 return View();
+
             }
         }
 
@@ -409,7 +403,7 @@ namespace OcorrenciasDP.Controllers
         {
             if (filename == null)
             {
-                TempData["ErroAnexo"] = "O arquivo não foi encontrado!";
+                TempData["ErroRelat"] = "O arquivo não foi encontrado!";
                 return View("Index");
             }
 
@@ -430,7 +424,7 @@ namespace OcorrenciasDP.Controllers
             }
             else // Se o arquivo não existir
             {
-                TempData["ErroAnexo"] = "O Arquivo não foi encontrado!";
+                TempData["ErroRelat"] = "O Arquivo não foi encontrado!";
                 return RedirectToAction("Index");
             }
         }

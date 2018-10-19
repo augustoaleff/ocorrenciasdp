@@ -7,21 +7,9 @@
     string setor_login = Context.Session.GetString("Setor");
 }
 @{
-    string update;
+    string data1, update;
 
     update = "false";
-}
-
-
-@if (TempData["MsgOcorrenciaOK"] != null)
-{
-    <div class="alert alert-success" role="alert">
-        @TempData["MsgOcorrenciaOK"]
-    </div>
-}
-
-@{
-    string data1;
 
     if (ViewBag.Ocorrencia != null)
     {
@@ -32,19 +20,28 @@
         data1 = DateTime.Now.ToString("yyyy-MM-dd");
     }
 }
+
+
+@if (TempData["MsgOcorrenciaOK"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["MsgOcorrenciaOK"]
+    </div>
+}
+
 @if (TempData["MsgOcorrenciaNotOK"] != null)
 {
     <div class="alert alert-warning" role="alert">
         <b>@TempData["MsgOcorrenciaNotOK"],<button type="button" class="btn btn-warning" onclick="return mudarVariavel();">Clique aqui</button> se  confirma o envio (<span class="glyphicon glyphicon-info-sign"></span>Você deverá inserir o anexo novamente).</b>
     </div>
 }
+
 @if (TempData["MsgOcorrenciaNotOK2"] != null)
 {
     <div class="alert alert-danger" role="alert">
         @TempData["MsgOcorrenciaNotOK2"]
     </div>
 }
-
 
 <h2>Inclusão de Ocorrência</h2>
 <br />
@@ -289,6 +286,28 @@
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
 
 </form>
+
+<!--####### Seleciona as últimas 30 ocorrências enviadas-->
+
+@{
+    List<string> Calendario = new List<string>();
+}
+
+<h3>Faltam enviar as seguintes ocorrências: </h3>
+
+<!-- 01/01/2018 - Não Enviado -->
+
+<div style="justify-content:flex-end;display:flex;flex-direction:row">
+
+    @foreach (var dia in Calendario)
+    {
+    
+        <b>dia.Data</b><span style="display:block;background-color:forestgreen"></span>
+        <b>dia.Data</b><span style="display:block;background-color:red"></span>
+    }
+
+</div>
+<!--################-->
 
 @section Scripts{
     <script language="javascript">
