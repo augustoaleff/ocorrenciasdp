@@ -76,7 +76,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var msg in ViewBag.Msgs)
+        @foreach (Mensagem msg in ViewBag.Msgs)
         {
             <tr>
                 <th scope="row">@msg.Data.Date.ToString("dd/MM/yyyy")</th>
@@ -92,7 +92,7 @@
                 <td>
                     <a href="/Home/DetalharMsg/@msg.Id" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar" 
                        data-valormodal="false" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                       <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                     </a>
                 </td>
             </tr>
@@ -162,6 +162,7 @@
                     @ViewBag.MsgDetalhe.Data
                     <br />
                     <br />
+
                     <strong>Mensagem: </strong>
                     <br />
                     <br />
@@ -212,7 +213,6 @@
             </div>
         </div>
     </div>
-
 }
 
 @section Scripts{

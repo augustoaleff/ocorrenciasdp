@@ -63,7 +63,6 @@ namespace OcorrenciasDP.Controllers
             }
             finally
             {
-
                 _db.SaveChanges();
             }
 
@@ -180,11 +179,9 @@ namespace OcorrenciasDP.Controllers
                 };
                 relatorioVM.Add(ocorVM);
             }
-
-
+            
             if (relatorioVM.Count > 0)
             {
-
                 filtros = GerarFiltros(datainicio_notnull, datafim_notnull, setor);
                 relatorioVM[0].DadosPesquisa = filtros; //Armazena os dados que veio do filtro no primeiro index do modelo (.pdf)
             }
@@ -233,7 +230,6 @@ namespace OcorrenciasDP.Controllers
 
                 try
                 {
-
                     string data = string.Concat(DateTime.Now.ToShortDateString(), "_", DateTime.Now.ToShortTimeString());
 
                     var relatorioPDF = new ViewAsPdf
@@ -245,6 +241,7 @@ namespace OcorrenciasDP.Controllers
                         PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
                         CustomSwitches = "--page-offset 0 --footer-left " + data + " --footer-right [page]/[toPage] --footer-font-size 8",
                         PageSize = Rotativa.AspNetCore.Options.Size.A4
+
                     };
 
                     log.ExportarRelatorio(id_notnull, filtros);

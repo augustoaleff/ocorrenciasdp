@@ -6,6 +6,7 @@
     string nome_login = Context.Session.GetString("Login");
     string setor_login = Context.Session.GetString("Setor");
 }
+
 @{
     string data1, update;
 
@@ -20,7 +21,6 @@
         data1 = DateTime.Now.ToString("yyyy-MM-dd");
     }
 }
-
 
 @if (TempData["MsgOcorrenciaOK"] != null)
 {
@@ -287,26 +287,33 @@
 
 </form>
 
-<!--####### Seleciona as últimas 30 ocorrências enviadas-->
+<!--####### Seleciona as últimas 30 ocorrências enviadas para o calendário-->
 
-@{
-    List<string> Calendario = new List<string>();
-}
-
-<h3>Faltam enviar as seguintes ocorrências: </h3>
-
-<!-- 01/01/2018 - Não Enviado -->
-
-<div style="justify-content:flex-end;display:flex;flex-direction:row">
-
-    @foreach (var dia in Calendario)
+@if (ViewBag.Calendario != null)
+{
+    @if (ViewBag.Calendario.Count > 0)
     {
-    
-        <b>dia.Data</b><span style="display:block;background-color:forestgreen"></span>
-        <b>dia.Data</b><span style="display:block;background-color:red"></span>
-    }
 
-</div>
+        <h3>Faltam enviar as seguintes ocorrências: </h3>
+
+
+        <div style="display:block;width:75%">
+
+            @foreach (var dia in ViewBag.Calendario)
+            {
+
+                <button class="btn-group btn-danger" id="@dia.ToString("yyyy-MM-dd")"
+                        onclick="return document.getElementById('data').setAttribute('value',this.id)"
+                        value="@dia.ToString("yyyy-MM-dd")">
+                    @dia.ToShortDateString()
+                </button>
+
+            }
+
+
+        </div>
+    }
+}
 <!--################-->
 
 @section Scripts{
@@ -339,6 +346,9 @@
         var acidente2 = document.getElementById("acidente_nao");
         var outra2 = document.getElementById("outra_nao");
 
+
+        var data = document.getElementById("data")
+
         function mostrarTextArea() {
             if (atrasado.checked == true || cedo.checked == true || advertencia.checked == true || acidente.checked == true || outra.checked == true) {
                 descricao.hidden = false; //Mostra a Div
@@ -352,6 +362,7 @@
                 descricao_text.required = false; //Deixa como não Obrigatório
             }
         }
+
 
     </script>
 

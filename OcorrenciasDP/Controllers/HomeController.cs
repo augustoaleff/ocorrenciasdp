@@ -25,7 +25,6 @@ namespace OcorrenciasDP.Controllers
         public HomeController(DatabaseContext db)
         {
             _db = db;
-
             setores = _db.Int_DP_Setores.ToList();
 
         }
@@ -84,7 +83,6 @@ namespace OcorrenciasDP.Controllers
                 if (msg.Titulo != null)
                 {
                     mensagem.Titulo = msg.Titulo;
-
                 }
                 else
                 {
@@ -289,7 +287,6 @@ namespace OcorrenciasDP.Controllers
             };
         }
 
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
@@ -332,7 +329,6 @@ namespace OcorrenciasDP.Controllers
             }
             finally
             {
-
                 _db.SaveChanges();
                 HttpContext.Session.Clear();
             }

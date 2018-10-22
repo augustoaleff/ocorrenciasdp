@@ -25,13 +25,14 @@ namespace OcorrenciasDP.Controllers
         }
 
         public List<Mensagem> ConsultarMensagens() {
+
             var relat2 = _db.Int_DP_Mensagens
                        .OrderByDescending(b => b.Data)
                        .ToList();
 
         List<Mensagem> msgVM = new List<Mensagem>();
 
-            foreach (var msg in relat2)
+            foreach (Mensagem msg in relat2)
             {
                 Mensagem mensagem = new Mensagem
                 {
@@ -80,8 +81,10 @@ namespace OcorrenciasDP.Controllers
 
                 }catch (InvalidOperationException)
                 {
+
                     TempData["LembreteNotOK"] = "Todos os usuários já enviaram as ocorrências no periodo solicitado!";
                     return RedirectToAction("Index");
+
                 }
 
                 var vUsuarios = _db.Int_Dp_Usuarios
@@ -187,7 +190,6 @@ namespace OcorrenciasDP.Controllers
 
         }
 
-
         [HttpGet]
         public ActionResult Cadastrar()
         {
@@ -197,7 +199,6 @@ namespace OcorrenciasDP.Controllers
         [HttpPost]
         public ActionResult Cadastrar([FromForm]Mensagem mensagem)
         {
-
             int idNotNull = HttpContext.Session.GetInt32("ID") ?? 0;
 
             var vRemetente = _db.Int_Dp_Usuarios.Find(idNotNull);
@@ -231,10 +232,8 @@ namespace OcorrenciasDP.Controllers
                 }
                 finally
                 {
-                    _db.SaveChanges();
+                    _db.SaveChangesAsync();
                 }
-
-                
 
                 return RedirectToAction("Index");
 

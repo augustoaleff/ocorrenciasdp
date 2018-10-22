@@ -22,14 +22,15 @@ namespace OcorrenciasDP.Controllers
         {
             _db = db;
         }
-
-
+        
         [HttpGet]
         public IActionResult Index()
         {
             ViewBag.Ocorrencia = new Ocorrencia();
             ViewBag.Ocorrencia.Data = DateTime.Now;
             ViewBag.Anexo = "";
+
+            OcorrenciasFaltantes();
 
             return View(new Ocorrencia());
         }
@@ -58,7 +59,7 @@ namespace OcorrenciasDP.Controllers
                 ViewBag.Ocorrencia.Data = DateTime.Now;
 
                 Log log = new Log();
-                
+
                 try
                 {
                     _db.Int_DP_Ocorrencias.Add(ocorrencia);
@@ -69,8 +70,9 @@ namespace OcorrenciasDP.Controllers
                     _db.Int_DP_Logs.Add(log);
 
                 }
-                catch(Exception exp)
+                catch (Exception exp)
                 {
+                    //MsgOcorrenciaNotOK já está em uso!
                     TempData["MsgOcorrenciaNotOK2"] = "Ocorreu um erro ao enviar, por favor, tente novamente...";
 
                     log.IncluirOcorrencia_Erro(id_notnull, exp);
@@ -80,7 +82,7 @@ namespace OcorrenciasDP.Controllers
                 {
                     _db.SaveChanges();
                 }
-                
+
                 return View("Index", ocorrencia);
             }
 
@@ -88,10 +90,89 @@ namespace OcorrenciasDP.Controllers
 
         }
 
+        public void OcorrenciasFaltantes()
+        {
+
+            List<DateTime> dias = new List<DateTime>(); //30 últimos dias
+            List<DateTime> enviados = new List<DateTime>(); //Ultimas ocorrências enviadas
+            List<DateTime> calend = new List<DateTime>(); //Dias - Falta
+            List<DateTime> calend_final = new List<DateTime>(); //Calend - Finais de Semana
+
+            try
+            {
+                int id_user = HttpContext.Session.GetInt32("ID") ?? 0;
+
+                DateTime dataCadastro = _db.Int_Dp_Usuarios
+                                        .Where(a => a.Id == id_user)
+                                        .Select(s => s.DataCadastro)
+                                        .FirstOrDefault();
+
+                var feriados = _db.Int_Dp_Feriados
+                            .OrderByDescending(a => a.Data)
+                            .Select(s => s.Data)
+                            .ToList();
+
+                int usuario = HttpContext.Session.GetInt32("ID") ?? 0;
+
+
+                TimeSpan diff = DateTime.Now.Subtract(dataCadastro);
+                DateTime dataInicial;
+
+                if ( diff.Days >= 30)
+                {
+                    dataInicial = DateTime.Today.AddDays(-30);
+
+                    for (int i = 29; i >= 0; i--)
+                    {
+                        dias.Add(DateTime.Today.AddDays(i * -1));
+                    }
+                }
+                else
+                {
+                    dataInicial = dataCadastro.Date;
+
+                    for (int i = diff.Days; i >= 0; i--)
+                    {
+                        dias.Add(DateTime.Today.AddDays(i * -1));
+                    }
+                }
+           
+                enviados = _db.Int_DP_Ocorrencias
+                        .Where(a => a.Data >= dataInicial && a.Usuario.Id == usuario)
+                        .OrderByDescending(a => a.Data)
+                        .Select(a => a.Data)
+                        .ToList();
+
+                //Pega os útimos 30 dias
+                
+
+                calend = dias.Except(enviados).ToList(); //Retira os dias que foram enviados
+                calend = calend.Except(feriados).ToList(); //Retira os feriados
+                
+            //Retira o sábado e o domingo da lista
+               foreach (var dia in calend)
+                {
+                    if (!dia.DayOfWeek.Equals(DayOfWeek.Saturday) && !dia.DayOfWeek.Equals(DayOfWeek.Sunday))
+                    {
+                        calend_final.Add(dia);
+                    }
+                }
+
+                calend_final.Reverse(); //Reverte a ordem das datas para decrescente
+
+                ViewBag.Calendario = calend_final;
+
+            }
+            catch (Exception)
+            {
+                ViewBag.Calendario = null;
+            }
+        }
+
         [HttpPost]
         public ActionResult Index([FromForm]Ocorrencia ocorrencia, IFormFile anexo, string update)
         {
-            if(ocorrencia.Descricao == null)
+            if (ocorrencia.Descricao == null)
             {
                 ocorrencia.Descricao = "Não houve ocorrências";
             }
@@ -99,7 +180,7 @@ namespace OcorrenciasDP.Controllers
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
 
             Usuario usuario = _db.Int_Dp_Usuarios.Find(id_notnull);
-            
+
             ocorrencia.Usuario = usuario;
 
             if (ModelState.IsValid)
@@ -117,15 +198,18 @@ namespace OcorrenciasDP.Controllers
                     ViewBag.Ocorrencia.Data = DateTime.Now;
                     Log log = new Log();
 
-                    if(anexo != null) {
+                    if (anexo != null)
+                    {
 
                         ViewBag.Ocorrencia.Anexo = anexo.FileName;
                         ocorrencia.Anexo = anexo.FileName;
                         ViewBag.Anexo = anexo;
+
                     }
-                    
-                    try {
-                        
+
+                    try
+                    {
+
                         _db.Int_DP_Ocorrencias.Add(ocorrencia);
                         _db.SaveChanges();
 
@@ -140,6 +224,7 @@ namespace OcorrenciasDP.Controllers
                         _db.Int_DP_Logs.Add(log);
 
                         TempData["MsgOcorrenciaNotOK2"] = "Ocorreu um erro ao enviar, por favor, tente novamente...";
+                        OcorrenciasFaltantes();
                         return View("Index", ocorrencia);
                     }
                     finally
@@ -149,25 +234,28 @@ namespace OcorrenciasDP.Controllers
 
                     idOcorrencia = ocorrencia.Id.ToString() + "_";
 
-                    if(anexo != null)
+                    if (anexo != null)
                     {
                         UploadFile(anexo);
                     }
 
                     TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
+                    OcorrenciasFaltantes(); //Atualiza as datas
                     return View("Index", ocorrencia);
                 }
                 else
                 {
                     ViewBag.Ocorrencia = ocorrencia;
 
-                    if(anexo != null) {
-                    ViewBag.Ocorrencia.Anexo = anexo.FileName;
+                    if (anexo != null)
+                    {
+                        ViewBag.Ocorrencia.Anexo = anexo.FileName;
                     }
 
                     //### Gerar alerta para o usuário perguntado se ele quer que atualize a pagina, se sim, executa este código, senão, não executa e volta pra View;
                     TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrencia cadastrada para esta data!";
                     //Retorna o valor como Objeto Ocorrencia para a View
+                    OcorrenciasFaltantes();
                     return View("Index", ocorrencia);
                 }
             }
@@ -177,6 +265,8 @@ namespace OcorrenciasDP.Controllers
             {
                 ViewBag.Ocorrencia.Anexo = anexo.FileName;
             }
+
+            OcorrenciasFaltantes();
 
             return View();
         }
@@ -204,7 +294,6 @@ namespace OcorrenciasDP.Controllers
                 }
                 else
                 {
-
                     ViewBag.Ocorrencia = ocorrencia;
                     TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrencia cadastrada para esta data!";
                     return View("Index", ocorrencia);
@@ -223,13 +312,13 @@ namespace OcorrenciasDP.Controllers
 
                 var path = Path.Combine(
                             Directory.GetCurrentDirectory(), "wwwroot/uploads",
-                            string.Concat(idOcorrencia,file.FileName));
+                            string.Concat(idOcorrencia, file.FileName));
 
                 using (var stream = new FileStream(path, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
                 }
-              
+
             }
 
         }

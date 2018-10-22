@@ -384,6 +384,7 @@ namespace OcorrenciasDP.Controllers
                     confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
                     usuario.Email = usuario.Email.ToLower();
                     usuario.UltimoLogin = DateTime.Now;
+                    usuario.DataCadastro = DateTime.Now;
 
                     if (usuario.Senha == confirmasenha)
                     {
