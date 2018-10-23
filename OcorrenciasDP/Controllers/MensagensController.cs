@@ -18,19 +18,20 @@ namespace OcorrenciasDP.Controllers
     {
 
         private DatabaseContext _db;
-        
+
         public MensagensController(DatabaseContext db)
         {
             _db = db;
         }
 
-        public List<Mensagem> ConsultarMensagens() {
+        public List<Mensagem> ConsultarMensagens()
+        {
 
             var relat2 = _db.Int_DP_Mensagens
                        .OrderByDescending(b => b.Data)
                        .ToList();
 
-        List<Mensagem> msgVM = new List<Mensagem>();
+            List<Mensagem> msgVM = new List<Mensagem>();
 
             foreach (Mensagem msg in relat2)
             {
@@ -53,10 +54,10 @@ namespace OcorrenciasDP.Controllers
                     mensagem.Titulo = "Sem Título";
                 }
 
-                    msgVM.Add(mensagem);
+                msgVM.Add(mensagem);
 
             }
-                ViewBag.Msgs = msgVM;
+            ViewBag.Msgs = msgVM;
 
             return msgVM;
         }
@@ -64,13 +65,78 @@ namespace OcorrenciasDP.Controllers
         [HttpPost]
         public ActionResult Lembrete(int dias)
         {
-            if(dias > 0)
-            {
-        
-                List<int> vUsuariosSemEnvio = new List<int>();
-        
-                try {
+            int id_user = HttpContext.Session.GetInt32("ID") ?? 0;
 
+            if (dias > 0)
+            {
+              
+                List<DateTime> diasLista = new List<DateTime>();
+                List<DateTime> feriados = new List<DateTime>();
+                List<int> vUsuariosSemEnvio = new List<int>();
+
+                /*
+                try
+                {
+
+                    for (int i = dias - 1; i >= 0; i--)
+                    {
+                        DateTime data = DateTime.Now.AddDays(i * -1);
+
+                        if (!data.DayOfWeek.Equals(DayOfWeek.Saturday) && !data.DayOfWeek.Equals(DayOfWeek.Sunday))
+                        {
+                            diasLista.Add(data.Date);
+                        }
+                    }
+
+
+                    feriados = _db.Int_Dp_Feriados.Select(s => s.Data).ToList();
+                    diasLista.Except(feriados);
+
+
+                    foreach (var dia in diasLista)
+                    {
+                        var usuarios = _db.Int_DP_Ocorrencias
+                                         .Where(a => a.Data == dia.Date)
+                                         .GroupBy(g => g.Usuario.Id)
+                                         .Select(s => s.Key)
+                                         .ToList();
+
+                        vUsuariosSemEnvio.AddRange(usuarios);
+
+                    }
+
+                    vUsuariosSemEnvio = vUsuariosSemEnvio.Distinct().ToList();
+
+
+                }
+                catch (InvalidCastException exp)
+                {
+                    TempData["LembreteNotOK"] = "Todos os usuários já enviaram as ocorrências no periodo solicitado!";
+
+                    Log log = new Log();
+                    log.EnviarLembrete_Erro(id_user, exp);
+                    _db.SaveChanges();
+
+                    return RedirectToAction("Index");
+                }
+                catch (Exception exp)
+                {
+                    TempData["LembreteNotOK"] = "Ocorreu um erro ao tentar enviar o lembrete!";
+
+                    Log log = new Log();
+                    log.EnviarLembrete_Erro(id_user, exp);
+                    _db.SaveChanges();
+
+                    return RedirectToAction("Index");
+
+                }
+
+                */
+                
+                //List<int> vUsuariosSemEnvio = new List<int>();
+
+                try
+                {
                     DateTime datainicio = (DateTime.Today.Date.AddDays(dias * (-1)));
 
                     vUsuariosSemEnvio = _db.Int_DP_Ocorrencias
@@ -78,11 +144,26 @@ namespace OcorrenciasDP.Controllers
                                        .GroupBy(g => g.Usuario.Id)
                                        .Select(s => s.Key)
                                        .ToList();
-
-                }catch (InvalidOperationException)
+                }
+                catch (InvalidOperationException exp)
                 {
-
                     TempData["LembreteNotOK"] = "Todos os usuários já enviaram as ocorrências no periodo solicitado!";
+
+                    Log log = new Log();
+                    log.EnviarLembrete_Erro(id_user, exp);
+                    _db.SaveChanges();
+
+                    return RedirectToAction("Index");
+
+                }
+                catch (Exception exp)
+                {
+                    TempData["LembreteNotOK"] = "Ocorreu um erro ao tentar enviar o lembrete!";
+
+                    Log log = new Log();
+                    log.EnviarLembrete_Erro(id_user, exp);
+                    _db.SaveChanges();
+
                     return RedirectToAction("Index");
 
                 }
@@ -92,31 +173,34 @@ namespace OcorrenciasDP.Controllers
                                 .Select(s => s.Id)
                                 .ToList();
 
-                var lista2 = vUsuarios.Except(vUsuariosSemEnvio).ToList();
+                var usuariosNaoEnviados = vUsuarios.Except(vUsuariosSemEnvio).ToList();
 
-                if (lista2.Count > 0)
+                if (usuariosNaoEnviados.Count > 0)
                 {
-                    List<string> vEmails = new List<string>(); 
 
-                    foreach (var id in lista2)
+                    List<string> vEmails = new List<string>();
+
+                    foreach (var id in usuariosNaoEnviados)
                     {
                         var email = _db.Int_Dp_Usuarios
                                      .Where(a => a.Id == id)
                                      .Select(s => s.Email)
                                      .FirstOrDefault();
 
-                        if (!vEmails.Contains(email)) { //Para não entrar duplicado
-                        vEmails.Add(email);
+                        if (!vEmails.Contains(email))
+                        { //Para não entrar duplicado
+                        
+                            vEmails.Add(email);
                         
                         }
                     }
 
                     vEmails.RemoveAll(item => item == null); //Remove os valores nulos da lista
-                    
-                    if(vEmails.Count > 0) {
+
+                    if (vEmails.Count > 0)
+                    {
 
                         Log log = new Log();
-                        int id_user = HttpContext.Session.GetInt32("ID") ?? 0;
 
                         try
                         {
@@ -125,37 +209,40 @@ namespace OcorrenciasDP.Controllers
 
                             log.EnviarLembrete(id_user, vEmails.Count);
                             _db.Int_DP_Logs.Add(log);
+
                         }
-                        catch(Exception exp)
+                        catch (Exception exp)
                         {
                             log.EnviarLembrete_Erro(id_user, exp);
                             _db.Int_DP_Logs.Add(log);
 
                             TempData["LembreteNotOK"] = "Ocorreu um erro ao tentar enviar o lembrete, por favor, tente novamente!";
+
                         }
                         finally
                         {
                             _db.SaveChanges();
                         }
-                       
+
                     }
                     else
                     {
                         TempData["LembreteNotOK"] = "Não há e-mails cadastrados para envio";
                     }
 
-                    
+
                     return RedirectToAction("Index");
 
                 }
                 else
-                { 
+                {
                     TempData["LembreteNotOK"] = "Todos os usuários já enviaram as ocorrências no período solicitado!";
                     return RedirectToAction("Index");
                 }
             }
 
             return RedirectToAction("Index");
+
         }
 
         [HttpGet]
@@ -204,8 +291,8 @@ namespace OcorrenciasDP.Controllers
             var vRemetente = _db.Int_Dp_Usuarios.Find(idNotNull);
             mensagem.Remetente = vRemetente;
             mensagem.Data = DateTime.Now;
-            
-            if(ModelState.IsValid == true)
+
+            if (ModelState.IsValid == true)
             {
                 Log log = new Log();
 
@@ -218,12 +305,12 @@ namespace OcorrenciasDP.Controllers
                     log.EnviarMensagem(idNotNull, mensagem.Id);
                     _db.Int_DP_Logs.Add(log);
 
-                    TempData["MensagemEnviada"] = "Mesnagem enviada com sucesso!";
+                    TempData["MensagemEnviada"] = "Mensagem enviada com sucesso!";
 
                 }
-                catch(Exception exp)
+                catch (Exception exp)
                 {
-                    
+
                     log.EnviarMensagem_Erro(idNotNull, exp);
                     _db.Int_DP_Logs.Add(log);
 

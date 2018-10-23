@@ -144,7 +144,6 @@ namespace OcorrenciasDP.Controllers
                 {
                     query = query.Where(a => a.a.o.Data >= pesquisa.DataInicio);
                 }
-
             }
 
             if (pesquisa.Setor != null && pesquisa.Setor != "0")
@@ -204,7 +203,7 @@ namespace OcorrenciasDP.Controllers
 
                 try
                 {
-                    var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
+                    IPagedList<OcorrenciaViewModel> resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
 
                     log.ConsultarRelatorio(id_notnull, filtros);
                     _db.Int_DP_Logs.Add(log);

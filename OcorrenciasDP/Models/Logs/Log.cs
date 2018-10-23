@@ -25,11 +25,11 @@ namespace OcorrenciasDP.Models
 
         }
 
-        public void LogIn_Erro(int usuario, Exception exp)
+        public void LogIn_Erro(int usuario, Exception e)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
-            this.Obs = "ERRO: " + exp.Message;
+            this.Obs = "ERRO: " + e.Message;
             this.Tipo = 1; //Login efetuado com Erro 
         }
         public void LogOut(int usuario)
@@ -39,12 +39,12 @@ namespace OcorrenciasDP.Models
             this.Tipo = 4; //Logout efetuado com Sucesso
         }
 
-        public void LogOut_Erro(int usuario, Exception exp)
+        public void LogOut_Erro(int usuario, Exception e)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.Tipo = 3; //Logout efetuado com Sucesso
-            this.Obs = "ERRO: " + exp.Message;
+            this.Obs = "ERRO: " + e.Message;
         }
 
         public void CadastrarUsuario(int usuario, int usuarioCadastrado)
@@ -55,12 +55,12 @@ namespace OcorrenciasDP.Models
             this.Tipo = 302; //Criação de Usuario com Sucesso
         }
 
-        public void CadastrarUsuario_Erro(int usuario, string loginUsuario, Exception exp)
+        public void CadastrarUsuario_Erro(int usuario, string loginUsuario, Exception e)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.Tipo = 301; //Criação de Usuario com Erro
-            this.Obs = "ERRO: " + exp.Message + ", Login Usuário = " + loginUsuario;
+            this.Obs = "ERRO: " + e.Message + ", Login Usuário = " + loginUsuario;
         }
         
         public void ExcluirUsuario(int usuario, int usuarioExcluido)
@@ -71,13 +71,13 @@ namespace OcorrenciasDP.Models
             this.Tipo = 304; //Exclusão de Usuario com Sucesso
         }
 
-        public void ExcluirUsuario_Erro(int usuario, int usuarioExcluido, Exception exp)
+        public void ExcluirUsuario_Erro(int usuario, int usuarioExcluido, Exception e)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.UsuarioAlterado = usuarioExcluido;
             this.Tipo = 303; //Exclusão de Usuario com Erro
-            this.Obs = "ERRO: " + exp.Message;
+            this.Obs = "ERRO: " + e.Message;
         }
 
         public void AlterarUsuario(int usuario, int usuarioAlterado, bool alteraPerfil, string perfil)
@@ -98,12 +98,12 @@ namespace OcorrenciasDP.Models
 
         }
 
-        public void AlterarUsuario_Erro(int usuario, int usuarioAlterado, bool alteraPerfil, string perfil, Exception exp)
+        public void AlterarUsuario_Erro(int usuario, int usuarioAlterado, bool alteraPerfil, string perfil, Exception e)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.UsuarioAlterado = usuarioAlterado;
-            this.Obs = "ERRO: " + exp.Message;
+            this.Obs = "ERRO: " + e.Message;
 
             if (alteraPerfil)
             {
@@ -125,12 +125,12 @@ namespace OcorrenciasDP.Models
 
         }
         
-        public void IncluirOcorrencia_Erro(int usuario, Exception exp)
+        public void IncluirOcorrencia_Erro(int usuario, Exception e)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.Tipo = 201; //Envio de Ocorrencia com erro
-            this.Obs = "ERRO: " + exp.Message;
+            this.Obs = "ERRO: " + e.Message;
         }
 
         public void ExcluirOcorrencia(int usuario, long ocorrencia)
@@ -141,13 +141,13 @@ namespace OcorrenciasDP.Models
             this.Tipo = 204; //Exclusão de Ocorrencia com sucesso
         }
 
-        public void ExcluirOcorrencia_Erro(int usuario, long ocorrencia, Exception exp)
+        public void ExcluirOcorrencia_Erro(int usuario, long ocorrencia, Exception e)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.Ocorrencia = ocorrencia;
             this.Tipo = 203; //Exclusão de Ocorrencia com erro
-            this.Obs = "ERRO: " + exp.Message;
+            this.Obs = "ERRO: " + e.Message;
 
         }
 
@@ -159,12 +159,12 @@ namespace OcorrenciasDP.Models
             this.Obs = "Enviado " + total + " emails com sucesso";
         }
 
-        public void EnviarLembrete_Erro(int usuario, Exception exp)
+        public void EnviarLembrete_Erro(int usuario, Exception e)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.Tipo = 401; //Envio de Lembrete com Erro
-            this.Obs = "ERRO: " + exp.Message;
+            this.Obs = "ERRO: " + e.Message;
         }
 
         public void EnviarMensagem(int usuario, long mensagem)
@@ -175,12 +175,12 @@ namespace OcorrenciasDP.Models
             this.Mensagem = mensagem;
         }
 
-        public void EnviarMensagem_Erro(int usuario, Exception exp)
+        public void EnviarMensagem_Erro(int usuario, Exception e)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.Tipo = 403; // Envio de Mensagem com Erro
-            this.Obs = "ERRO: " + exp.Message;
+            this.Obs = "ERRO: " + e.Message;
         }
 
     
@@ -193,12 +193,12 @@ namespace OcorrenciasDP.Models
             this.Obs = "Filtros: " + filtros;
         }
 
-        public void ExportarRelatorio_Erro(int usuario,Exception exp)
+        public void ExportarRelatorio_Erro(int usuario,Exception e)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.Tipo = 501; //Exportação de Relatorio em .pdf com erro
-            this.Obs = "ERRO: " + exp.Message;
+            this.Obs = "ERRO: " + e.Message;
         }
 
         public void ConsultarRelatorio(int usuario, string filtros)
@@ -209,12 +209,12 @@ namespace OcorrenciasDP.Models
             this.Obs = "Filtros: " + filtros;
         }
 
-        public void ConsultarRelatorio_Erro(int usuario, string filtros, Exception exp)
+        public void ConsultarRelatorio_Erro(int usuario, string filtros, Exception e)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.Tipo = 503; //Consultar Relatório com Erro
-            this.Obs = "ERRO: " + exp.Message + ", Filtros: " + filtros;
+            this.Obs = "ERRO: " + e.Message + ", Filtros: " + filtros;
         }
 
         public void Outro_Sucesso(int usuario, string descricao)
@@ -225,12 +225,12 @@ namespace OcorrenciasDP.Models
             this.Obs = descricao;
         }
 
-        public void Outro_Erro(int usuario, string descricao, Exception exp)
+        public void Outro_Erro(int usuario, string descricao, Exception e)
         {
             this.Data = DateTime.Now;
             this.Usuario = usuario;
             this.Tipo = 901; // Outro (Erro)
-            this.Obs = "ERRO: " + exp.Message + ", " + descricao;
+            this.Obs = "ERRO: " + e.Message + ", " + descricao;
         }
     }
 }

@@ -70,12 +70,12 @@ namespace OcorrenciasDP.Controllers
                     _db.Int_DP_Logs.Add(log);
 
                 }
-                catch (Exception exp)
+                catch (Exception e)
                 {
                     //MsgOcorrenciaNotOK já está em uso!
                     TempData["MsgOcorrenciaNotOK2"] = "Ocorreu um erro ao enviar, por favor, tente novamente...";
 
-                    log.IncluirOcorrencia_Erro(id_notnull, exp);
+                    log.IncluirOcorrencia_Erro(id_notnull, e);
                     _db.Int_DP_Logs.Add(log);
                 }
                 finally
@@ -115,7 +115,7 @@ namespace OcorrenciasDP.Controllers
                 int usuario = HttpContext.Session.GetInt32("ID") ?? 0;
 
 
-                TimeSpan diff = DateTime.Now.Subtract(dataCadastro);
+                TimeSpan diff = DateTime.Now.Subtract(dataCadastro); //Diferença de dias entre data do cadastro e hoje
                 DateTime dataInicial;
 
                 if ( diff.Days >= 30)
@@ -145,7 +145,6 @@ namespace OcorrenciasDP.Controllers
 
                 //Pega os útimos 30 dias
                 
-
                 calend = dias.Except(enviados).ToList(); //Retira os dias que foram enviados
                 calend = calend.Except(feriados).ToList(); //Retira os feriados
                 
@@ -200,16 +199,13 @@ namespace OcorrenciasDP.Controllers
 
                     if (anexo != null)
                     {
-
                         ViewBag.Ocorrencia.Anexo = anexo.FileName;
                         ocorrencia.Anexo = anexo.FileName;
                         ViewBag.Anexo = anexo;
-
                     }
 
                     try
                     {
-
                         _db.Int_DP_Ocorrencias.Add(ocorrencia);
                         _db.SaveChanges();
 
@@ -219,7 +215,6 @@ namespace OcorrenciasDP.Controllers
                     }
                     catch (Exception exp)
                     {
-
                         log.IncluirOcorrencia_Erro(id_notnull, exp);
                         _db.Int_DP_Logs.Add(log);
 
