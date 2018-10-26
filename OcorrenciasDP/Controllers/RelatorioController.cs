@@ -14,7 +14,7 @@ using X.PagedList;
 
 namespace OcorrenciasDP.Controllers
 {
-
+    
     [Login]
     [Admin]
     public class RelatorioController : Controller
@@ -22,6 +22,7 @@ namespace OcorrenciasDP.Controllers
         private DatabaseContext _db;
         readonly List<Setor> setores = new List<Setor>();
         List<OcorrenciaViewModel> relatorioVM = new List<OcorrenciaViewModel>();
+        readonly int paginasPagedList = 20;
 
         public RelatorioController(DatabaseContext db)
         {
@@ -31,8 +32,7 @@ namespace OcorrenciasDP.Controllers
             ViewBag.Setor = setores;
             setores.Add(new Setor() { Id = 0, Nome = "*Todos*" });
         }
-
-
+        
         public ActionResult Excluir(long id)
         {
             ViewBag.Setor = setores;
@@ -50,14 +50,13 @@ namespace OcorrenciasDP.Controllers
 
                 log.ExcluirOcorrencia(user_id, id);
                 _db.Int_DP_Logs.Add(log);
-
-    
+                
             }
             catch (Exception exp)
             {
+
                 log.ExcluirOcorrencia_Erro(user_id, id, exp);
                 _db.Int_DP_Logs.Add(log);
-
                 TempData["ErroRelat"] = "Ocorreu um erro ao tentar excluir o registro!";
 
             }
@@ -65,8 +64,7 @@ namespace OcorrenciasDP.Controllers
             {
                 _db.SaveChanges();
             }
-
-
+            
             return RedirectToAction("Index");
         }
 
@@ -203,7 +201,7 @@ namespace OcorrenciasDP.Controllers
 
                 try
                 {
-                    IPagedList<OcorrenciaViewModel> resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
+                    IPagedList<OcorrenciaViewModel> resultadoPaginado = relatorioVM.ToPagedList(pageNumber, paginasPagedList);
 
                     log.ConsultarRelatorio(id_notnull, filtros);
                     _db.Int_DP_Logs.Add(log);
@@ -373,7 +371,7 @@ namespace OcorrenciasDP.Controllers
                     }
                 }
                 
-                var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, 10);
+                var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, paginasPagedList);
 
                 log.ConsultarRelatorio(id_notnull, filtros);
                 _db.Int_DP_Logs.Add(log);

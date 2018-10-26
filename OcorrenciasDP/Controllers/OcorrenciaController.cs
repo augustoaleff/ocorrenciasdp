@@ -12,6 +12,7 @@ using OcorrenciasDP.Models;
 
 namespace OcorrenciasDP.Controllers
 {
+    
     [Login]
     public class OcorrenciaController : Controller
     {

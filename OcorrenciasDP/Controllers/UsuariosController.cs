@@ -12,7 +12,7 @@ using X.PagedList;
 
 namespace OcorrenciasDP.Controllers
 {
-
+   
     [Login]
     [Admin]
     public class UsuariosController : Controller

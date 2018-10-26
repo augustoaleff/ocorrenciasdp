@@ -12,7 +12,7 @@ using OcorrenciasDP.Models;
 
 namespace OcorrenciasDP.Controllers
 {
-
+    
     public class HomeController : Controller
     {
 
@@ -158,7 +158,6 @@ namespace OcorrenciasDP.Controllers
                 //Se existir ele entra no if
                 if (vLogin != null)
                 {
-
                     // var vSetor = _db.Int_DP_Setores.Find(vLogin.Setor.Id);
                     // vLogin.Setor = vSetor;
 
@@ -186,7 +185,7 @@ namespace OcorrenciasDP.Controllers
 
                                 _db.SaveChangesAsync(); //Salvar por método assíncrono
 
-                                return RedirectToAction("Inicio", "Home"); //Vai para a página de Início
+                                return RedirectToAction("Inicio", "Home","OcorrenciasDP\\"); //Vai para a página de Início
 
                             }
                             catch (Exception exp)
@@ -234,17 +233,14 @@ namespace OcorrenciasDP.Controllers
                 return View("Index");
             }
 
-
             var path = Path.Combine(
                            Directory.GetCurrentDirectory(),
                            "wwwroot", "uploads", filename);
 
             Request.ToString();
 
-            if (System.IO.File.Exists(path)) //Se o arquivo existir
+            if(System.IO.File.Exists(path)) //Se o arquivo existir
             {
-
-
                 var memory = new MemoryStream();
                 using (var stream = new FileStream(path, FileMode.Open))
                 {

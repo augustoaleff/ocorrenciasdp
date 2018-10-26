@@ -90,7 +90,7 @@
                     <td>@msg.Conteudo</td>
                 }
                 <td>
-                    <a href="/Home/DetalharMsg/@msg.Id" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar" 
+                    <a href="/OcorrenciasDP/Home/DetalharMsg/@msg.Id" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar" 
                        data-valormodal="false" class="btn btn-default btn-sm">
                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                     </a>
@@ -129,7 +129,7 @@
             @if (ocor.Anexo != null)
             {
                 <td>
-                    <a href="\Home\Download?filename=@string.Concat(ocor.Id.ToString(), "_", ocor.Anexo)" aria-label=""  alt="download" 
+                    <a href="\OcorrenciasDP\Home\Download?filename=@string.Concat(ocor.Id.ToString(), "_", ocor.Anexo)" aria-label=""  alt="download" 
                        type="button" class="btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
                     </a>

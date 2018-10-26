@@ -49,7 +49,7 @@ namespace OcorrenciasDP
 
             services.AddSingleton<IFileProvider>(
                 new PhysicalFileProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
+                    Path.Combine(Directory.GetCurrentDirectory(),"wwwroot")));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1); //Adiciona o serviço do MVC
             services.AddDistributedMemoryCache();
@@ -80,9 +80,10 @@ namespace OcorrenciasDP
 
             app.UseMvc(routes =>
             { //Habilita o uso do MVC
+
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "/OcorrenciasDP/{controller=Home}/{action=Index}/{id?}");
             });
 
             RotativaConfiguration.Setup(env);

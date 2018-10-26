@@ -12,12 +12,14 @@ using X.PagedList;
 
 namespace OcorrenciasDP.Controllers
 {
+    
     [Login]
     [Admin]
     public class MensagensController : Controller
     {
 
         private DatabaseContext _db;
+        readonly int paginasPagedList = 10;
 
         public MensagensController(DatabaseContext db)
         {
@@ -191,7 +193,7 @@ namespace OcorrenciasDP.Controllers
                         { //Para não entrar duplicado
                         
                             vEmails.Add(email);
-                        
+
                         }
                     }
 
@@ -252,7 +254,7 @@ namespace OcorrenciasDP.Controllers
 
             List<Mensagem> msgVM = ConsultarMensagens();
 
-            var resultadoPaginado = msgVM.ToPagedList(pageNumber, 10);
+            var resultadoPaginado = msgVM.ToPagedList(pageNumber, paginasPagedList);
             return View("Index", resultadoPaginado);
         }
 
@@ -272,7 +274,7 @@ namespace OcorrenciasDP.Controllers
 
             List<Mensagem> msgVM = ConsultarMensagens();
 
-            var resultadoPaginado = msgVM.ToPagedList(pageNumber, 10);
+            var resultadoPaginado = msgVM.ToPagedList(pageNumber, paginasPagedList);
             return View("Index", resultadoPaginado);
 
         }
@@ -287,6 +289,7 @@ namespace OcorrenciasDP.Controllers
         public ActionResult Cadastrar([FromForm]Mensagem mensagem)
         {
             int idNotNull = HttpContext.Session.GetInt32("ID") ?? 0;
+            
 
             var vRemetente = _db.Int_Dp_Usuarios.Find(idNotNull);
             mensagem.Remetente = vRemetente;
@@ -319,7 +322,7 @@ namespace OcorrenciasDP.Controllers
                 }
                 finally
                 {
-                    _db.SaveChangesAsync();
+                   _db.SaveChangesAsync();
                 }
 
                 return RedirectToAction("Index");
