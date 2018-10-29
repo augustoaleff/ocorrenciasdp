@@ -144,6 +144,8 @@ namespace OcorrenciasDP.Controllers
             try
             {
 
+                
+
                 var usuario = _db.Int_Dp_Usuarios.Find(id);
                 string usuario_temp = usuario.Login;
                 usuario.Ativo = 0;

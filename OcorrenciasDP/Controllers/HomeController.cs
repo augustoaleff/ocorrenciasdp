@@ -254,7 +254,7 @@ namespace OcorrenciasDP.Controllers
             else // Se o arquivo não existir
             {
                 TempData["ErroAnexo"] = "O Arquivo não foi encontrado!";
-                return RedirectToAction("Index");
+                return RedirectToAction("Inicio");
             }
         }
 

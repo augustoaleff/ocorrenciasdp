@@ -60,12 +60,12 @@
 <h2>Usuários</h2>
 <br />
 <div style="display:flex; justify-content:flex-end">
-    <a asp-controller="Usuarios" asp-action="Cadastrar" class="btn btn-success">
+    <a href="/OcorrenciasDP/Usuarios/Cadastrar" class="btn btn-success">
         Cadastrar Novo
     </a>
 </div>
 
-<form class="form-inline" method="get" asp-controller="Usuarios" asp-action="Filtrar">
+<form class="form-inline" method="get" action="/OcorrenciasDP/Usuarios/Filtrar">
     <div class="form-group mb-2">
         <label for="nome">Nome</label>
         <input type="text" name="nome" class="form-control-plaintext" id="nome" value="@nome">
@@ -132,10 +132,10 @@
                 <td>@user.UltimoAcesso.ToString("dd/MM/yyyy HH:mm:ss")</td>
 
                 <td>
-                    <a href="/Usuarios/Atualizar/@user.Id/" class="btn btn-warning btn-sm">
+                    <a href="/OcorrenciasDP/Usuarios/Atualizar/@user.Id/" class="btn btn-warning btn-sm">
                         Alterar
                     </a>
-                    <a href="/Usuarios/Excluir/@user.Id/" onclick="return confirmaApagar();" on class="btn btn-danger btn-sm">
+                    <a href="/OcorrenciasDP/Usuarios/Excluir/@user.Id/" onclick="return confirmaApagar();" on class="btn btn-danger btn-sm">
                         Excluir
                     </a>
 

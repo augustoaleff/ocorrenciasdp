@@ -78,13 +78,29 @@ namespace OcorrenciasDP
 
             app.UseSession();
 
-            app.UseMvc(routes =>
-            { //Habilita o uso do MVC
+
+            if (env.IsDevelopment())
+            {
+
+                app.UseMvc(routes =>
+                { //Habilita o uso do MVC
 
                 routes.MapRoute(
-                    name: "default",
-                    template: "/OcorrenciasDP/{controller=Home}/{action=Index}/{id?}");
-            });
+                        name: "default",
+                        template: "/OcorrenciasDP/{controller=Home}/{action=Index}/{id?}");
+                });
+            }
+            else
+            {
+                app.UseMvc(routes =>
+                { //Habilita o uso do MVC
+
+                    routes.MapRoute(
+                            name: "default",
+                            template: "{controller=Home}/{action=Index}/{id?}");
+                });
+
+            }
 
             RotativaConfiguration.Setup(env);
         }

@@ -58,7 +58,7 @@
     }
 }
 
-<link href="/css/PagedList.css" rel="stylesheet" type="text/css" />
+<link href="/OcorrenciasDP/css/PagedList.css" rel="stylesheet" type="text/css" />
 
 @if (TempData["ErroRelat"] != null)
 {
@@ -76,7 +76,7 @@
 
 <h2>Relatório</h2>
 <br />
-<form class="form-inline" method="get" asp-controller="Relatorio" asp-action="Filtrar">
+<form class="form-inline" method="get" action="/OcorrenciasDP/Relatorio/Filtrar">
     <div class="form-group mb-2">
         <label for="datainicio">Data Início</label>
         <input type="date" name="datainicio" class="form-control-plaintext" id="datainicio" value="@datainicio">
@@ -159,7 +159,7 @@
                 @if (ocor.Anexo != null)
                 {
                     <td>
-                        <a href="/Relatorio/Download?filename=@string.Concat(ocor.Id.ToString(),"_",ocor.Anexo)" alt="download" type="button"
+                        <a href="/OcorrenciasDP/Relatorio/Download?filename=@string.Concat(ocor.Id.ToString(),"_",ocor.Anexo)" alt="download" type="button"
                            class="btn btn-default btn-sm">
                             <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
                         </a>
@@ -170,14 +170,14 @@
                     <td></td>
                 }
                 <td>
-                    <a href="/Relatorio/Detalhar?id=@ocor.Id&page=@Model.PageNumber&datafim=@datafim&datainicio=@datainicio&setor=@setor"
+                    <a href="/OcorrenciasDP/Relatorio/Detalhar?id=@ocor.Id&page=@Model.PageNumber&datafim=@datafim&datainicio=@datainicio&setor=@setor"
                        alt="detalhar" class="btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                     </a>
                 </td>
 
                 <td>
-                    <a href="/Relatorio/Excluir/@ocor.Id" alt="excluir" onclick="return confirmaApagar();" class="btn btn-default btn-sm">
+                    <a href="/OcorrenciasDP/Relatorio/Excluir/@ocor.Id" alt="excluir" onclick="return confirmaApagar();" class="btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                     </a>
                 </td>
@@ -186,7 +186,7 @@
     </tbody>
 </table>
 
-<a href="/Relatorio/Filtrar?pdf=true&setor=@setor&datainicio=@datainicio&datafim=@datafim" type="button" class="btn-default btn"
+<a href="/OcorrenciasDP/Relatorio/Filtrar?pdf=true&setor=@setor&datainicio=@datainicio&datafim=@datafim" type="button" class="btn-default btn"
    id="exportarPDF"><span class="glyphicon glyphicon-file"></span>Gerar relatório em PDF</a>
 
 
