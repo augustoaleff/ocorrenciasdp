@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OcorrenciasDP.Database;
 using OcorrenciasDP.Library.Filters;
+using OcorrenciasDP.Library.Globalization;
 using OcorrenciasDP.Models;
 
 namespace OcorrenciasDP.Controllers
@@ -28,7 +29,7 @@ namespace OcorrenciasDP.Controllers
         public IActionResult Index()
         {
             ViewBag.Ocorrencia = new Ocorrencia();
-            ViewBag.Ocorrencia.Data = DateTime.Now;
+            ViewBag.Ocorrencia.Data = Globalization.HoraAtualBR();
             ViewBag.Anexo = "";
 
             OcorrenciasFaltantes();
@@ -57,7 +58,7 @@ namespace OcorrenciasDP.Controllers
             if (ModelState.IsValid)
             {
                 ViewBag.Ocorrencia = new Ocorrencia();
-                ViewBag.Ocorrencia.Data = DateTime.Now;
+                ViewBag.Ocorrencia.Data = Globalization.HoraAtualBR();
 
                 Log log = new Log();
 
@@ -116,7 +117,7 @@ namespace OcorrenciasDP.Controllers
                 int usuario = HttpContext.Session.GetInt32("ID") ?? 0;
 
 
-                TimeSpan diff = DateTime.Now.Subtract(dataCadastro); //Diferença de dias entre data do cadastro e hoje
+                TimeSpan diff = Globalization.HoraAtualBR().Subtract(dataCadastro); //Diferença de dias entre data do cadastro e hoje
                 DateTime dataInicial;
 
                 if ( diff.Days >= 30)
@@ -195,7 +196,7 @@ namespace OcorrenciasDP.Controllers
                 if (vOcorrencia == null || update == "true")
                 {
                     ViewBag.Ocorrencia = new Ocorrencia();
-                    ViewBag.Ocorrencia.Data = DateTime.Now;
+                    ViewBag.Ocorrencia.Data = Globalization.HoraAtualBR();
                     Log log = new Log();
 
                     if (anexo != null)
@@ -284,7 +285,7 @@ namespace OcorrenciasDP.Controllers
                 {
 
                     ViewBag.Ocorrencia = new Ocorrencia();
-                    ViewBag.Ocorrencia.Data = DateTime.Now;
+                    ViewBag.Ocorrencia.Data = Globalization.HoraAtualBR();
                     return RedirectToAction("Incluir", ocorrencia);
 
                 }

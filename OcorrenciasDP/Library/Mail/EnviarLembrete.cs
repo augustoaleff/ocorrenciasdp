@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Mail;
+using OcorrenciasDP.Library.Globalization;
 
 namespace OcorrenciasDP.Library.Mail
 {
@@ -13,12 +14,13 @@ namespace OcorrenciasDP.Library.Mail
         {
             
             string saudacao, conteudo;
+            DateTime agora = Globalization.Globalization.HoraAtualBR();
 
-            if(DateTime.Now.Hour >= 3 && DateTime.Now.Hour <= 11) //Entre 3h e meio-dia ==> Bom Dia
+            if(agora.Hour >= 3 && agora.Hour <= 11) //Entre 3h e meio-dia ==> Bom Dia
             {
                 saudacao = "Bom Dia <br />";
             }
-            else if(DateTime.Now.Hour >= 12 && DateTime.Now.Hour <= 17) //Entre meio-dia e 18h ==> Boa Tarde
+            else if(agora.Hour >= 12 && agora.Hour <= 17) //Entre meio-dia e 18h ==> Boa Tarde
             {
                 saudacao = "Boa Tarde <br />";
             }
@@ -54,7 +56,7 @@ namespace OcorrenciasDP.Library.Mail
                 Body = saudacao +
                 conteudo + "<br />" +
                 "<a href='http://www.eletroleste.com.br/OcorrenciasDP/'><h2>Clique aqui para enviar<h2></a>" +
-                "<br /><br /><font size='1'>Mensagem Automática, favor não responder. Enviada:" + DateTime.Now.ToLongDateString() + " às " + DateTime.Now.ToShortTimeString() + "</font>"
+                "<br /><br /><font size='1'>Mensagem Automática, favor não responder. Enviada: " + Globalization.Globalization.DataAtualExtensoBR() + "</font>"
 
             };
 

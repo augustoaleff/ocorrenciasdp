@@ -2,6 +2,7 @@
 @using X.PagedList;
 @using X.PagedList.Mvc.Core;
 @using Microsoft.AspNetCore.Http;
+@using OcorrenciasDP.Library.Globalization;
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -9,7 +10,6 @@
 @{
     ViewData["Title"] = "Relatório";
 }
-
 
 @{
     /*string filtro = "";
@@ -131,7 +131,7 @@
 
             string classeLinha;
 
-            DateTime ultimoAcesso = DateTime.Parse(Context.Session.GetString("UltimoAcesso"));
+            DateTime ultimoAcesso = Globalization.ConverterData(Context.Session.GetString("UltimoAcesso"));
 
             if (ocor.Data.Date >= ultimoAcesso.Date) //Verifica se tem novas ocorrencias desde a data do último acesso
             {

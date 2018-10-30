@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OcorrenciasDP.Database;
 using OcorrenciasDP.Library.Filters;
+using OcorrenciasDP.Library.Globalization;
 using OcorrenciasDP.Library.Mail;
 using OcorrenciasDP.Models;
 using X.PagedList;
@@ -293,7 +294,7 @@ namespace OcorrenciasDP.Controllers
 
             var vRemetente = _db.Int_Dp_Usuarios.Find(idNotNull);
             mensagem.Remetente = vRemetente;
-            mensagem.Data = DateTime.Now;
+            mensagem.Data = Globalization.HoraAtualBR();
 
             if (ModelState.IsValid == true)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -49,13 +51,21 @@ namespace OcorrenciasDP
 
             services.AddSingleton<IFileProvider>(
                 new PhysicalFileProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(),"wwwroot")));
+                    Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1); //Adiciona o serviço do MVC
             services.AddDistributedMemoryCache();
             services.AddSession();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddProgressiveWebApp();
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.DefaultRequestCulture = new RequestCulture("pt-BR");
+                options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR") };
+                options.RequestCultureProviders.Clear();
+            });
+
             //services.AddProgressiveWebApp();
         }
 
@@ -68,8 +78,10 @@ namespace OcorrenciasDP
             }
             else
             { //Se estiver no ambiente de Produção
-                app.UseExceptionHandler("/Home/Error"); //Redireciona para a página de Erro
-                app.UseHsts();
+
+                app.UseDeveloperExceptionPage();
+                //app.UseExceptionHandler("/Home/Error"); //Redireciona para a página de Erro
+                //app.UseHsts();
             }
 
             app.UseHttpsRedirection();
@@ -78,16 +90,15 @@ namespace OcorrenciasDP
 
             app.UseSession();
 
-
             if (env.IsDevelopment())
             {
 
                 app.UseMvc(routes =>
                 { //Habilita o uso do MVC
 
-                routes.MapRoute(
-                        name: "default",
-                        template: "/OcorrenciasDP/{controller=Home}/{action=Index}/{id?}");
+                    routes.MapRoute(
+                            name: "default",
+                            template: "/OcorrenciasDP/{controller=Home}/{action=Index}/{id?}");
                 });
             }
             else
@@ -101,6 +112,25 @@ namespace OcorrenciasDP
                 });
 
             }
+
+
+
+            app.UseRequestLocalization();
+
+            /*
+             * 
+             *             var supportedCultures = new[]
+            {
+                new CultureInfo("pt-BR")
+            };
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("pt-BR"),
+                // Formatting numbers, dates, etc.
+                SupportedCultures = supportedCultures,
+                // UI strings that we have localized.
+                SupportedUICultures = supportedCultures
+            });*/
 
             RotativaConfiguration.Setup(env);
         }

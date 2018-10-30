@@ -1,4 +1,5 @@
 ﻿@model List<OcorrenciasDP.Models.OcorrenciaViewModel>
+@using OcorrenciasDP.Library.Globalization;
 
 @{
     ViewData["Title"] = "Início";
@@ -90,9 +91,9 @@
                     <td>@msg.Conteudo</td>
                 }
                 <td>
-                    <a href="/OcorrenciasDP/Home/DetalharMsg/@msg.Id" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar" 
+                    <a href="/OcorrenciasDP/Home/DetalharMsg/@msg.Id" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar"
                        data-valormodal="false" class="btn btn-default btn-sm">
-                       <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                     </a>
                 </td>
             </tr>
@@ -114,32 +115,32 @@
     <tbody>
         @foreach (var ocor in Model)
         {
-        <tr>
-            <th scope="row">@ocor.Id</th>
-            <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
-            @if (ocor.Descricao.Length >= 100)
-            {
-                <td>@ocor.Descricao.Substring(0, 100)</td>
-            }
-            else
-            {
-                <td>@ocor.Descricao</td>
-            }
+            <tr>
+                <th scope="row">@ocor.Id</th>
+                <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
+                @if (ocor.Descricao.Length >= 100)
+                {
+                    <td>@ocor.Descricao.Substring(0, 100)</td>
+                }
+                else
+                {
+                    <td>@ocor.Descricao</td>
+                }
 
-            @if (ocor.Anexo != null)
-            {
-                <td>
-                    <a href="\OcorrenciasDP\Home\Download?filename=@string.Concat(ocor.Id.ToString(), "_", ocor.Anexo)" aria-label=""  alt="download" 
-                       type="button" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
-                    </a>
-                </td>
-            }
-            else
-            {
-                <td></td>
-            }
-        </tr>
+                @if (ocor.Anexo != null)
+                {
+                    <td>
+                        <a href="\OcorrenciasDP\Home\Download?filename=@string.Concat(ocor.Id.ToString(), "_", ocor.Anexo)" aria-label="" alt="download"
+                           type="button" class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
+                        </a>
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
+            </tr>
         }
     </tbody>
 </table>
@@ -159,7 +160,7 @@
                 <div class="modal-body">
                     <strong>Data: </strong>
 
-                    @ViewBag.MsgDetalhe.Data
+                    @Globalization.DataHoraExtensoBR(ViewBag.MsgDetalhe.Data)
                     <br />
                     <br />
 

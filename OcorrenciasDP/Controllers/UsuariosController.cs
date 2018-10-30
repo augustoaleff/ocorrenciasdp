@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OcorrenciasDP.Database;
 using OcorrenciasDP.Library.Filters;
+using OcorrenciasDP.Library.Globalization;
 using OcorrenciasDP.Models;
 using OcorrenciasDP.ViewModels;
 using X.PagedList;
@@ -149,7 +150,7 @@ namespace OcorrenciasDP.Controllers
                 var usuario = _db.Int_Dp_Usuarios.Find(id);
                 string usuario_temp = usuario.Login;
                 usuario.Ativo = 0;
-                usuario.Login = string.Concat(usuario.Login, DateTime.Now.Day.ToString(), DateTime.Now.Second.ToString(), DateTime.Now.Minute.ToString());
+                usuario.Login = string.Concat(usuario.Login, Globalization.HoraAtualBR().Day.ToString(), Globalization.HoraAtualBR().Second.ToString(), Globalization.HoraAtualBR().Minute.ToString());
                 //_db.Int_Dp_Usuarios.Remove(usuario);
                 _db.SaveChanges();
                 TempData["UsuarioExcluido"] = "O usuário '" + usuario_temp + "' foi excluido!";
@@ -205,9 +206,9 @@ namespace OcorrenciasDP.Controllers
             {
 
                 var vUsuario = _db.Int_Dp_Usuarios.Find(usuario.Id);
-                if (vUsuario.Login.ToLower() != usuario.Login.ToLower())
+                if (vUsuario.Login.ToLower() != usuario.Login.ToLower()) //Se mudou o Login do Usuário
                 {
-                    var vUsuario2 = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
+                    var vUsuario2 = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault(); //Procura no banco para ver alguém já tem esse login
 
                     if (vUsuario2 == null)
                     {
@@ -279,6 +280,7 @@ namespace OcorrenciasDP.Controllers
                     {
                         TempData["ExisteUsuario"] = "Já existe um usuário com esse login, favor escolher outro!";
                         ViewBag.User = usuario;
+                        ViewBag.ConfirmarSenha = usuario.Senha;
                         return View("Cadastrar");
                     }
 
@@ -385,8 +387,8 @@ namespace OcorrenciasDP.Controllers
                     usuario.Senha = usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Senha
                     confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
                     usuario.Email = usuario.Email.ToLower();
-                    usuario.UltimoLogin = DateTime.Now;
-                    usuario.DataCadastro = DateTime.Now;
+                    usuario.UltimoLogin = Globalization.HoraAtualBR();
+                    usuario.DataCadastro = Globalization.HoraAtualBR();
 
                     if (usuario.Senha == confirmasenha)
                     {

@@ -1,9 +1,21 @@
 ﻿@using Microsoft.AspNetCore.Http;
+@using OcorrenciasDP.Library.Globalization;
+
 
 @{
     string Login = Context.Session.GetString("Login");
     string Perfil = Context.Session.GetString("Perfil");
-    string UltimoLogin = Context.Session.GetString("UltimoAcesso");
+    string UltimoLogin = String.Empty;
+
+
+    if(Context.Session.GetString("UltimoAcesso") != null)
+    {
+        //CultureInfo culture = new CultureInfo("pt-BR");
+        //UltimoLogin = Globalization.DataExtensoBR(DateTime.Parse(Context.Session.GetString("UltimoAcesso"),culture));
+        UltimoLogin = Globalization.DataHoraExtensoBR(Globalization.ConverterData(Context.Session.GetString("UltimoAcesso")));
+    }
+
+
 }
 
 <!DOCTYPE html>
@@ -92,7 +104,7 @@
                 <div>
                     <p>&copy; @DateTime.Now.Year - OcorrenciasDP</p>
                 </div>
-                @if (UltimoLogin != null)
+                @if (UltimoLogin != String.Empty)
                 {
                     <div>
                         <p><strong>Último Acesso:</strong> @UltimoLogin</p>

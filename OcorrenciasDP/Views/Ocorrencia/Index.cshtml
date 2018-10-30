@@ -1,5 +1,6 @@
 ﻿@model OcorrenciasDP.Models.Ocorrencia
 @using Microsoft.AspNetCore.Http;
+@using OcorrenciasDP.Library.Globalization;
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Ocorrências";
@@ -18,7 +19,7 @@
     }
     else
     {
-        data1 = DateTime.Now.ToString("yyyy-MM-dd");
+        data1 = Globalization.HoraAtualBR().ToString("yyyy-MM-dd");
     }
 }
 
@@ -305,7 +306,7 @@
                 <button class="btn-group btn-danger" id="@dia.ToString("yyyy-MM-dd")"
                         onclick="return document.getElementById('data').setAttribute('value',this.id)"
                         value="@dia.ToString("yyyy-MM-dd")">
-                    @dia.ToShortDateString()
+                    @dia.ToString("dd/MM/yyyy")
                 </button>
 
             }

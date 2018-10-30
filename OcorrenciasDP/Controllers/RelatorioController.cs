@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OcorrenciasDP.Database;
 using OcorrenciasDP.Library.Filters;
+using OcorrenciasDP.Library.Globalization;
 using OcorrenciasDP.Models;
 using OcorrenciasDP.ViewModels;
 using Rotativa.AspNetCore;
@@ -227,11 +228,11 @@ namespace OcorrenciasDP.Controllers
 
                 try
                 {
-                    string data = string.Concat(DateTime.Now.ToShortDateString(), "_", DateTime.Now.ToShortTimeString());
+                    string data = string.Concat(Globalization.HoraAtualBR().ToShortDateString(), "_", Globalization.HoraAtualBR().ToShortTimeString());
 
                     var relatorioPDF = new ViewAsPdf
                     {
-                        WkhtmlPath = "~/wwwroot/Rotativa",
+                        WkhtmlPath = "~/OcorrenciasDP/wwwroot/Rotativa",
                         ViewName = "VisualizarComoPDF",
                         IsGrayScale = true,
                         Model = relatorioVM,

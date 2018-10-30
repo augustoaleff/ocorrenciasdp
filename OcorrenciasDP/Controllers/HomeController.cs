@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OcorrenciasDP.Database;
 using OcorrenciasDP.Library.Filters;
+using OcorrenciasDP.Library.Globalization;
 using OcorrenciasDP.Models;
 
 namespace OcorrenciasDP.Controllers
@@ -15,6 +17,7 @@ namespace OcorrenciasDP.Controllers
     
     public class HomeController : Controller
     {
+
 
         private DatabaseContext _db;
 
@@ -106,7 +109,9 @@ namespace OcorrenciasDP.Controllers
                                    .Select(s => s.UltimoLogin)
                                    .FirstOrDefault();
 
-            DateTime dataUltimoAcesso2 = DateTime.Parse(HttpContext.Session.GetString("UltimoAcesso"));
+            //CultureInfo culture = new CultureInfo("pt-BR");
+            //DateTime dataUltimoAcesso2 = DateTime.Parse(HttpContext.Session.GetString("UltimoAcesso"),culture);
+            DateTime dataUltimoAcesso2 = Globalization.ConverterData(HttpContext.Session.GetString("UltimoAcesso"));
 
             var mensagem = _db.Int_DP_Mensagens
                             .Where(a => a.Data >= dataUltimoAcesso2)
@@ -174,10 +179,10 @@ namespace OcorrenciasDP.Controllers
                                 HttpContext.Session.SetString("Setor", vLogin.Setor.Nome);
                                 HttpContext.Session.SetString("Perfil", vLogin.Perfil);
                                 HttpContext.Session.SetInt32("ID", vLogin.Id);
-                                HttpContext.Session.SetString("UltimoAcesso", vLogin.UltimoLogin.ToString());
+                                HttpContext.Session.SetString("UltimoAcesso", vLogin.UltimoLogin.ToString("dd/MM/yyyy HH:mm:ss"));
                                 HttpContext.Session.SetString("Visualizado", "false");
 
-                                vLogin.UltimoLogin = DateTime.Now;
+                                vLogin.UltimoLogin = Globalization.HoraAtualBR();
 
                                 Log log = new Log();
                                 log.LogIn(vLogin.Id);
@@ -185,7 +190,7 @@ namespace OcorrenciasDP.Controllers
 
                                 _db.SaveChangesAsync(); //Salvar por método assíncrono
 
-                                return RedirectToAction("Inicio", "Home","OcorrenciasDP\\"); //Vai para a página de Início
+                                return RedirectToAction("Inicio", "Home"); //Vai para a página de Início
 
                             }
                             catch (Exception exp)

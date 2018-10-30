@@ -1,6 +1,7 @@
 ﻿@model X.PagedList.IPagedList<OcorrenciasDP.Models.Mensagem>
 @using X.PagedList;
 @using X.PagedList.Mvc.Core;
+@using OcorrenciasDP.Library.Globalization;
 
 
 @{
@@ -82,7 +83,7 @@
 
                 <td>
                     <!--data-toggle="modal" data-target="#modalDetalharMensagem" onclick="return detalharMsg(this.getAttribute('value'));"-->
-                    <a href="/Mensagens/DetalharMsg?id=@msg.Id&page=@pagina" onabort="" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar" data-valormodal="false" class="btn btn-default btn-sm">
+                    <a href="/OcorrenciasDP/Mensagens/DetalharMsg?id=@msg.Id&page=@pagina" onabort="" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar" data-valormodal="false" class="btn btn-default btn-sm">
                         <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                     </a>
                 </td>
@@ -105,7 +106,7 @@
                 </div>
                 <div class="modal-body">
                     <b>Data: </b>
-                    @ViewBag.DetalheMsg.Data
+                    @Globalization.DataHoraExtensoBR(ViewBag.DetalheMsg.Data)
                     <br />
                     <br />
                     <b>Mensagem: </b>
