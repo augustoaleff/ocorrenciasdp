@@ -58,6 +58,7 @@ namespace OcorrenciasDP
             services.AddSession();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddProgressiveWebApp();
+            services.AddServiceWorker();
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -65,8 +66,7 @@ namespace OcorrenciasDP
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR") };
                 options.RequestCultureProviders.Clear();
             });
-
-            //services.AddProgressiveWebApp();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -79,9 +79,9 @@ namespace OcorrenciasDP
             else
             { //Se estiver no ambiente de Produção
 
-                app.UseDeveloperExceptionPage();
-                //app.UseExceptionHandler("/Home/Error"); //Redireciona para a página de Erro
-                //app.UseHsts();
+                //app.UseDeveloperExceptionPage();
+                app.UseExceptionHandler("/Home/Error"); //Redireciona para a página de Erro
+                app.UseHsts();
             }
 
             app.UseHttpsRedirection();
@@ -92,7 +92,6 @@ namespace OcorrenciasDP
 
             if (env.IsDevelopment())
             {
-
                 app.UseMvc(routes =>
                 { //Habilita o uso do MVC
 
@@ -110,27 +109,9 @@ namespace OcorrenciasDP
                             name: "default",
                             template: "{controller=Home}/{action=Index}/{id?}");
                 });
-
             }
 
-
-
             app.UseRequestLocalization();
-
-            /*
-             * 
-             *             var supportedCultures = new[]
-            {
-                new CultureInfo("pt-BR")
-            };
-            app.UseRequestLocalization(new RequestLocalizationOptions
-            {
-                DefaultRequestCulture = new RequestCulture("pt-BR"),
-                // Formatting numbers, dates, etc.
-                SupportedCultures = supportedCultures,
-                // UI strings that we have localized.
-                SupportedUICultures = supportedCultures
-            });*/
 
             RotativaConfiguration.Setup(env);
         }

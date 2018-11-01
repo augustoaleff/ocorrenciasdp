@@ -21,8 +21,6 @@ namespace OcorrenciasDP.Controllers
 
         private DatabaseContext _db;
 
-        //const string SessionName = "_Nome";
-        //const string SessionID = "_Cod";
         readonly List<Setor> setores = new List<Setor>();
 
         public HomeController(DatabaseContext db)

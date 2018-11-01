@@ -233,7 +233,7 @@ namespace OcorrenciasDP.Controllers
 
                     if (anexo != null)
                     {
-                        UploadFile(anexo);
+                       UploadFile(anexo);
                     }
 
                     TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
@@ -306,7 +306,6 @@ namespace OcorrenciasDP.Controllers
         {
             if (file != null || file.Length != 0)
             {
-
                 var path = Path.Combine(
                             Directory.GetCurrentDirectory(), "wwwroot/uploads",
                             string.Concat(idOcorrencia, file.FileName));

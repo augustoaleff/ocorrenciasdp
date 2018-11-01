@@ -1,5 +1,6 @@
 ﻿@model List<OcorrenciasDP.Models.OcorrenciaViewModel>
 @using Microsoft.AspNetCore.Http;
+@using OcorrenciasDP.Library.Globalization;
 @{
     Layout = null;
 }
@@ -16,7 +17,7 @@
     }
 
 }
-<html>
+<html lang="pt-br">
 <head>
     <meta charset="utf-8">
     <title>Relatório de Ocorrências</title>
@@ -72,7 +73,7 @@
                 {
                     <tr>
                         <th scope="row">@ocor.Id</th>
-                        <td>@ocor.Data.ToShortDateString()</td>
+                        <td>@Globalization.DataCurtaBR(ocor.Data)</td>
                         <td>@ocor.Nome</td>
                         <td>@ocor.Setor</td>
                         @if (ocor.Descricao.Length >= 50)

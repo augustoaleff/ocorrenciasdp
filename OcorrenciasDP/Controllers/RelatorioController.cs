@@ -228,7 +228,7 @@ namespace OcorrenciasDP.Controllers
 
                 try
                 {
-                    string data = string.Concat(Globalization.HoraAtualBR().ToShortDateString(), "_", Globalization.HoraAtualBR().ToShortTimeString());
+                    string data = Globalization.DataRelatorioPdfBR();
 
                     var relatorioPDF = new ViewAsPdf
                     {
@@ -239,7 +239,6 @@ namespace OcorrenciasDP.Controllers
                         PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
                         CustomSwitches = "--page-offset 0 --footer-left " + data + " --footer-right [page]/[toPage] --footer-font-size 8",
                         PageSize = Rotativa.AspNetCore.Options.Size.A4
-
                     };
 
                     log.ExportarRelatorio(id_notnull, filtros);
@@ -271,11 +270,11 @@ namespace OcorrenciasDP.Controllers
             {
                 if (filtros == "")
                 {
-                    filtros += "Data Inicial: " + datainicio.ToShortDateString();
+                    filtros += "Data Inicial: " + Globalization.DataCurtaBR(datainicio);
                 }
                 else
                 {
-                    filtros += ", Data Inicial: " + datainicio.ToShortDateString();
+                    filtros += ", Data Inicial: " + Globalization.DataCurtaBR(datainicio);
                 }
             }
 
@@ -283,11 +282,11 @@ namespace OcorrenciasDP.Controllers
             {
                 if (filtros == "")
                 {
-                    filtros += "Data Final: " + datafim.ToShortDateString();
+                    filtros += "Data Final: " + Globalization.DataCurtaBR(datafim);
                 }
                 else
                 {
-                    filtros += ", Data Final: " + datafim.ToShortDateString();
+                    filtros += ", Data Final: " + Globalization.DataCurtaBR(datafim);
                 }
             }
 
@@ -423,7 +422,7 @@ namespace OcorrenciasDP.Controllers
                 return RedirectToAction("Index");
             }
         }
-
+            
         private string GetContentType(string path)
         {
             var types = GetMimeTypes();
