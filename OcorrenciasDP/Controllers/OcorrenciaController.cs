@@ -116,7 +116,6 @@ namespace OcorrenciasDP.Controllers
 
                 int usuario = HttpContext.Session.GetInt32("ID") ?? 0;
 
-
                 TimeSpan diff = Globalization.HoraAtualBR().Subtract(dataCadastro); //Diferença de dias entre data do cadastro e hoje
                 DateTime dataInicial;
 
@@ -144,6 +143,7 @@ namespace OcorrenciasDP.Controllers
                         .OrderByDescending(a => a.Data)
                         .Select(a => a.Data)
                         .ToList();
+                        
 
                 //Pega os útimos 30 dias
                 
@@ -162,14 +162,13 @@ namespace OcorrenciasDP.Controllers
                 calend_final.Reverse(); //Reverte a ordem das datas para decrescente
 
                 ViewBag.Calendario = calend_final;
-
             }
             catch (Exception)
             {
                 ViewBag.Calendario = null;
             }
         }
-
+    
         [HttpPost]
         public ActionResult Index([FromForm]Ocorrencia ocorrencia, IFormFile anexo, string update)
         {
@@ -254,9 +253,9 @@ namespace OcorrenciasDP.Controllers
                     //Retorna o valor como Objeto Ocorrencia para a View
                     OcorrenciasFaltantes();
                     return View("Index", ocorrencia);
+                    
                 }
             }
-
             ViewBag.Ocorrencia = ocorrencia;
             if (anexo != null)
             {
@@ -292,7 +291,7 @@ namespace OcorrenciasDP.Controllers
                 else
                 {
                     ViewBag.Ocorrencia = ocorrencia;
-                    TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrencia cadastrada para esta data!";
+                    TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrência cadastrada para esta data!";
                     return View("Index", ocorrencia);
                 }
             }
@@ -314,10 +313,7 @@ namespace OcorrenciasDP.Controllers
                 {
                     await file.CopyToAsync(stream);
                 }
-
             }
-
         }
-
     }
 }

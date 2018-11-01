@@ -14,10 +14,10 @@ using OcorrenciasDP.Models;
 
 namespace OcorrenciasDP.Controllers
 {
-    
+
     public class HomeController : Controller
     {
-
+   
 
         private DatabaseContext _db;
 
@@ -32,6 +32,7 @@ namespace OcorrenciasDP.Controllers
 
         public List<OcorrenciaViewModel> CarregarOcorrencias()
         {
+
             var usuarios = _db.Int_Dp_Usuarios.ToList();
 
             int userID = HttpContext.Session.GetInt32("ID") ?? 0;
@@ -73,7 +74,6 @@ namespace OcorrenciasDP.Controllers
             {
                 Mensagem mensagem = new Mensagem
                 {
-
                     Conteudo = msg.Conteudo,
                     Data = msg.Data,
                     Id = msg.Id,
@@ -92,7 +92,6 @@ namespace OcorrenciasDP.Controllers
 
                 msgVM.Add(mensagem);
 
-
                 ViewBag.Msgs = msgVM;
             }
         }
@@ -107,8 +106,6 @@ namespace OcorrenciasDP.Controllers
                                    .Select(s => s.UltimoLogin)
                                    .FirstOrDefault();
 
-            //CultureInfo culture = new CultureInfo("pt-BR");
-            //DateTime dataUltimoAcesso2 = DateTime.Parse(HttpContext.Session.GetString("UltimoAcesso"),culture);
             DateTime dataUltimoAcesso2 = Globalization.ConverterData(HttpContext.Session.GetString("UltimoAcesso"));
 
             var mensagem = _db.Int_DP_Mensagens
@@ -132,8 +129,6 @@ namespace OcorrenciasDP.Controllers
 
             ProcurarMensagens();
 
-            //DateTime dataUltimoAcesso = DateTime.Parse(HttpContext.Session.GetString("UltimoAcesso"));
-
             if (HttpContext.Session.GetString("Visualizado") == "false")
             {
                 VerificarMensagensNovas();
@@ -145,8 +140,15 @@ namespace OcorrenciasDP.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            ViewBag.Usuario = new Usuario();
-            return View();
+            if (HttpContext.Session.GetString("Login") == null)
+            {
+                ViewBag.Usuario = new Usuario();
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Inicio");
+            }
         }
 
         [HttpPost]
@@ -161,9 +163,6 @@ namespace OcorrenciasDP.Controllers
                 //Se existir ele entra no if
                 if (vLogin != null)
                 {
-                    // var vSetor = _db.Int_DP_Setores.Find(vLogin.Setor.Id);
-                    // vLogin.Setor = vSetor;
-
                     //Verifica se está ativo
                     if (vLogin.Ativo == 1)
                     {
@@ -199,7 +198,7 @@ namespace OcorrenciasDP.Controllers
 
                                 _db.SaveChangesAsync(); //Salvar por método assíncrono
                                 HttpContext.Session.Clear(); //Limpa a sessão para voltar ao início
-                                
+
                                 return RedirectToAction("Index", "Home");
                             }
                         }
@@ -242,14 +241,12 @@ namespace OcorrenciasDP.Controllers
 
             Request.ToString();
 
-            if(System.IO.File.Exists(path)) //Se o arquivo existir
+            if (System.IO.File.Exists(path)) //Se o arquivo existir
             {
                 var memory = new MemoryStream();
                 using (var stream = new FileStream(path, FileMode.Open))
                 {
-
                     await stream.CopyToAsync(memory);
-
                 }
                 memory.Position = 0;
                 return File(memory, GetContentType(path), Path.GetFileName(path));
