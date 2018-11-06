@@ -59,6 +59,7 @@ namespace OcorrenciasDP
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddProgressiveWebApp();
             services.AddServiceWorker();
+            services.AddAuthentication();
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -69,6 +70,7 @@ namespace OcorrenciasDP
             
         }
 
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
@@ -78,7 +80,7 @@ namespace OcorrenciasDP
             }
             else
             { //Se estiver no ambiente de Produção
-
+              
                 //app.UseDeveloperExceptionPage();
                 app.UseExceptionHandler("/Home/Error"); //Redireciona para a página de Erro
                 app.UseHsts();

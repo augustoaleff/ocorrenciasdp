@@ -13,7 +13,7 @@ using X.PagedList;
 
 namespace OcorrenciasDP.Controllers
 {
-    
+
     [Login]
     [Admin]
     public class MensagensController : Controller
@@ -29,8 +29,7 @@ namespace OcorrenciasDP.Controllers
 
         public List<Mensagem> ConsultarMensagens()
         {
-
-            var relat2 = _db.Int_DP_Mensagens
+            List<Mensagem> relat2 = _db.Int_DP_Mensagens
                        .OrderByDescending(b => b.Data)
                        .ToList();
 
@@ -46,11 +45,9 @@ namespace OcorrenciasDP.Controllers
                     Remetente = msg.Remetente
                 };
 
-
                 if (msg.Titulo != null)
                 {
                     mensagem.Titulo = msg.Titulo;
-
                 }
                 else
                 {
@@ -60,6 +57,7 @@ namespace OcorrenciasDP.Controllers
                 msgVM.Add(mensagem);
 
             }
+
             ViewBag.Msgs = msgVM;
 
             return msgVM;
@@ -72,7 +70,6 @@ namespace OcorrenciasDP.Controllers
 
             if (dias > 0)
             {
-              
                 List<DateTime> diasLista = new List<DateTime>();
                 List<DateTime> feriados = new List<DateTime>();
                 List<int> vUsuariosSemEnvio = new List<int>();
@@ -134,9 +131,10 @@ namespace OcorrenciasDP.Controllers
 
                 }
 
+                List<int> vUsuariosSemEnvio = new List<int>();
+
+
                 */
-                
-                //List<int> vUsuariosSemEnvio = new List<int>();
 
                 try
                 {
@@ -171,12 +169,12 @@ namespace OcorrenciasDP.Controllers
 
                 }
 
-                var vUsuarios = _db.Int_Dp_Usuarios
+                List<int> vUsuarios = _db.Int_Dp_Usuarios
                                 .Where(a => a.Ativo == 1)
                                 .Select(s => s.Id)
                                 .ToList();
 
-                var usuariosNaoEnviados = vUsuarios.Except(vUsuariosSemEnvio).ToList();
+                List<int> usuariosNaoEnviados = vUsuarios.Except(vUsuariosSemEnvio).ToList();
 
                 if (usuariosNaoEnviados.Count > 0)
                 {
@@ -185,14 +183,14 @@ namespace OcorrenciasDP.Controllers
 
                     foreach (var id in usuariosNaoEnviados)
                     {
-                        var email = _db.Int_Dp_Usuarios
+                        string email = _db.Int_Dp_Usuarios
                                      .Where(a => a.Id == id)
                                      .Select(s => s.Email)
                                      .FirstOrDefault();
 
                         if (!vEmails.Contains(email))
-                        { //Para não entrar duplicado
-                        
+                        {  //Para não entrar duplicado
+
                             vEmails.Add(email);
 
                         }
@@ -202,7 +200,6 @@ namespace OcorrenciasDP.Controllers
 
                     if (vEmails.Count > 0)
                     {
-
                         Log log = new Log();
 
                         try
@@ -220,7 +217,6 @@ namespace OcorrenciasDP.Controllers
                             _db.Int_DP_Logs.Add(log);
 
                             TempData["LembreteNotOK"] = "Ocorreu um erro ao tentar enviar o lembrete, por favor, tente novamente!";
-
                         }
                         finally
                         {
@@ -243,8 +239,11 @@ namespace OcorrenciasDP.Controllers
                     return RedirectToAction("Index");
                 }
             }
-
-            return RedirectToAction("Index");
+            else
+            {
+                TempData["LembreteNotOK"] = "Insira um período de dias válido";
+                return RedirectToAction("Index");
+            }
 
         }
 
@@ -290,7 +289,7 @@ namespace OcorrenciasDP.Controllers
         public ActionResult Cadastrar([FromForm]Mensagem mensagem)
         {
             int idNotNull = HttpContext.Session.GetInt32("ID") ?? 0;
-            
+
 
             var vRemetente = _db.Int_Dp_Usuarios.Find(idNotNull);
             mensagem.Remetente = vRemetente;
@@ -323,7 +322,7 @@ namespace OcorrenciasDP.Controllers
                 }
                 finally
                 {
-                   _db.SaveChangesAsync();
+                    _db.SaveChangesAsync();
                 }
 
                 return RedirectToAction("Index");

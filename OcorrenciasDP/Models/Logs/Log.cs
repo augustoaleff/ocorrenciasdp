@@ -17,7 +17,7 @@ namespace OcorrenciasDP.Models
         public int UsuarioAlterado { get; set; }
         public long Mensagem { get; set; }
         public string Obs { get; set; }
-
+        
         public void LogIn(int usuario)
         {
             this.Data = Globalization.HoraAtualBR();
@@ -60,7 +60,7 @@ namespace OcorrenciasDP.Models
         {
             this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
-            this.Tipo = 301; //Criação de Usuario com Erro
+            this.Tipo = 301; //Criação de Usuário com Erro
             this.Obs = "ERRO: " + e.Message + ", Login Usuário = " + loginUsuario;
         }
         
@@ -157,7 +157,14 @@ namespace OcorrenciasDP.Models
             this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 402; //Envio de Lembrete com Sucesso
-            this.Obs = "Enviado " + total + " emails com sucesso";
+            if (total == 1)
+            {
+                this.Obs = "Enviado 1 email com sucesso";
+            }
+            else
+            {
+                this.Obs = "Enviado " + total + " emails com sucesso";
+            }
         }
 
         public void EnviarLembrete_Erro(int usuario, Exception e)
@@ -183,9 +190,7 @@ namespace OcorrenciasDP.Models
             this.Tipo = 403; // Envio de Mensagem com Erro
             this.Obs = "ERRO: " + e.Message;
         }
-
-    
-
+        
         public void ExportarRelatorio(int usuario, string filtros)
         {
             this.Data = Globalization.HoraAtualBR();

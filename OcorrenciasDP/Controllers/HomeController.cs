@@ -27,7 +27,6 @@ namespace OcorrenciasDP.Controllers
         {
             _db = db;
             setores = _db.Int_DP_Setores.ToList();
-
         }
 
         public List<OcorrenciaViewModel> CarregarOcorrencias()
@@ -79,7 +78,6 @@ namespace OcorrenciasDP.Controllers
                     Id = msg.Id,
                     Remetente = msg.Remetente
                 };
-
 
                 if (msg.Titulo != null)
                 {
@@ -154,11 +152,10 @@ namespace OcorrenciasDP.Controllers
         [HttpPost]
         public ActionResult Index([FromForm]Usuario usuario)
         {
-
             if (ModelState.IsValid) //Se a autenticação é válida
             {
                 //Verifica se o login existe no banco
-                var vLogin = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
+                Usuario vLogin = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
 
                 //Se existir ele entra no if
                 if (vLogin != null)
@@ -279,7 +276,8 @@ namespace OcorrenciasDP.Controllers
                 {".jpg", "image/jpeg"},
                 {".jpeg", "image/jpeg"},
                 {".gif", "image/gif"},
-                {".csv", "text/csv"}
+                {".csv", "text/csv"},
+                {".tiff", "image/tiff"}
             };
         }
 
@@ -292,7 +290,7 @@ namespace OcorrenciasDP.Controllers
         [HttpGet]
         public ActionResult DetalharMsg(long? id)
         {
-            var vMensagem = _db.Int_DP_Mensagens.Find(id);
+            Mensagem vMensagem = _db.Int_DP_Mensagens.Find(id);
             if (vMensagem.Titulo == null)
             {
                 vMensagem.Titulo = "Sem Título";
@@ -304,6 +302,7 @@ namespace OcorrenciasDP.Controllers
             ProcurarMensagens();
             List<OcorrenciaViewModel> ocorVM = CarregarOcorrencias();
             return View("Inicio", ocorVM);
+
         }
 
         public ActionResult Logout()

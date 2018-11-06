@@ -8,7 +8,6 @@ namespace OcorrenciasDP.Library.Globalization
 {
     public class Globalization
     {
-         
         public static DateTime HoraAtualBR()
         {
             return TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));

@@ -231,13 +231,14 @@ namespace OcorrenciasDP.Controllers
                     idOcorrencia = ocorrencia.Id.ToString() + "_";
 
                     if (anexo != null)
-                    {
+                    {  
                        UploadFile(anexo);
                     }
 
                     TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
                     OcorrenciasFaltantes(); //Atualiza as datas
                     return View("Index", ocorrencia);
+
                 }
                 else
                 {
@@ -300,7 +301,7 @@ namespace OcorrenciasDP.Controllers
 
         }
 
-        //Updload
+        //Upload
         public async void UploadFile(IFormFile file)
         {
             if (file != null || file.Length != 0)
