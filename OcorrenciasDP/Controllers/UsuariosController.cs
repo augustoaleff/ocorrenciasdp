@@ -13,7 +13,7 @@ using X.PagedList;
 
 namespace OcorrenciasDP.Controllers
 {
-   
+
     [Login]
     [Admin]
     public class UsuariosController : Controller
@@ -36,9 +36,9 @@ namespace OcorrenciasDP.Controllers
         public IActionResult Filtrar(string nome, string setor, int? page)
         {
             ViewBag.Setores = setores;
-            var pageNumber = page ?? 1;
+            int pageNumber = page ?? 1;
 
-            var query = _db.Int_Dp_Usuarios
+            var query = _db.Int_DP_Usuarios
                 .Join(_db.Int_DP_Setores, u => u.Setor.Id, o => o.Id, (u, o) => new { u, o })
                 .Where(u => u.u.Ativo == 1)
                 .AsQueryable();
@@ -90,16 +90,15 @@ namespace OcorrenciasDP.Controllers
             return View("Index", resultadoPaginado);
 
         }
-
-
+        
         [HttpGet]
         public IActionResult Index(int? page)
         {
             ViewBag.Setores = setores;
-            var pageNumber = page ?? 0;
+            int pageNumber = page ?? 0;
 
 
-            var relat = _db.Int_Dp_Usuarios
+            var relat = _db.Int_DP_Usuarios
                 .Join(_db.Int_DP_Setores, a => a.Setor.Id, b => b.Id, (a, b) => new { a, b })
                 .Where(u => u.a.Ativo == 1)
                 .OrderBy(o => o.a.Nome)
@@ -125,12 +124,11 @@ namespace OcorrenciasDP.Controllers
                     Ativo = user.Ativo,
                     Setor = user.Setor,
                     UltimoAcesso = user.UltimoLogin
-
                 };
                 usuariosVM.Add(userVM);
             }
 
-            var resultadoPaginado = usuariosVM.ToPagedList(pageNumber, 5);
+            IPagedList<UsuariosViewModel> resultadoPaginado = usuariosVM.ToPagedList(pageNumber, 5);
 
             return View(resultadoPaginado);
 
@@ -145,9 +143,7 @@ namespace OcorrenciasDP.Controllers
             try
             {
 
-                
-
-                var usuario = _db.Int_Dp_Usuarios.Find(id);
+                Usuario usuario = _db.Int_DP_Usuarios.Find(id);
                 string usuario_temp = usuario.Login;
                 usuario.Ativo = 0;
                 usuario.Login = string.Concat(usuario.Login, Globalization.HoraAtualBR().Day.ToString(), Globalization.HoraAtualBR().Second.ToString(), Globalization.HoraAtualBR().Minute.ToString());
@@ -157,7 +153,6 @@ namespace OcorrenciasDP.Controllers
 
                 log.ExcluirUsuario(user_id, id);
                 _db.Int_DP_Logs.Add(log);
-
 
             }
             catch (Exception exp)
@@ -180,7 +175,7 @@ namespace OcorrenciasDP.Controllers
         [HttpGet]
         public ActionResult Atualizar(int id)
         {
-            Usuario usuario = _db.Int_Dp_Usuarios.Find(id);
+            Usuario usuario = _db.Int_DP_Usuarios.Find(id);
 
             usuario.Login = usuario.Login.ToLower();
 
@@ -191,12 +186,11 @@ namespace OcorrenciasDP.Controllers
             return View("Cadastrar");
         }
 
-
         [HttpPost]
         public ActionResult Atualizar([FromForm]Usuario usuario, string confirmasenha)
         {
             int user_id = HttpContext.Session.GetInt32("ID") ?? 0;
-            var vSetor = _db.Int_DP_Setores.Find(usuario.Setor.Id);
+            Setor vSetor = _db.Int_DP_Setores.Find(usuario.Setor.Id);
             usuario.Setor = vSetor;
 
             ViewBag.User = new Usuario();
@@ -204,54 +198,52 @@ namespace OcorrenciasDP.Controllers
 
             if (ModelState.IsValid)
             {
-
-                var vUsuario = _db.Int_Dp_Usuarios.Find(usuario.Id);
+                Usuario vUsuario = _db.Int_DP_Usuarios.Find(usuario.Id);
                 if (vUsuario.Login.ToLower() != usuario.Login.ToLower()) //Se mudou o Login do Usuário
                 {
-                    var vUsuario2 = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault(); //Procura no banco para ver alguém já tem esse login
+                    Usuario vUsuario2 = _db.Int_DP_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault(); //Procura no banco para ver alguém já tem esse login
 
-                    if (vUsuario2 == null)
+                    if(vUsuario2 == null)
                     {
                         usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
-                        usuario.Senha = usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Senha
-                        confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
+                        usuario.Senha = usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").Replace("'", "").ToLower(); //Passa para minúsculo a Senha
+                        confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").Replace("'", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
                         usuario.Email = usuario.Email.ToLower();
 
                         if (usuario.Senha == confirmasenha)
                         {
 
-                            var vUpdate = _db.Int_Dp_Usuarios.Find(usuario.Id);
+                            Usuario vUpdate = _db.Int_DP_Usuarios.Find(usuario.Id);
 
                             Log log = new Log();
                             bool perfil;
+                            
+                            if (vUpdate.Perfil != usuario.Perfil)
+                            {
+                                perfil = true;
+                            }
+                            else
+                            {
+                                perfil = false;
+                            }
 
-
-                                if (vUpdate.Perfil != usuario.Perfil)
-                                {
-                                    perfil = true;
-                                }
-                                else
-                                {
-                                    perfil = false;
-                                }
-
-                                vUpdate.Login = usuario.Login;
-                                vUpdate.Nome = usuario.Nome;
-                                vUpdate.Perfil = usuario.Perfil;
-                                vUpdate.Senha = usuario.Senha;
-                                vUpdate.Setor = usuario.Setor;
-                                vUpdate.Ativo = usuario.Ativo;
-                                vUpdate.Email = usuario.Email;
+                            vUpdate.Login = usuario.Login;
+                            vUpdate.Nome = usuario.Nome;
+                            vUpdate.Perfil = usuario.Perfil;
+                            vUpdate.Senha = usuario.Senha;
+                            vUpdate.Setor = usuario.Setor;
+                            vUpdate.Ativo = usuario.Ativo;
+                            vUpdate.Email = usuario.Email;
 
                             try
                             {
-                               
+
                                 _db.SaveChanges();
                                 TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi atualizado com sucesso!";
 
                                 log.AlterarUsuario(user_id, usuario.Id, perfil, usuario.Perfil);
                                 _db.Int_DP_Logs.Add(log);
-                               
+
                             }
                             catch (Exception exp)
                             {
@@ -259,13 +251,11 @@ namespace OcorrenciasDP.Controllers
                                 _db.Int_DP_Logs.Add(log);
 
                                 TempData["UsuarioErro"] = "Ocorreu um erro ao tentar alterar o usuário!";
-
                             }
                             finally
                             {
                                 _db.SaveChanges();
                             }
-
 
                             return RedirectToAction("Index");
                         }
@@ -288,16 +278,16 @@ namespace OcorrenciasDP.Controllers
                 else
                 {
                     usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
-                    usuario.Senha = usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Senha
-                    confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
+                    usuario.Senha = usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").Replace("'", "").ToLower(); //Passa para minúsculo a Senha
+                    confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").Replace("'", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
 
                     if (usuario.Senha == confirmasenha)
                     {
                         bool perfil;
 
-                        var vUpdate = _db.Int_Dp_Usuarios.Find(usuario.Id);
+                        Usuario vUpdate = _db.Int_DP_Usuarios.Find(usuario.Id);
 
-                        if(vUpdate.Perfil != usuario.Perfil)
+                        if (vUpdate.Perfil != usuario.Perfil)
                         {
                             perfil = true;
                         }
@@ -317,17 +307,16 @@ namespace OcorrenciasDP.Controllers
                         Log log = new Log();
 
 
-                        try { 
-
-                        _db.SaveChanges();
-                        TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi atualizado com sucesso!";
+                        try
+                        {
+                            _db.SaveChanges();
+                            TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi atualizado com sucesso!";
 
                             log.AlterarUsuario(user_id, usuario.Id, perfil, usuario.Perfil);
                             _db.Int_DP_Logs.Add(log);
-
-
+                            
                         }
-                        catch(Exception exp)
+                        catch (Exception exp)
                         {
 
                             log.AlterarUsuario_Erro(user_id, usuario.Id, perfil, usuario.Perfil, exp);
@@ -339,7 +328,7 @@ namespace OcorrenciasDP.Controllers
                         {
                             _db.SaveChanges();
                         }
-                        
+
 
                         return RedirectToAction("Index");
                     }
@@ -371,21 +360,24 @@ namespace OcorrenciasDP.Controllers
         public ActionResult Cadastrar([FromForm]Usuario usuario, string confirmasenha)
         {
 
-            var vSetor = _db.Int_DP_Setores.Find(usuario.Setor.Id);
+            Setor vSetor = _db.Int_DP_Setores.Find(usuario.Setor.Id);
             usuario.Setor = vSetor;
 
             ViewBag.User = new Usuario();
             ViewBag.Setores2 = setores2;
+            ViewBag.Setores2 = setores2;
+            ViewBag.Setores2 = setores2;
+            ViewBag.Setores2 = setores2;
 
             if (ModelState.IsValid)
             {
-                var vUsuario = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
+                Usuario vUsuario = _db.Int_DP_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
 
                 if (vUsuario == null)
                 {
                     usuario.Login = usuario.Login.ToLower(); //Passa para minúsculo o Login
-                    usuario.Senha = usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Senha
-                    confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
+                    usuario.Senha = usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").Replace("'", "").ToLower(); //Passa para minúsculo a Senha
+                    confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").Replace("'", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
                     usuario.Email = usuario.Email.ToLower();
                     usuario.UltimoLogin = Globalization.HoraAtualBR();
                     usuario.DataCadastro = Globalization.HoraAtualBR();
@@ -397,7 +389,7 @@ namespace OcorrenciasDP.Controllers
 
                         try
                         {
-                            _db.Int_Dp_Usuarios.Add(usuario);
+                            _db.Int_DP_Usuarios.Add(usuario);
                             _db.SaveChanges();
 
                             Log log = new Log();

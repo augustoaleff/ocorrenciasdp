@@ -38,7 +38,7 @@ namespace OcorrenciasDP.Controllers
         {
             ViewBag.Setor = setores;
             int user_id = HttpContext.Session.GetInt32("ID") ?? 0;
-            var ocorrencia = _db.Int_DP_Ocorrencias.Find(id);
+            Ocorrencia ocorrencia = _db.Int_DP_Ocorrencias.Find(id);
 
             Log log = new Log();
 
@@ -51,7 +51,7 @@ namespace OcorrenciasDP.Controllers
 
                 log.ExcluirOcorrencia(user_id, id);
                 _db.Int_DP_Logs.Add(log);
-                
+
             }
             catch (Exception exp)
             {
@@ -65,7 +65,7 @@ namespace OcorrenciasDP.Controllers
             {
                 _db.SaveChanges();
             }
-            
+
             return RedirectToAction("Index");
         }
 
@@ -77,15 +77,16 @@ namespace OcorrenciasDP.Controllers
             ViewBag.SetorRelat = setor;
 
             ViewBag.Setor = setores;
-            var ocorrencia = _db.Int_DP_Ocorrencias.Find(id);
+            Ocorrencia ocorrencia = _db.Int_DP_Ocorrencias.Find(id);
 
             var relat = _db.Int_DP_Ocorrencias
-               .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
+               .Join(_db.Int_DP_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
                .Join(_db.Int_DP_Setores, a => a.u.Setor.Id, b => b.Id, (a, b) => new { a, b })
                .Where(w => w.a.o.Id == id)
                .Select(s => new
                {
                    s.a.o.Data,
+                   s.a.o.DataEnvio,
                    s.a.o.Descricao,
                    s.a.o.Id,
                    s.a.o.Anexo,
@@ -102,6 +103,7 @@ namespace OcorrenciasDP.Controllers
             {
                 Id = relat.Id,
                 Data = relat.Data,
+                DataEnvio = relat.DataEnvio,
                 Descricao = relat.Descricao.Replace("\r\n", "<br />"),
                 Nome = relat.Nome,
                 Setor = relat.Setor,
@@ -123,11 +125,11 @@ namespace OcorrenciasDP.Controllers
             FiltrarPesquisaRelatViewModel pesquisa = new FiltrarPesquisaRelatViewModel() { DataInicio = datainicio, DataFim = datafim, Setor = setor };
 
             ViewBag.Setores = setores;
-            var pageNumber = page ?? 1;
+            int pageNumber = page ?? 1;
             string filtros = "";
 
             var query = _db.Int_DP_Ocorrencias
-                       .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
+                       .Join(_db.Int_DP_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
                        .Join(_db.Int_DP_Setores, a => a.u.Setor.Id, b => b.Id, (a, b) => new { a, b })
                        .OrderByDescending(c => c.a.o.Data)
                        .ThenByDescending(a => a.a.o.Id)
@@ -183,8 +185,8 @@ namespace OcorrenciasDP.Controllers
                 filtros = GerarFiltros(datainicio_notnull, datafim_notnull, setor);
                 relatorioVM[0].DadosPesquisa = filtros; //Armazena os dados que veio do filtro no primeiro index do modelo (.pdf)
             }
-
-            var vPesquisa = _db.Int_DP_Setores.Find(int.Parse(pesquisa.Setor));
+            
+            Setor vPesquisa = _db.Int_DP_Setores.Find(int.Parse(pesquisa.Setor));
 
             if (vPesquisa != null)
             {
@@ -197,7 +199,6 @@ namespace OcorrenciasDP.Controllers
 
             if (pdf != true)
             {
-
                 ViewBag.Pesquisa = pesquisa;
 
                 try
@@ -223,18 +224,15 @@ namespace OcorrenciasDP.Controllers
             }
             else
             {
-                //ViewBag.PDF = relatorioVM;
-                // return RedirectToAction("GerarPDF",relatorioVM);
-
                 try
                 {
                     string data = Globalization.DataRelatorioPdfBR();
 
-                    var relatorioPDF = new ViewAsPdf
+                    ViewAsPdf relatorioPDF = new ViewAsPdf
                     {
                         WkhtmlPath = "~/OcorrenciasDP/wwwroot/Rotativa",
                         ViewName = "VisualizarComoPDF",
-                        IsGrayScale = true,
+                        IsGrayScale = false,
                         Model = relatorioVM,
                         PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
                         CustomSwitches = "--page-offset 0 --footer-left " + data + " --footer-right [page]/[toPage] --footer-font-size 8",
@@ -255,9 +253,8 @@ namespace OcorrenciasDP.Controllers
                     _db.SaveChanges();
 
                     TempData["ErroRelat"] = "Ocorreu um erro ao tentar exportar o relátório, por favor, tente novamente...";
-
+        
                     return RedirectToAction("Index");
-
                 }
             }
         }
@@ -265,7 +262,7 @@ namespace OcorrenciasDP.Controllers
         public string GerarFiltros(DateTime datainicio, DateTime datafim, string setor)
         {
             string filtros = "";
-
+            
             if (datainicio != null && datainicio != DateTime.MinValue)
             {
                 if (filtros == "")
@@ -292,7 +289,7 @@ namespace OcorrenciasDP.Controllers
 
             if (setor != null && setor != "0")
             {
-                var nome_setor = _db.Int_DP_Setores.Find(int.Parse(setor));
+                Setor nome_setor = _db.Int_DP_Setores.Find(int.Parse(setor));
 
                 if (filtros == "")
                 {
@@ -325,7 +322,7 @@ namespace OcorrenciasDP.Controllers
 
             ViewBag.Setores = setores;
             ViewBag.Pesquisa = new FiltrarPesquisaRelatViewModel();
-            var pageNumber = page ?? 1;
+            int pageNumber = page ?? 1;
             Log log = new Log();
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
             string filtros = GerarFiltros(DateTime.MinValue, DateTime.MaxValue, "0");
@@ -341,7 +338,7 @@ namespace OcorrenciasDP.Controllers
                 if (relatorioVM.Count == 0)
                 {
                     var relat = _db.Int_DP_Ocorrencias
-                       .Join(_db.Int_Dp_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
+                       .Join(_db.Int_DP_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
                        .Join(_db.Int_DP_Setores, r => r.u.Setor.Id, s => s.Id, (r, s) => new { r, s })
                        .OrderByDescending(a => a.r.o.Data)
                        .ThenByDescending(a => a.r.o.Id)
@@ -371,7 +368,7 @@ namespace OcorrenciasDP.Controllers
                     }
                 }
                 
-                var resultadoPaginado = relatorioVM.ToPagedList(pageNumber, paginasPagedList);
+                IPagedList<OcorrenciaViewModel> resultadoPaginado = relatorioVM.ToPagedList(pageNumber, paginasPagedList);
 
                 log.ConsultarRelatorio(id_notnull, filtros);
                 _db.Int_DP_Logs.Add(log);
@@ -388,10 +385,10 @@ namespace OcorrenciasDP.Controllers
                 TempData["ErroRelat"] = "Ocorreu um erro ao tentar consultar o relatório...";
 
                 return View();
-
+            
             }
         }
-
+            
         [HttpGet]
         public async Task<IActionResult> Download(string filename)
         {
@@ -401,14 +398,14 @@ namespace OcorrenciasDP.Controllers
                 return View("Index");
             }
 
-            var path = Path.Combine(
+            string path = Path.Combine(
                            Directory.GetCurrentDirectory(),
                            "wwwroot", "uploads", filename);
 
             if (System.IO.File.Exists(path)) //Se o arquivo existir
             {
-                var memory = new MemoryStream();
-                using (var stream = new FileStream(path, FileMode.Open))
+                MemoryStream memory = new MemoryStream();
+                using (FileStream stream = new FileStream(path, FileMode.Open))
                 {
                     await stream.CopyToAsync(memory);
                 }
@@ -425,8 +422,8 @@ namespace OcorrenciasDP.Controllers
             
         private string GetContentType(string path)
         {
-            var types = GetMimeTypes();
-            var ext = Path.GetExtension(path).ToLowerInvariant();
+            Dictionary<string,string> types = GetMimeTypes();
+            string ext = Path.GetExtension(path).ToLowerInvariant();
             return types[ext];
         }
 

@@ -36,7 +36,7 @@ namespace OcorrenciasDP
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
+                options.CheckConsentNeeded = context => false;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
@@ -55,6 +55,7 @@ namespace OcorrenciasDP
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1); //Adiciona o serviço do MVC
             services.AddDistributedMemoryCache();
+
             services.AddSession();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddProgressiveWebApp();
@@ -75,7 +76,8 @@ namespace OcorrenciasDP
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
-            {  //Se estiver no ambiente de desenvolvimento
+            {  
+                //Se estiver no ambiente de desenvolvimento
                 app.UseDeveloperExceptionPage();
             }
             else

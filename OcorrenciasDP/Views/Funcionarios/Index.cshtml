@@ -1,0 +1,96 @@
+﻿@model OcorrenciasDP.Models.Funcionario  
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Funcionários";
+}
+
+<h2>Funcionários</h2>
+<br />
+
+<div style="display:flex;justify-content:space-between">
+
+    <div>
+        <form class="form-inline" method="get" action="/OcorrenciasDP/Funcionarios/Filtrar">
+            <div class="form-group mb-2">
+                <label for="nome">Nome</label>
+                <input type="text" name="nome" class="form-control-plaintext" id="nome">
+            </div>
+
+            <div class="form-group p-2">
+                <label for="setor">Setor</label>
+                <select name="setor" id="setor" class="form-control mb-2">
+                    <option value="1">Setor 1</option>
+                    <option value="1">Setor 2</option>
+                    <option value="1">Setor 3</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Pesquisar</button>
+            <button type="reset" class="btn btn-default">Limpar Tela</button>
+        </form>
+    </div>
+
+    <a href="/OcorrenciasDP/Funcionarios/Cadastrar" class="btn btn-success">Cadastrar</a>
+
+</div>
+
+<br />
+<br />
+
+<div style="display:flex;justify-content:flex-end">
+    <b>Encontrado XX Resultados</b>
+</div>
+
+
+<table class="table table-hover" style="padding-top: 15px">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Setor</th>
+            <th scope="col">Encarregado</th>
+            <th scope="col">Experiência?</th>
+            <th scope="col">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+            <th scope="row">1</th>
+            <td>Nome Teste</td>
+            <td>Setor Teste</td>
+            <td>Encarregado Teste</td>
+            <td>Sim</td>
+            <td>
+
+                <a href="/OcorrenciasDP/Funcionarios/Atualizar/1/" class="btn btn-warning btn-sm">
+                    Alterar
+                </a>
+
+                <a href="/OcorrenciasDP/Funcionarios/Excluir/1/" onclick="return confirmaApagar();" on class="btn btn-danger btn-sm">
+                    Excluir
+                </a>
+
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">2</th>
+            <td>Nome 2 Teste</td>
+            <td>Setor 2 Teste</td>
+            <td>Encarregado 2 Teste</td>
+            <td>Não</td>
+            <td>
+
+                <a href="/OcorrenciasDP/Funcionarios/Atualizar/2/" class="btn btn-warning btn-sm">
+                    Alterar
+                </a>
+
+                <a href="/OcorrenciasDP/Funcionarios/Excluir/2/" onclick="return confirmaApagar();" on class="btn btn-danger btn-sm">
+                    Excluir
+                </a>
+
+            </td>
+        </tr>
+
+    </tbody>
+</table>

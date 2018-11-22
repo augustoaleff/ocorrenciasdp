@@ -29,7 +29,8 @@ namespace OcorrenciasDP.Library.Filters
                 context.Result = new RedirectToActionResult("Index", "Home", null);
             }
             
-            if(now.DayOfWeek == DayOfWeek.Saturday) //Sábado
+           
+            if(Equals(now.DayOfWeek,DayOfWeek.Saturday)) //Sábado
             {
                 if (context.Controller != null)
                 {
@@ -41,7 +42,8 @@ namespace OcorrenciasDP.Library.Filters
 
             }
 
-            if(now.DayOfWeek == DayOfWeek.Sunday) //Domingo
+
+            if(Equals(now.DayOfWeek,DayOfWeek.Sunday)) //Domingo
             {   
                 if(context.Controller != null)
                 {
@@ -50,6 +52,7 @@ namespace OcorrenciasDP.Library.Filters
                 }
 
                 context.Result = new RedirectToActionResult("Index","Home",null);
+            
             }
         }
     }

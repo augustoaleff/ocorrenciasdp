@@ -1,0 +1,97 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Cadastrar Funcionário";
+}
+
+<h2>Cadastro de Funcionário</h2>
+<br />
+
+<!--Voltar a página-->
+<div>
+    <a href="javascript:window.history.go(-1)" class="btn btn-default btn-lg">
+        <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+    </a>
+</div>
+
+<form action="OcorrenciasDP/Funcionarios/Cadastrar" method="post" style="width:50%">
+
+    <input type="hidden" name="id" value="" />
+    <input type="hidden" name="ativo" value="1" />
+
+    <div class="form-group col-md-auto">
+        <label for="nome">Nome</label>
+        <input type="text" name="nome" class="form-control" id="nome" value="" placeholder="" required>
+    </div>
+    
+
+    <div class="form-group p-2">
+        <label for="setor">Setor</label>
+        <select name="setor" id="setor" class="form-control mb-2" required>
+            <option value="">Setor 1</option>
+            <option value="">Setor 2</option>
+        </select>
+    </div>
+
+    <div class="form-group p-2">
+        <label for="encarregado">Encarregado</label>
+        <select name="encarregado" id="encarregado" class="form-control mb-2" required>
+            <option value="">Encarregado 1</option>
+            <option value="">Encarregado 2</option>
+        </select>
+
+    </div>
+
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" name="experiencia" class="checkbox" id="experiencia" onclick="return funcExperiencia();" placeholder="">Experiência?
+        </label>
+    </div>
+
+    <div id="exp_div" hidden>
+
+        <div class="form-group col-md-auto">
+            <label for="datainicio">Data Início</label>
+            <input type="date" name="datainicio" class="form-control" id="datainicio" value="" placeholder="" >
+        </div>
+
+        <div class="form-group col-md-auto">
+            <label for="periodo">Período (dias)</label>
+            <div class="input-group">
+                <input type="number" name="periodo" class="form-control" id="periodo" value="" placeholder="">
+                <div class="input-group-addon">dias</div>
+            </div>
+        </div>
+
+    </div>
+    <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
+    
+</form>
+
+<script type="text/javascript" language="javascript">
+
+    function funcExperiencia() {
+
+        var experiencia = document.getElementById("experiencia");
+        var datainicio = document.getElementById("datainicio");
+        var periodo = document.getElementById("periodo");
+        var div_exp = document.getElementById("exp_div")
+        
+        if (experiencia.checked) {
+
+            div_exp.hidden = false;
+
+            datainicio.required = true;
+            periodo.required = true;
+
+        } else {
+
+            div_exp.hidden = true;
+     
+            datainicio.required = false;
+            periodo.required = false;
+        }
+        
+    }
+    
+</script>

@@ -107,14 +107,21 @@
 <br />
 
 <div>
-    <strong>#ID: </strong> @Model.Id
+    <strong>#ID: </strong> 
+    @Model.Id
 </div>
 
 <br />
 
 <div>
-    <strong>Data: </strong>
-    @Globalization.DataExtensoBR(Model.Data) 
+    <strong>Data da Ocorrência: </strong>
+    @Globalization.DataExtensoBR(Model.Data)
+</div>
+<br />
+
+<div>
+    <strong>Data de Envio: </strong>
+    @Globalization.DataHoraCurtaBR(Model.DataEnvio)
 </div>
 
 <br />
@@ -183,4 +190,6 @@
     <strong>Anexo: </strong>
     <a href="\Relatorio\Download?filename=@string.Concat(Model.Id.ToString(),"_",Model.Anexo)">@Model.Anexo</a>
 </div>
+
+
 

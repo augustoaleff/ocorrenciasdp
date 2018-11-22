@@ -17,8 +17,6 @@ namespace OcorrenciasDP.Controllers
 
     public class HomeController : Controller
     {
-   
-
         private DatabaseContext _db;
 
         readonly List<Setor> setores = new List<Setor>();
@@ -31,10 +29,11 @@ namespace OcorrenciasDP.Controllers
 
         public List<OcorrenciaViewModel> CarregarOcorrencias()
         {
-
-            var usuarios = _db.Int_Dp_Usuarios.ToList();
+            var usuarios = _db.Int_DP_Usuarios.ToList();
 
             int userID = HttpContext.Session.GetInt32("ID") ?? 0;
+
+            // Take(5) = SELECT TOP 5
 
             var relat = _db.Int_DP_Ocorrencias
                 .Where(a => a.Usuario.Id == userID)
@@ -44,7 +43,7 @@ namespace OcorrenciasDP.Controllers
 
             List<OcorrenciaViewModel> ocorVM = new List<OcorrenciaViewModel>();
 
-            foreach (var ocor in relat)
+            foreach (Ocorrencia ocor in relat)
             {
                 OcorrenciaViewModel ocorrenciasVM = new OcorrenciaViewModel
                 {
@@ -56,20 +55,19 @@ namespace OcorrenciasDP.Controllers
 
                 ocorVM.Add(ocorrenciasVM);
             }
-
             return ocorVM;
         }
 
         public void ProcurarMensagens()
         {
-            var relat2 = _db.Int_DP_Mensagens
-                       .OrderByDescending(b => b.Data)
-                       .Take(5)
-                       .ToList();
+            List<Mensagem> relat2 = _db.Int_DP_Mensagens
+                         .OrderByDescending(b => b.Data)
+                         .Take(5)
+                         .ToList();
 
             List<Mensagem> msgVM = new List<Mensagem>();
 
-            foreach (var msg in relat2)
+            foreach (Mensagem msg in relat2)
             {
                 Mensagem mensagem = new Mensagem
                 {
@@ -99,14 +97,14 @@ namespace OcorrenciasDP.Controllers
 
             int userId = HttpContext.Session.GetInt32("ID") ?? 0;
 
-            var dataUltimoAcesso = _db.Int_Dp_Usuarios
+            DateTime dataUltimoAcesso = _db.Int_DP_Usuarios
                                    .Where(a => a.Id == userId)
                                    .Select(s => s.UltimoLogin)
                                    .FirstOrDefault();
 
             DateTime dataUltimoAcesso2 = Globalization.ConverterData(HttpContext.Session.GetString("UltimoAcesso"));
 
-            var mensagem = _db.Int_DP_Mensagens
+            List<Mensagem> mensagem = _db.Int_DP_Mensagens
                             .Where(a => a.Data >= dataUltimoAcesso2)
                             .OrderByDescending(b => b.Data)
                             .ToList();
@@ -117,7 +115,6 @@ namespace OcorrenciasDP.Controllers
             }
 
             HttpContext.Session.SetString("Visualizado", "true");
-
         }
 
         [Login]
@@ -152,10 +149,10 @@ namespace OcorrenciasDP.Controllers
         [HttpPost]
         public ActionResult Index([FromForm]Usuario usuario)
         {
-            if (ModelState.IsValid) //Se a autenticação é válida
+            if(ModelState.IsValid) //Se a autenticação é válida
             {
                 //Verifica se o login existe no banco
-                Usuario vLogin = _db.Int_Dp_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
+                Usuario vLogin = _db.Int_DP_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
 
                 //Se existir ele entra no if
                 if (vLogin != null)
@@ -164,7 +161,7 @@ namespace OcorrenciasDP.Controllers
                     if (vLogin.Ativo == 1)
                     {
                         //Verifica se a senha está correta
-                        if (Equals(vLogin.Senha, usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").ToLower()))
+                        if (Equals(vLogin.Senha, usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").Replace("'","").ToLower()))
                         {
                             try
                             {
@@ -182,7 +179,7 @@ namespace OcorrenciasDP.Controllers
                                 log.LogIn(vLogin.Id);
                                 _db.Int_DP_Logs.Add(log);
 
-                                _db.SaveChangesAsync(); //Salvar por método assíncrono
+                                _db.SaveChanges();
 
                                 return RedirectToAction("Inicio", "Home"); //Vai para a página de Início
 
@@ -193,8 +190,9 @@ namespace OcorrenciasDP.Controllers
                                 log.LogIn_Erro(vLogin.Id, exp);
                                 _db.Int_DP_Logs.Add(log);
 
-                                _db.SaveChangesAsync(); //Salvar por método assíncrono
+                                _db.SaveChanges();
                                 HttpContext.Session.Clear(); //Limpa a sessão para voltar ao início
+                                TempData["MensagemErro"] = "Ocorreu um erro ao tentar logar";
 
                                 return RedirectToAction("Index", "Home");
                             }

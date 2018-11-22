@@ -19,6 +19,8 @@ namespace OcorrenciasDP.Models
         public int OcorrenciaViewModelId { get; set; }
 
         public DateTime Data { get; set; } //Ocorrência
+
+        public DateTime DataEnvio { get; set; } //Data Envio
          
         public string Descricao { get; set; } //Ocorrência
 

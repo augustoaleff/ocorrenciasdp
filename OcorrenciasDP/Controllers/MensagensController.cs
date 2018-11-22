@@ -169,7 +169,7 @@ namespace OcorrenciasDP.Controllers
 
                 }
 
-                List<int> vUsuarios = _db.Int_Dp_Usuarios
+                List<int> vUsuarios = _db.Int_DP_Usuarios
                                 .Where(a => a.Ativo == 1)
                                 .Select(s => s.Id)
                                 .ToList();
@@ -183,7 +183,7 @@ namespace OcorrenciasDP.Controllers
 
                     foreach (var id in usuariosNaoEnviados)
                     {
-                        string email = _db.Int_Dp_Usuarios
+                        string email = _db.Int_DP_Usuarios
                                      .Where(a => a.Id == id)
                                      .Select(s => s.Email)
                                      .FirstOrDefault();
@@ -263,7 +263,7 @@ namespace OcorrenciasDP.Controllers
         {
             int pageNumber = page ?? 1;
 
-            var vMensagem = _db.Int_DP_Mensagens.Find(id);
+            Mensagem vMensagem = _db.Int_DP_Mensagens.Find(id);
             if (vMensagem.Titulo == null)
             {
                 vMensagem.Titulo = "Sem Título";
@@ -274,7 +274,7 @@ namespace OcorrenciasDP.Controllers
 
             List<Mensagem> msgVM = ConsultarMensagens();
 
-            var resultadoPaginado = msgVM.ToPagedList(pageNumber, paginasPagedList);
+            IPagedList<Mensagem> resultadoPaginado = msgVM.ToPagedList(pageNumber, paginasPagedList);
             return View("Index", resultadoPaginado);
 
         }
@@ -291,7 +291,7 @@ namespace OcorrenciasDP.Controllers
             int idNotNull = HttpContext.Session.GetInt32("ID") ?? 0;
 
 
-            var vRemetente = _db.Int_Dp_Usuarios.Find(idNotNull);
+            Usuario vRemetente = _db.Int_DP_Usuarios.Find(idNotNull);
             mensagem.Remetente = vRemetente;
             mensagem.Data = Globalization.HoraAtualBR();
 
@@ -301,7 +301,6 @@ namespace OcorrenciasDP.Controllers
 
                 try
                 {
-
                     _db.Int_DP_Mensagens.Add(mensagem);
                     _db.SaveChanges();
 
@@ -318,7 +317,7 @@ namespace OcorrenciasDP.Controllers
                     _db.Int_DP_Logs.Add(log);
 
                     TempData["MensagemNaoEnviada"] = "Ocorreu um erro ao enviar a mensagem, por favor, envie novamente!";
-
+                
                 }
                 finally
                 {
@@ -330,8 +329,10 @@ namespace OcorrenciasDP.Controllers
             }
             else
             {
+
                 TempData["MensagemNaoEnviada"] = "Ocorreu um erro ao enviar a mensagem, por favor, envie novamente!";
                 return RedirectToAction("Index");
+
             }
 
 

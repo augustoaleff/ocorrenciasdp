@@ -1,6 +1,7 @@
 ﻿@model X.PagedList.IPagedList<OcorrenciasDP.ViewModels.UsuariosViewModel>
 @using X.PagedList;
 @using X.PagedList.Mvc.Core;
+@using OcorrenciasDP.Library.Globalization;
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -32,25 +33,25 @@
     }
 
 }
-@if (TempData["CadastroUserOK"] != null)
+@if (TempData["CadastroUserOK"] != null)//Cadastro de Usuário OK
 {
     <div class="alert alert-success" role="alert">
         @TempData["CadastroUserOK"]
     </div>
 }
-@if (TempData["UsuarioExcluido"] != null)
+@if (TempData["UsuarioExcluido"] != null)//Exclusão de Usuário OK
 {
     <div class="alert alert-danger" role="alert">
         @TempData["UsuarioExcluido"]
     </div>
 }
-@if (TempData["UsuarioErro"] != null)
+@if (TempData["UsuarioErro"] != null)//Erro ao Excluir,Alterar Usuário
 {
     <div class="alert alert-danger" role="alert">
         @TempData["UsuarioErro"]
     </div>
 }
-@if (TempData["CadastroUserNotOK"] != null)
+@if (TempData["CadastroUserNotOK"] != null)//Erro ao cadastrar o Usuário
 {
     <div class="alert alert-danger" role="alert">
         @TempData["CadastroUserNotOK"]
@@ -84,17 +85,19 @@
                 {
                     <option value="@depto.Id">@depto.Nome</option>
                 }
-
-            }
-        </select>
-    </div>
+            } 
+        </select> 
+    </div> 
     <button type="submit" class="btn btn-primary">Pesquisar</button>
-</form>
-
+    <button type="reset" class="btn btn-default">Limpar Tela</button>
+</form> 
+ 
 <br />
-<div style=" display: flex;justify-content:flex-end">
-    <b>Total de Resultados: </b> @Model.TotalItemCount
+
+<div style="display: flex;justify-content:flex-end">
+    <b>Total de Resultados: @Model.TotalItemCount </b> 
 </div>
+
 <table class="table table-hover" style="padding-top: 15px">
     <thead>
         <tr>
@@ -129,12 +132,14 @@
                     <td>@user.Perfil</td>
                 }
 
-                <td>@user.UltimoAcesso.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                <td>@Globalization.DataHoraCurtaBR(user.UltimoAcesso)</td>
 
                 <td>
+
                     <a href="/OcorrenciasDP/Usuarios/Atualizar/@user.Id/" class="btn btn-warning btn-sm">
                         Alterar
                     </a>
+
                     <a href="/OcorrenciasDP/Usuarios/Excluir/@user.Id/" onclick="return confirmaApagar();" on class="btn btn-danger btn-sm">
                         Excluir
                     </a>

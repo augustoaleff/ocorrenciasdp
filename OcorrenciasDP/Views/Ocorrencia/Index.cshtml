@@ -6,6 +6,8 @@
     ViewData["Title"] = "Ocorrências";
     string nome_login = Context.Session.GetString("Login");
     string setor_login = Context.Session.GetString("Setor");
+
+
 }
 
 @{
@@ -47,7 +49,7 @@
 <h2>Inclusão de Ocorrência</h2>
 <br />
 
-<form method="post" action="\OcorrenciasDP\ocorrencia\index\" enctype="multipart/form-data">
+<form method="post" action="\OcorrenciasDP\Ocorrencia\Index\" enctype="multipart/form-data">
 
     <input type="hidden" id="update" name="update" value="@update" />
     <input type="hidden" name="id" value="@ViewBag.Ocorrencia.Id" />
@@ -70,6 +72,33 @@
     </div>
 
     <br />
+
+    <!-- Experiencia -->
+    @if (ViewBag.Experiencia != null)
+    {
+
+        @foreach (var exp in ViewBag.Experiencia)
+        {
+            <b>Nome: </b>
+            @exp.Nome
+
+            <b>Data Início:</b>
+            @exp.Data
+
+            <div style="border:thin;border-color:black;border-collapse:initial">
+
+                <strong>Nota: </strong>
+                <input type="range" />
+                <strong>Avaliação: </strong>
+                <textarea required class="form-control" name="exp_cod" placeholder="Digite a Avaliação do Funcionário..."></textarea>
+
+                <br />
+            </div>
+
+        }
+    }
+
+    <!--Radio - Atrasado-->
     <div style="display:flex;flex-direction:row;align-items:flex-start;">
         <div style="width:40%;">
             <label>
@@ -110,6 +139,7 @@
         </div>
     </div>
 
+    <!--Radio - Cedo -->
     <div style="display:flex;flex-direction:row;align-items:flex-start;">
         <div style="width:40%;">
             <label>
@@ -149,6 +179,7 @@
         </div>
     </div>
 
+    <!--Radio - Advertência-->
     <div style="display:flex;flex-direction:row;align-items:flex-start;">
         <div style="width:40%;">
             <label>
@@ -189,6 +220,7 @@
         </div>
     </div>
 
+    <!--Radio - Acidente-->
     <div style="display:flex;flex-direction:row;align-items:flex-start;">
         <div style="width:40%;">
             <label>
@@ -229,6 +261,7 @@
         </div>
     </div>
 
+    <!--Radio - Outro-->
     <div style="display:flex;flex-direction:row;align-items:flex-start;">
         <div style="width:40%;">
             <label>
@@ -277,7 +310,6 @@
         <strong style="color:#FF0000">@Html.ValidationMessage("descricao")</strong>
     </div>
 
-
     <div class="custom-file">
         <input type="file" class="custom-file-input" value="@ViewBag.Anexo" name="anexo" id="anexo" lang="pt-br">
         <label class="custom-file-label" for="anexo">Selecionar Arquivo</label>
@@ -294,28 +326,24 @@
 {
     @if (ViewBag.Calendario.Count > 0)
     {
-
         <h3>Faltam enviar as seguintes ocorrências: </h3>
-
 
         <div style="display:block;width:75%">
 
             @foreach (var dia in ViewBag.Calendario)
             {
-
                 <button class="btn-group btn-danger" id="@dia.ToString("yyyy-MM-dd")"
                         onclick="return document.getElementById('data').setAttribute('value',this.id)"
                         value="@dia.ToString("yyyy-MM-dd")">
-                    @dia.ToString("dd/MM/yyyy")
+                    @Globalization.DataCurtaBR(dia)
                 </button>
-
             }
-
 
         </div>
     }
 }
-<!--################-->
+
+<!--##########-->
 
 @section Scripts{
     <script language="javascript">
@@ -340,15 +368,16 @@
         var advertencia = document.getElementById("advertencia_sim");
         var acidente = document.getElementById("acidente_sim");
         var outra = document.getElementById("outra_sim");
+        //var experiencia = document.getElementById("experiencia_sim");
 
         var atrasado2 = document.getElementById("atrasado_nao");
         var cedo2 = document.getElementById("cedo_nao");
         var advertencia2 = document.getElementById("advertencia_nao");
         var acidente2 = document.getElementById("acidente_nao");
         var outra2 = document.getElementById("outra_nao");
+        //var experiencia2 = document.getElementById("experiencia_nao");
 
-
-        var data = document.getElementById("data")
+        var data = document.getElementById("data");
 
         function mostrarTextArea() {
             if (atrasado.checked == true || cedo.checked == true || advertencia.checked == true || acidente.checked == true || outra.checked == true) {
@@ -363,7 +392,6 @@
                 descricao_text.required = false; //Deixa como não Obrigatório
             }
         }
-
 
     </script>
 

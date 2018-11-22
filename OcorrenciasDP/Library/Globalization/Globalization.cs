@@ -19,6 +19,13 @@ namespace OcorrenciasDP.Library.Globalization
             return data.ToString("f", culture); //19 de setembro de 2018 14:30
         }
 
+        public static DateTime HojeBR()
+        {
+            DateTime data = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));
+            CultureInfo culture = new CultureInfo("pt-BR");
+            return data.Date; // Data Hoje sem Hora
+        }
+
         public static string DataHoraExtensoBR(DateTime data)
         {
              CultureInfo culture = new CultureInfo("pt-BR");
@@ -37,10 +44,22 @@ namespace OcorrenciasDP.Library.Globalization
             return data.ToString("d", culture); // 19/09/2018
         }
 
+        public static string DataHoraCurtaBR(DateTime data)
+        {
+            CultureInfo culture = new CultureInfo("pt-BR");
+            return data.ToString("G", culture); // 19/09/2018 14:30:00
+        }
+
+        public static string DataHoraCurta_SemSegundosBR(DateTime data)
+        {
+            CultureInfo culture = new CultureInfo("pt-BR");
+            return data.ToString("g", culture); // 19/09/2018 14:30
+        }
+
         public static DateTime ConverterData(string data)
         {
             CultureInfo culture = new CultureInfo("pt-BR");
-            return DateTime.Parse(data, culture);
+            return DateTime.Parse(data, culture); 
         }
 
         public static string DataRelatorioPdfBR()

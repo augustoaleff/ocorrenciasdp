@@ -14,6 +14,7 @@ namespace OcorrenciasDP.Models
         [Required(ErrorMessage ="Esse Campo é Obrigatório")]
         public DateTime Data { get; set; }
 
+        public DateTime DataEnvio { get; set; }
        
         [MaxLength(3000, ErrorMessage ="Este campo deve conter no máximo 3000 caracteres")]
         public string Descricao { get; set; }
@@ -29,6 +30,7 @@ namespace OcorrenciasDP.Models
         public byte Acidente { get; set; }
         public byte Outro { get; set; }
 
+        
 
         public Ocorrencia()
         {
