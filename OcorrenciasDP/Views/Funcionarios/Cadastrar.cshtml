@@ -1,7 +1,69 @@
-﻿
+﻿@using OcorrenciasDP.Library.Globalization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Cadastrar Funcionário";
+
+}
+
+@{
+    int setor2,enc2;
+    string acao, experiencia,data_exp;
+    int periodo_dias = 0;
+
+    if (ViewBag.Func.Setor != null)
+    {
+        setor2 = ViewBag.Func.Setor.Id;
+    }
+    else
+    {
+        setor2 = 0;
+    }
+
+    if (ViewBag.Func.Experiencia == 1)
+    {
+        experiencia = "true";
+
+        //TimeSpan periodo = ViewBag.Func.Exp_DataFim - ViewBag.Func.Exp_DataInicio;
+        periodo_dias = ViewBag.Func.Exp_DataFim.Subtract(ViewBag.Func.Exp_DataInicio).Days;
+        //periodo_dias = periodo.Days;
+
+    }
+    else
+    {
+        experiencia = "";
+        //experiencia = "true";
+    }
+
+
+    if (ViewBag.Func.Id != null && ViewBag.Func.Id != 0)
+    {
+        acao = "/OcorrenciasDP/Funcionarios/Atualizar";
+    }
+    else
+    {
+        acao = "/OcorrenciasDP/Funcionarios/Cadastrar";
+        experiencia = "true";
+    }
+
+    if (ViewBag.Func != null)
+    {
+        data_exp = ViewBag.Func.Exp_DataInicio.ToString("yyyy-MM-dd");
+    }
+    else
+    {
+        data_exp = Globalization.HoraAtualBR().ToString("yyyy-MM-dd");
+    }
+
+    if (ViewBag.Func.Encarregado != null)
+    {
+        enc2 = ViewBag.Func.Encarregado.Id;
+    }
+    else
+    {
+        enc2 = 0;
+    }
+
+
 }
 
 <h2>Cadastro de Funcionário</h2>
@@ -14,60 +76,122 @@
     </a>
 </div>
 
-<form action="OcorrenciasDP/Funcionarios/Cadastrar" method="post" style="width:50%">
+<form action="@acao" method="post" style="width:50%">
 
-    <input type="hidden" name="id" value="" />
+    <input type="hidden" name="id" value="@ViewBag.Func.Id" />
     <input type="hidden" name="ativo" value="1" />
 
     <div class="form-group col-md-auto">
         <label for="nome">Nome</label>
-        <input type="text" name="nome" class="form-control" id="nome" value="" placeholder="" required>
+
+        @if (ViewBag.Func.Id != 0 && ViewBag.Func.Id != null)
+        {
+            <input type="text" name="nome" class="form-control" id="nome" value="@ViewBag.Func.Nome" placeholder="" disabled>
+        }
+        else
+        {
+            <input type="text" name="nome" class="form-control" id="nome" value="@ViewBag.Func.Nome" placeholder="" required>
+        }
+
     </div>
-    
 
     <div class="form-group p-2">
         <label for="setor">Setor</label>
-        <select name="setor" id="setor" class="form-control mb-2" required>
-            <option value="">Setor 1</option>
-            <option value="">Setor 2</option>
+        <select name="setor.id" id="setor" class="form-control mb-2" required>
+            @foreach (var setor in ViewBag.Setores2)
+            {
+
+                if (setor.Id == setor2)
+                {
+                    <option value="@setor.Id" selected>@setor.Nome</option>
+                }
+                else
+                {
+                    <option value="@setor.Id">@setor.Nome</option>
+                }
+
+            }
         </select>
+
     </div>
 
     <div class="form-group p-2">
         <label for="encarregado">Encarregado</label>
-        <select name="encarregado" id="encarregado" class="form-control mb-2" required>
-            <option value="">Encarregado 1</option>
-            <option value="">Encarregado 2</option>
+        <select name="encarregado.id" id="encarregado" class="form-control mb-2" required>
+            @foreach (var enc in ViewBag.Encarregados)
+            {
+                if (enc.Id == enc2)
+                {
+                    <option value="@enc.Id" selected>@enc.Nome</option>
+                }
+                else
+                {
+                    <option value="@enc.Id">@enc.Nome</option>
+                }
+            }
+
         </select>
 
     </div>
 
     <div class="checkbox">
         <label>
-            <input type="checkbox" name="experiencia" class="checkbox" id="experiencia" onclick="return funcExperiencia();" placeholder="">Experiência?
+            @if (ViewBag.Func.Experiencia == 0)
+            {
+                <input type="checkbox" name="experiencia" class="checkbox" id="experiencia" value="@experiencia" onclick="return funcExperiencia();" placeholder="">
+            }
+            else
+            {
+               <input type="checkbox" name="experiencia" class="checkbox" id="experiencia" value="@experiencia" onclick="return funcExperiencia();" placeholder="" checked>
+            }Experiência ?
+
         </label>
+
     </div>
 
-    <div id="exp_div" hidden>
-
-        <div class="form-group col-md-auto">
-            <label for="datainicio">Data Início</label>
-            <input type="date" name="datainicio" class="form-control" id="datainicio" value="" placeholder="" >
-        </div>
-
-        <div class="form-group col-md-auto">
-            <label for="periodo">Período (dias)</label>
-            <div class="input-group">
-                <input type="number" name="periodo" class="form-control" id="periodo" value="" placeholder="">
-                <div class="input-group-addon">dias</div>
+    @if (ViewBag.Func.Experiencia == 0)
+    {
+        <div id="exp_div" hidden>
+            <div class="form-group col-md-auto">
+                <label for="datainicio">Data Início</label>
+                <input type="date" name="exp_datainicio" class="form-control" id="datainicio" value="@data_exp" placeholder="">
             </div>
-        </div>
 
-    </div>
+            <div class="form-group col-md-auto">
+                <label for="periodo">Período (dias)</label>
+                <div class="input-group">
+                    <input type="number" name="exp_periodo" class="form-control" id="periodo" value="@periodo_dias" placeholder="">
+                    <div class="input-group-addon">dias</div>
+                </div>
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <div id="exp_div">
+
+            <div class="form-group col-md-auto">
+                <label for="datainicio">Data Início</label>
+                <input type="date" name="exp_datainicio" class="form-control" id="datainicio" value="@data_exp" placeholder="">
+            </div>
+
+            <div class="form-group col-md-auto">
+                <label for="periodo">Período (dias)</label>
+                <div class="input-group">
+                    <input type="number" name="exp_periodo" class="form-control" id="periodo" value="@periodo_dias" placeholder="">
+                    <div class="input-group-addon">dias</div>
+                </div>
+            </div>
+
+        </div>
+    }
+
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
+    <button type="reset" class="btn btn-default">Limpa Tela</button>
     
 </form>
-
+    
 <script type="text/javascript" language="javascript">
 
     function funcExperiencia() {
@@ -75,23 +199,22 @@
         var experiencia = document.getElementById("experiencia");
         var datainicio = document.getElementById("datainicio");
         var periodo = document.getElementById("periodo");
-        var div_exp = document.getElementById("exp_div")
-        
-        if (experiencia.checked) {
+        var div_exp = document.getElementById("exp_div");
 
+        if (experiencia.checked) {
+        
             div_exp.hidden = false;
 
             datainicio.required = true;
             periodo.required = true;
 
-        } else {
+        }else{
 
             div_exp.hidden = true;
-     
+
             datainicio.required = false;
             periodo.required = false;
         }
-        
     }
-    
+
 </script>

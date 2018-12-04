@@ -84,11 +84,10 @@ namespace OcorrenciasDP.Controllers
             ViewBag.PesquisaSetor = setor;
             ViewBag.PesquisaNome = nome;
 
-            var resultadoPaginado = usuariosVM.ToPagedList(pageNumber, 5);
-
+            IPagedList<UsuariosViewModel> resultadoPaginado = usuariosVM.ToPagedList(pageNumber, 5);
 
             return View("Index", resultadoPaginado);
-
+        
         }
         
         [HttpGet]
@@ -364,9 +363,6 @@ namespace OcorrenciasDP.Controllers
             usuario.Setor = vSetor;
 
             ViewBag.User = new Usuario();
-            ViewBag.Setores2 = setores2;
-            ViewBag.Setores2 = setores2;
-            ViewBag.Setores2 = setores2;
             ViewBag.Setores2 = setores2;
 
             if (ModelState.IsValid)

@@ -17,6 +17,7 @@ namespace OcorrenciasDP.Database
         public DbSet<Log> Int_DP_Logs { get; set; }
         public DbSet<Feriado> Int_DP_Feriados { get; set; }
         public DbSet<Funcionario> Int_DP_Funcionarios { get; set; }
+        public DbSet<ValidacaoSenha> Int_DP_ValidSenhas { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {

@@ -11,6 +11,7 @@ using OcorrenciasDP.Database;
 using OcorrenciasDP.Library.Filters;
 using OcorrenciasDP.Library.Globalization;
 using OcorrenciasDP.Models;
+using OcorrenciasDP.Library.Mail;
 
 namespace OcorrenciasDP.Controllers
 {
@@ -300,6 +301,146 @@ namespace OcorrenciasDP.Controllers
             ProcurarMensagens();
             List<OcorrenciaViewModel> ocorVM = CarregarOcorrencias();
             return View("Inicio", ocorVM);
+
+        }
+
+
+        [HttpPost]
+        public ActionResult TrocarSenha([FromForm]int id, [FromForm]string nome, [FromForm]string email, [FromForm]string senha, [FromForm]string confimarsenha)
+        {
+
+            Usuario usuario = new Usuario
+            {
+                Id = id,
+                Nome = nome,
+                Email = email
+            };
+
+            ViewBag.UsuarioSenha = usuario;
+
+            ViewBag.Senha = senha;
+            
+            if (usuario.Senha.ToLower() == confimarsenha.ToLower())
+            {
+
+                var vUsuario = _db.Int_DP_Usuarios.Find(usuario.Id);
+                vUsuario.Senha = senha.ToLower();
+
+                _db.SaveChanges();
+
+                TempData["TrocaSenha"] = "Senha Alterada com sucesso";
+                return RedirectToAction("Index");
+                
+            }
+            else
+            {
+              
+                TempData["SenhaNaoConfere"] = "Senhas não conferem!";
+                return View();
+            }
+
+
+        }
+
+        public ActionResult TrocarSenha()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult TrocarSenha(long? key)
+        {
+            long key2 = key ?? 1;
+
+            DateTime agora = Globalization.HoraAtualBR();
+            var vKey = _db.Int_DP_ValidSenhas.Find(key2);
+            //var vKey = _db.Int_DP_ValidSenhas.Where(a => a.Id == key2).FirstOrDefault();
+            //vKey.Usuario.Id = _db.Int_DP_ValidSenhas.Where(a => a.Id == key2).Select(s => s.Usuario.Id).FirstOrDefault();
+
+            if(vKey != null)
+            {
+
+               if(vKey.DataExpiracao >= agora)
+                {
+
+                    if(vKey.Utilizado == 0)
+                    {
+                        Usuario usuario = _db.Int_DP_Usuarios.Find(vKey.Usuario);
+                  
+                        vKey.Utilizado = 1;
+                        _db.SaveChanges();
+
+                        ViewBag.Senha = "";
+                        ViewBag.UsuarioSenha = usuario;
+                        ViewBag.TrocarSenha = vKey;
+                        return View();
+                    }
+                    else
+                    {
+                        TempData["TrocaSenhaNotOK"] = "Link já Utilizado";
+                        return RedirectToAction("Index");
+                    }
+
+
+                }
+                else
+                {
+                    TempData["TrocaSenhaNotOK"] = "Link Expirado";
+                    return RedirectToAction("Index");
+                }
+
+
+
+            }
+            else
+            {
+                TempData["TrocaSenhaNotOK"] = "Link Inválido";
+                return RedirectToAction("Index");
+
+            }
+
+        }
+
+        [HttpPost]
+        public ActionResult EnviarLinkSenha([FromForm]string email)
+        {
+            string codigo;
+            DateTime agora = Globalization.HoraAtualBR();
+
+
+            email.ToLower();
+
+            var vEmail = _db.Int_DP_Usuarios.Where(a => a.Email == email && a.Ativo == 1).FirstOrDefault();
+
+            if (vEmail != null)
+            {
+                codigo = vEmail.Id.ToString() + agora.Minute.ToString() + agora.Month.ToString() + agora.Day.ToString() +
+                         agora.Year.ToString() + agora.Second.ToString() + agora.Hour.ToString();
+
+                ValidacaoSenha valid = new ValidacaoSenha
+                {
+                    Id = long.Parse(codigo),
+                    Data = agora,
+                    DataExpiracao = agora.AddHours(5),
+                    Utilizado = 0,
+                    Usuario = vEmail.Id
+                };
+
+                _db.Int_DP_ValidSenhas.Add(valid);
+                _db.SaveChanges();
+
+                Library.Mail.EnviarLinkSenha.EnviarLinkTrocarSenha(email, codigo);
+
+                TempData["TrocaSenhaOK"] = "Um link foi enviado ao seu e-mail com instruções para trocar a senha";
+
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                TempData["TrocaSenhaNotOK"] = "Esta email não está cadastrado no sistema";
+
+                return RedirectToAction("Index");
+            }
 
         }
 

@@ -13,6 +13,20 @@
     </div>
 }
 
+@if (TempData["TrocaSenhaOK"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["TrocaSenhaOK"]
+    </div>
+}
+
+@if (TempData["TrocaSenhaNotOK"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["TrocaSenhaNotOK"]
+    </div>
+}
+
 <h1>Efetue o seu login</h1> <br />
 <form method="post" action="/OcorrenciasDP/home/index">
     <div class="form-group">
@@ -30,6 +44,35 @@
     <button type="submit" class="btn btn-lg btn-primary">Entrar</button>
 
 </form>
+<br />
+<button type="button" data-toggle="modal" data-target="#modalEsqueceuSenha" class="btn-default btn-sm">Esqueceu sua Senha?  <span class="glyphicon glyphicon-refresh"></span></button>
 
 <br />
 
+<div class="modal fade" id="modalEsqueceuSenha" tabindex="-1" role="dialog" aria-labelledby="modalEsqueceuSenhaTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalEsqueceuSenhaTitulo">Enviar Lembrete</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="\OcorrenciasDP\Home\EnviarLinkSenha">
+                    <div class="form-group col-md-auto">
+                        <label for="dias">Digite o seu Email: </label>
+                        <input type="email" name="email" class="form-control" id="email" required>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

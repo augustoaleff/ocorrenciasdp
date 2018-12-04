@@ -17,6 +17,7 @@ namespace OcorrenciasDP.Models
         public int UsuarioAlterado { get; set; }
         public long Mensagem { get; set; }
         public string Obs { get; set; }
+        public long Funcionario { get; set; }
         
         public void LogIn(int usuario)
         {
@@ -238,5 +239,41 @@ namespace OcorrenciasDP.Models
             this.Tipo = 901; // Outro (Erro)
             this.Obs = "ERRO: " + e.Message + ", " + descricao;
         }
+
+        public void CadastrarFuncionario(int usuario, long funcionario)
+        {
+            this.Data = Globalization.HoraAtualBR();
+            this.Usuario = usuario;
+            this.Funcionario = funcionario;
+            this.Tipo = 602; //Criação de Usuario com Sucesso
+        }
+
+        public void CadastrarFuncionario_Erro(int usuario, long funcionario, Exception exp)
+        {
+            this.Data = Globalization.HoraAtualBR();
+            this.Usuario = usuario;
+            this.Funcionario = funcionario;
+            this.Obs = "ERRO: " + exp.Message;
+            this.Tipo = 601; //Criação de Funcionario com Sucesso
+        }
+
+        public void AlterarFuncionario(int usuario, long funcionario)
+        {
+            this.Data = Globalization.HoraAtualBR();
+            this.Usuario = usuario;
+            this.Funcionario = funcionario;
+            this.Tipo = 604; //Alteração de Funcionario com Erro
+        }
+
+        public void AlterarFuncionario_Erro(int usuario, long funcionario, Exception exp)
+        {
+            this.Data = Globalization.HoraAtualBR();
+            this.Usuario = usuario;
+            this.Funcionario = funcionario;
+            this.Tipo = 604; //Alteração de Funcionario com Sucesso
+            this.Obs = "ERRO: " + exp.Message;
+        }
+
+
     }
 }

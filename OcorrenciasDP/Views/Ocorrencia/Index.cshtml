@@ -6,8 +6,6 @@
     ViewData["Title"] = "Ocorrências";
     string nome_login = Context.Session.GetString("Login");
     string setor_login = Context.Session.GetString("Setor");
-
-
 }
 
 @{
@@ -90,7 +88,7 @@
                 <strong>Nota: </strong>
                 <input type="range" />
                 <strong>Avaliação: </strong>
-                <textarea required class="form-control" name="exp_cod" placeholder="Digite a Avaliação do Funcionário..."></textarea>
+                <textarea class="form-control" name="exp_cod" placeholder="Digite a Avaliação do Funcionário..." required></textarea>
 
                 <br />
             </div>
@@ -123,7 +121,6 @@
             }
             @if (ViewBag.Ocorrencia.Atrasado == 0)
             {
-
                 <div class="form-check input-group">
                     <input class="form-check-input" type="radio" name="atrasado" id="atrasado_nao" value="0" checked onclick="return esconderTextArea();">
                     <label class="form-check-label" for="atrasado_nao">Não</label>

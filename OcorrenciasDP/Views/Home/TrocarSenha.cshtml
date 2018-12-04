@@ -1,0 +1,61 @@
+﻿@model OcorrenciasDP.Models.ValidacaoSenha
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml"; ;
+}
+@{
+    ViewData["Title"] = "Trocar Senha";
+}
+
+<h2>Trocar Senha</h2>
+<br />
+
+<br />
+<form method="post" action="/OcorrenciasDP/Home/TrocarSenha" style="width:50%">
+  
+        <input type="hidden" name="id" value="@ViewBag.UsuarioSenha.Id" />
+
+   
+
+    <!--Nome-->
+    <div class="form-group col-md-auto">
+        <label for="nome">Nome</label>
+        
+            <input type="text" name="nome" class="form-control" id="nome" value="@ViewBag.UsuarioSenha.Nome" placeholder="" disabled>
+       
+
+    </div>
+    @Html.ValidationMessage("nome")
+
+    <!--Email-->
+    <div class="form-group col-md-auto">
+        <label for="email">E-mail</label>
+            <input type="email" name="email" class="form-control" id="email" value="@ViewBag.UsuarioSenha.Email" placeholder="" disabled>
+        
+    </div>
+    @Html.ValidationMessage("email")
+
+    <!--Senha-->
+
+    <div class="form-group col-md-auto">
+        <label for="senha">Senha</label>
+
+            <input type="password" name="senha" class="form-control" id="senha" value="@ViewBag.Senha" placeholder="" required>
+       
+
+    </div>
+    @Html.ValidationMessage("senha")
+
+    <!--Confirmar Senha-->
+    <div class="form-group col-md-auto">
+        <label for="confirmasenha">Confime a Senha</label>
+        <input type="password" name="confirmasenha" class="form-control" id="confirmasenha" value="" onkeydown="return document.getElementById('conferencia').hidden = true; " placeholder="" required>
+    </div>
+    @if (@TempData["SenhaNaoConfere"] != null)
+    {
+        <b id="conferencia" style="color:red">@TempData["SenhaNaoConfere"]  </b>
+    }
+
+    <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
+
+</form>
+

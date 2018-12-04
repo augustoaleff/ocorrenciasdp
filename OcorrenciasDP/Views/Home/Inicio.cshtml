@@ -77,26 +77,29 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (Mensagem msg in ViewBag.Msgs)
+        @if (ViewBag.Msgs.Count > 0)
         {
-            <tr>
-                <th scope="row">@msg.Data.Date.ToString("dd/MM/yyyy")</th>
-                <td>@msg.Titulo</td>
-                @if (msg.Conteudo.Length >= 100)
-                {
-                    <td>@msg.Conteudo.Substring(0, 100)</td>
-                }
-                else
-                {
-                    <td>@msg.Conteudo</td>
-                }
-                <td>
-                    <a href="/OcorrenciasDP/Home/DetalharMsg/@msg.Id" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar"
-                       data-valormodal="false" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                    </a>
-                </td>
-            </tr>
+            @foreach (Mensagem msg in ViewBag.Msgs)
+            {
+                <tr>
+                    <th scope="row">@msg.Data.Date.ToString("dd/MM/yyyy")</th>
+                    <td>@msg.Titulo</td>
+                    @if (msg.Conteudo.Length >= 100)
+                    {
+                        <td>@msg.Conteudo.Substring(0, 100)</td>
+                    }
+                    else
+                    {
+                        <td>@msg.Conteudo</td>
+                    }
+                    <td>
+                        <a href="/OcorrenciasDP/Home/DetalharMsg/@msg.Id" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar"
+                           data-valormodal="false" class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        </a>
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </table>
@@ -110,38 +113,42 @@
             <th scope="col">Data</th>
             <th scope="col">Descrição</th>
             <th scope="col">Anexo</th>
-        </tr>
+        </tr> 
     </thead>
     <tbody>
-        @foreach (var ocor in Model)
+        @if (Model.Count > 0)
         {
-            <tr>
-                <th scope="row">@ocor.Id</th>
-                <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
-                @if (ocor.Descricao.Length >= 100)
-                {
-                    <td>@ocor.Descricao.Substring(0, 100)</td>
-                }
-                else
-                {
-                    <td>@ocor.Descricao</td>
-                }
+            @foreach (var ocor in Model)
+            {
+                <tr>
+                    <th scope="row">@ocor.Id</th>
+                    <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
+                    @if (ocor.Descricao.Length >= 100)
+                    {
+                        <td>@ocor.Descricao.Substring(0, 100)</td>
+                    }
+                    else
+                    {
+                        <td>@ocor.Descricao</td>
+                    }
 
-                @if (ocor.Anexo != null)
-                {
-                    <td>
-                        <a href="\OcorrenciasDP\Home\Download?filename=@string.Concat(ocor.Id.ToString(), "_", ocor.Anexo)" aria-label="" alt="download"
-                           type="button" class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
-                        </a>
-                    </td>
-                }
-                else
-                {
-                    <td></td>
-                }
-            </tr>
+                    @if (ocor.Anexo != null)
+                    {
+                        <td>
+                            <a href="\OcorrenciasDP\Home\Download?filename=@string.Concat(ocor.Id.ToString(), "_", ocor.Anexo)" aria-label="" alt="download"
+                               type="button" class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
+                            </a>
+                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                </tr>
+            }
         }
+
     </tbody>
 </table>
 

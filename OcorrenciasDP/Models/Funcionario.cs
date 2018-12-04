@@ -10,9 +10,11 @@ namespace OcorrenciasDP.Models
         public long Id { get; set; }
         public string Nome { get; set; }
         public Usuario Encarregado { get; set; }
+        public Setor Setor { get; set; }
         public DateTime DataCadastro { get; set; }
         public Usuario CadastradoPor { get; set; } //Qual o usuário que cadastrou o funcionário.
         public byte Ativo { get; set; }
+        public int Loja { get; set; }
 
         //Experiência
         public byte Experiencia { get; set; }
