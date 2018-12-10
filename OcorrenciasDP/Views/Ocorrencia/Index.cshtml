@@ -10,6 +10,7 @@
 
 @{
     string data1, update;
+    DateTime agora = Globalization.HoraAtualBR();
 
     update = "false";
 
@@ -19,10 +20,16 @@
     }
     else
     {
-        data1 = Globalization.HoraAtualBR().ToString("yyyy-MM-dd");
+        if (ViewBag.Calendario == null)
+        {
+            data1 = Globalization.HoraAtualBR().ToString("yyyy-MM-dd");
+        }
+        else
+        {
+            data1 = DateTime.Parse(ViewBag.Calendario.Last());
+        }
     }
 }
-
 @if (TempData["MsgOcorrenciaOK"] != null)
 {
     <div class="alert alert-success" role="alert">
@@ -41,6 +48,14 @@
 {
     <div class="alert alert-danger" role="alert">
         @TempData["MsgOcorrenciaNotOK2"]
+    </div>
+}
+
+
+@if (TempData["MsgOcorrenciaAlerta"] != null)
+{
+    <div class="alert alert-warning" role="alert">
+        @TempData["MsgOcorrenciaAlerta"]
     </div>
 }
 
@@ -74,7 +89,6 @@
     <!-- Experiencia -->
     @if (ViewBag.Experiencia != null)
     {
-
         @foreach (var exp in ViewBag.Experiencia)
         {
             <b>Nome: </b>
@@ -327,14 +341,59 @@
 
         <div style="display:block;width:75%">
 
-            @foreach (var dia in ViewBag.Calendario)
-            {
-                <button class="btn-group btn-danger" id="@dia.ToString("yyyy-MM-dd")"
-                        onclick="return document.getElementById('data').setAttribute('value',this.id)"
-                        value="@dia.ToString("yyyy-MM-dd")">
-                    @Globalization.DataCurtaBR(dia)
-                </button>
+
+            @{
+                List<DateTime> dias = ViewBag.Calendario;
             }
+
+            @if (dias.Count > 3)
+            {
+                List<DateTime> dias3Primeiros = dias.GetRange(0, 3);
+                dias.RemoveRange(0, 3);
+
+                foreach (var day in dias3Primeiros)
+                {
+                    <button class="btn-group btn-danger" id="@day.ToString("yyyy-MM-dd")"
+                            onclick="return document.getElementById('data').setAttribute('value',this.id)"
+                            value="@day.ToString("yyyy-MM-dd")">
+                        @Globalization.DataCurtaBR(day)
+                    </button>
+                }
+
+                foreach (var day in dias)
+                {
+                    <button class="btn-group btn-default" id="@day.ToString("yyyy-MM-dd")"
+                            onclick="return document.getElementById('data').setAttribute('value',this.id)"
+                            value="@day.ToString("yyyy-MM-dd")" disabled>
+                        @Globalization.DataCurtaBR(day)
+                    </button>
+                }
+            }
+            else
+            {
+                foreach (var day in dias)
+                {
+                    <button class="btn-group btn-danger" id="@day.ToString("yyyy-MM-dd")"
+                            onclick="return document.getElementById('data').setAttribute('value',this.id)"
+                            onloadstart="return document.getElementById('data').setAttribute('disabled','false')"
+                            value="@day.ToString("yyyy-MM-dd")">
+                        @Globalization.DataCurtaBR(day)
+                    </button>
+                }
+            }
+            <!--  ANTIGO
+            foreach (var dia in ViewBag.Calendario)
+            {
+
+            <button class="btn-group btn-danger" id="dia.ToString("yyyy-MM-dd")"
+                    onclick="return document.getElementById('data').setAttribute('value',this.id)"
+                    value="dia.ToString("yyyy-MM-dd")">
+                Globalization.DataCurtaBR(dia)
+            </button>
+
+
+            }
+                 -->
 
         </div>
     }
@@ -388,6 +447,14 @@
                 descricao.hidden = true; //Esconde a Div
                 descricao_text.required = false; //Deixa como não Obrigatório
             }
+        }
+
+        function mostraAlerta() {
+            alert("Você possui ocorrencias à serem entregas");
+        }
+
+        function trocarData() {
+
         }
 
     </script>

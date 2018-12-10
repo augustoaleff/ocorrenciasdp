@@ -66,6 +66,7 @@
                     <th scope="col">#</th>
                     <th scope="col">Data</th>
                     <th scope="col">Usuário</th>
+                    <th scope="col">Loja</th>
                     <th scope="col">Setor</th>
                     <th scope="col">Descrição</th>
                 </tr>
@@ -73,20 +74,21 @@
             <tbody>
                 @foreach (var ocor in Model)
                 {
-                    <tr>
-                        <th scope="row">@ocor.Id</th>
-                        <td>@Globalization.DataCurtaBR(ocor.Data)</td>
-                        <td>@ocor.Nome</td>
-                        <td>@ocor.Setor</td>
-                        @if (ocor.Descricao.Length >= 50)
-                        {
-                            <td>@ocor.Descricao.Substring(0, 50)</td>
-                        }
-                        else
-                        {
-                            <td>@ocor.Descricao</td>
-                        }
-                    </tr>
+                <tr>
+                    <th scope="row">@ocor.Id</th>
+                    <td>@Globalization.DataCurtaBR(ocor.Data)</td>
+                    <td>@ocor.Nome</td>
+                    <td>@ocor.Loja</td>
+                    <td>@ocor.Setor</td>
+                    @if (ocor.Descricao.Length >= 50)
+                    {
+                        <td>@ocor.Descricao.Substring(0, 50)</td>
+                    }
+                    else
+                    {
+                        <td>@ocor.Descricao</td>
+                    }
+                </tr>
                 }
             </tbody>
 

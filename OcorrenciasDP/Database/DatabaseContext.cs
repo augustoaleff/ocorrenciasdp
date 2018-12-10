@@ -18,6 +18,7 @@ namespace OcorrenciasDP.Database
         public DbSet<Feriado> Int_DP_Feriados { get; set; }
         public DbSet<Funcionario> Int_DP_Funcionarios { get; set; }
         public DbSet<ValidacaoSenha> Int_DP_ValidSenhas { get; set; }
+        public DbSet<Loja> Int_Dp_Lojas { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {

@@ -12,7 +12,7 @@
 
 @{
     string nome;
-    int setor;
+    int setor, loja;
 
     if (ViewBag.PesquisaNome != null)
     {
@@ -23,10 +23,20 @@
         nome = "";
     }
 
+    if (ViewBag.PesquisaLoja != null)
+    {
+        loja = int.Parse(ViewBag.PesquisaLoja);
+    }
+    else
+    {
+        loja = 0;
+    }
+
     if (ViewBag.PesquisaSetor != null)
     {
         setor = int.Parse(ViewBag.PesquisaSetor);
     }
+
     else
     {
         setor = 0;
@@ -71,6 +81,22 @@
         <label for="nome">Nome</label>
         <input type="text" name="nome" class="form-control-plaintext" id="nome" value="@nome">
     </div>
+    <div class="form-group p-2">
+        <label for="loja">Loja</label>
+        <select name="loja" id="loja" class="form-control mb-2">
+            @foreach (var loja2 in ViewBag.Lojas)
+            {
+                if (loja2.Id == loja)
+                {
+                    <option value="@loja2.Id" selected>@loja2.Nome</option>
+                }
+                else
+                {
+                    <option value="@loja2.Id">@loja2.Nome</option>
+                }
+            }
+        </select>
+    </div>
 
     <div class="form-group p-2">
         <label for="setor">Setor</label>
@@ -85,9 +111,9 @@
                 {
                     <option value="@depto.Id">@depto.Nome</option>
                 }
-            } 
-        </select> 
-    </div> 
+            }
+        </select>
+    </div>
     <button type="submit" class="btn btn-primary">Pesquisar</button>
     <button type="reset" class="btn btn-default">Limpar Tela</button>
 </form> 
@@ -104,6 +130,7 @@
             <th scope="col">#</th>
             <th scope="col">Login</th>
             <th scope="col">Nome</th>
+            <th scope="col">Loja</th>
             <th scope="col">Setor</th>
             <th scope="col">Perfil</th>
             <th scope="col">Último Acesso</th>
@@ -118,6 +145,7 @@
                 <th scope="row">@user.Id</th>
                 <td>@user.Login.ToLower()</td>
                 <td>@user.Nome</td>
+                <td>@user.Loja</td>
                 <td>@user.Setor</td>
                 @if (user.Perfil == "admin")
                 {

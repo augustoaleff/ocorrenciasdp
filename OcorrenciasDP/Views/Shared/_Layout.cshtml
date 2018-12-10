@@ -8,7 +8,7 @@
     string UltimoLogin = String.Empty;
 
 
-    if(Context.Session.GetString("UltimoAcesso") != null)
+    if (Context.Session.GetString("UltimoAcesso") != null)
     {
         //CultureInfo culture = new CultureInfo("pt-BR");
         //UltimoLogin = Globalization.DataExtensoBR(DateTime.Parse(Context.Session.GetString("UltimoAcesso"),culture));
@@ -66,6 +66,44 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
+                @if (Login != null)
+                {
+                    @switch (Context.Session.GetInt32("Loja"))
+                    {
+                        case 1:
+                            <a class="navbar-brand" href="/OcorrenciasDP/Home/Inicio/">
+                                <img alt="Brand" src="~/Logos/eletroleste.png" height="30" />
+                            </a>
+                            break;
+                        case 2:
+                            <a class="navbar-brand" href="/OcorrenciasDP/Home/Inicio/">
+                                <img alt="Brand" src="~/Logos/mateubras.png" height="30" />
+                            </a>
+                            break;
+                        case 3:
+                            <a class="navbar-brand" href="/OcorrenciasDP/Home/Inicio/">
+                                <img alt="Brand" src="~/Logos/megaleste.png" height="30" />
+                            </a>
+                            break;
+                        case 4:
+                            <a class="navbar-brand" href="/OcorrenciasDP/Home/Inicio/">
+                                <img alt="Brand" src="~/Logos/megaleste.png" height="30" />
+                            </a>
+                            break;
+                        case 5:
+                            <a class="navbar-brand" href="/OcorrenciasDP/Home/Inicio/">
+                                <img alt="Brand" src="~/Logos/megaleste.png" height="30" />
+                            </a>
+                            break;
+                        case 6:
+                            <a class="navbar-brand" href="/OcorrenciasDP/Home/Inicio/">
+                                <img alt="Brand" src="~/Logos/megaleste.png" height="30" />
+                            </a>
+                            break;
+                    }
+
+                }
+
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
@@ -85,7 +123,8 @@
                             <li><a asp-area="" asp-controller="Relatorio" asp-action="Index">Relatório</a></li>
                             <li><a asp-area="" asp-controller="Usuarios" asp-action="Index">Usuários</a></li>
                             <li><a asp-area="" asp-controller="Mensagens" asp-action="Index">Mensagens</a></li>
-                            <li><a asp-area="" asp-controller="Funcionarios" asp-action="Index">Funcionários</a></li>
+                            <!--
+                            <li><a asp-area="" asp-controller="Funcionarios" asp-action="Index">Funcionários</a></li>-->
                         }
 
                         <li class="nav-item"><a asp-area="" asp-controller="Home" asp-action="Logout">Logout</a></li>
@@ -95,14 +134,12 @@
                     {
                         <li><a asp-area="" asp-controller="Home" asp-action="Index">Login</a></li>
                     }
-
-
-                    <li><a href="#">Seu Mural</a></li>
+  
 
 
                 </ul>
                 <span class="badge bg-primary">@Login</span>
-             
+
 
             </div>
         </div>
@@ -114,15 +151,15 @@
         @RenderBody()
         <hr />
         <footer style="display:flex;justify-content:space-between">
+            <div>
+                <p>&copy; @DateTime.Now.Year - OcorrenciasDP</p>
+            </div>
+            @if (UltimoLogin != String.Empty)
+            {
                 <div>
-                    <p>&copy; @DateTime.Now.Year - OcorrenciasDP</p>
+                    <p><strong>Último Acesso:</strong> @UltimoLogin</p>
                 </div>
-                @if (UltimoLogin != String.Empty)
-                {
-                    <div>
-                        <p><strong>Último Acesso:</strong> @UltimoLogin</p>
-                    </div>
-                }
+            }
         </footer>
     </div>
 

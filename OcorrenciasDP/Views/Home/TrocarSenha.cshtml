@@ -6,22 +6,27 @@
     ViewData["Title"] = "Trocar Senha";
 }
 
+@if (TempData["TrocaSenhaNotOK"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["TrocaSenhaNotOK"]
+    </div>
+}
+
 <h2>Trocar Senha</h2>
 <br />
 
 <br />
 <form method="post" action="/OcorrenciasDP/Home/TrocarSenha" style="width:50%">
-  
-        <input type="hidden" name="id" value="@ViewBag.UsuarioSenha.Id" />
 
-   
+    <input type="hidden" name="id" value="@ViewBag.IdSenha" />
+
 
     <!--Nome-->
     <div class="form-group col-md-auto">
         <label for="nome">Nome</label>
-        
-            <input type="text" name="nome" class="form-control" id="nome" value="@ViewBag.UsuarioSenha.Nome" placeholder="" disabled>
-       
+        <input type="text" class="form-control" value="@ViewBag.Nome" disabled />
+        <input type="hidden" name="nome" id="nome" value="@ViewBag.Nome" placeholder="" />
 
     </div>
     @Html.ValidationMessage("nome")
@@ -29,8 +34,9 @@
     <!--Email-->
     <div class="form-group col-md-auto">
         <label for="email">E-mail</label>
-            <input type="email" name="email" class="form-control" id="email" value="@ViewBag.UsuarioSenha.Email" placeholder="" disabled>
-        
+        <input type="text" class="form-control" value="@ViewBag.Email" placeholder="" disabled />
+        <input type="hidden" name="email" id="email" value="@ViewBag.Email" placeholder="" />
+
     </div>
     @Html.ValidationMessage("email")
 
@@ -39,8 +45,8 @@
     <div class="form-group col-md-auto">
         <label for="senha">Senha</label>
 
-            <input type="password" name="senha" class="form-control" id="senha" value="@ViewBag.Senha" placeholder="" required>
-       
+        <input type="password" name="senha" class="form-control" id="senha" value="@ViewBag.Senha" placeholder="" required>
+
 
     </div>
     @Html.ValidationMessage("senha")
@@ -50,9 +56,15 @@
         <label for="confirmasenha">Confime a Senha</label>
         <input type="password" name="confirmasenha" class="form-control" id="confirmasenha" value="" onkeydown="return document.getElementById('conferencia').hidden = true; " placeholder="" required>
     </div>
+
     @if (@TempData["SenhaNaoConfere"] != null)
     {
-        <b id="conferencia" style="color:red">@TempData["SenhaNaoConfere"]  </b>
+       
+        <div>
+            <b id="conferencia" style="color:red">@TempData["SenhaNaoConfere"]  </b>
+        </div>
+
+        <br />
     }
 
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>

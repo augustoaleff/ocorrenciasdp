@@ -7,7 +7,7 @@
 }
 @{
 
-    int setor;
+    int setor, loja;
     string acao;
     if(ViewBag.User.Setor != null)
     {
@@ -18,7 +18,16 @@
         setor = 0;
     }
 
-    if(ViewBag.User.Id != null && ViewBag.User.Id != 0)
+    if (ViewBag.User.Loja != null)
+    {
+        loja = ViewBag.User.Loja.Id;
+    }
+    else
+    {
+        loja = 0;
+    }
+
+    if (ViewBag.User.Id != null && ViewBag.User.Id != 0)
     {
         acao = "/OcorrenciasDP/Usuarios/Atualizar";
     }
@@ -48,7 +57,7 @@
 
 <br />
 <form method="post" action="@acao" style="width:50%">
-    
+
     <input type="hidden" name="id" value="@ViewBag.User.Id" />
     <input type="hidden" name="ativo" value="1" />
 
@@ -107,6 +116,23 @@
         </select>
     </div>
 
+    <!--Loja-->
+    <div class="form-group col-md-auto">
+        <label for="perfil">Loja</label>
+        <select name="loja.id" id="loja" class="form-control mb-2" required>
+            @foreach (var loja2 in ViewBag.Lojas)
+            {
+                if (loja2.Id == loja)
+                {
+                    <option value="@loja2.Id" selected>@loja2.Nome</option>
+                }
+                else
+                {
+                    <option value="@loja2.Id">@loja2.Nome</option>
+                }
+            }
+        </select>
+    </div>
 
     <!--Setor-->
     <div class="form-group p-2">

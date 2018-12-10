@@ -21,6 +21,7 @@ namespace OcorrenciasDP.Controllers
         private DatabaseContext _db;
         readonly List<Setor> setores = new List<Setor>();
         readonly List<Setor> setores2 = new List<Setor>(); //Lista sem o "*Todos*"
+        readonly List<Loja> lojas = new List<Loja>();
         List<UsuariosViewModel> usuariosVM = new List<UsuariosViewModel>();
 
         public UsuariosController(DatabaseContext db)
@@ -28,41 +29,50 @@ namespace OcorrenciasDP.Controllers
             _db = db;
             setores = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
             setores2 = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
+            lojas = _db.Int_Dp_Lojas.OrderBy(a => a.Id).ToList();
+            lojas.Add(new Loja() { Id = 0, Nome = "*Todas*" });
             setores.Add(new Setor() { Id = 0, Nome = "*Todos*" });
             ViewBag.Setores = setores;
         }
 
         [HttpGet]
-        public IActionResult Filtrar(string nome, string setor, int? page)
+        public IActionResult Filtrar(string nome, string setor, string loja,int? page)
         {
             ViewBag.Setores = setores;
+            ViewBag.Lojas = lojas;
             int pageNumber = page ?? 1;
 
             var query = _db.Int_DP_Usuarios
                 .Join(_db.Int_DP_Setores, u => u.Setor.Id, o => o.Id, (u, o) => new { u, o })
-                .Where(u => u.u.Ativo == 1)
+                .Join(_db.Int_Dp_Lojas, r => r.u.Loja.Id, l => l.Id, (r,l) => new { r, l })
+                .Where(u => u.r.u.Ativo == 1)
                 .AsQueryable();
 
             if (nome != null)
             {
-                query = query.Where(a => a.u.Nome.ToLower().Contains(nome.ToLower()));
+                query = query.Where(a => a.r.u.Nome.ToLower().Contains(nome.ToLower()));
             }
 
             if (setor != null && setor != "0")
             {
-                query = query.Where(a => a.u.Setor.Id == int.Parse(setor));
-
+                query = query.Where(a => a.r.u.Setor.Id == int.Parse(setor));
+            
+            }
+            if(loja != null && loja != "0")
+            {
+                query = query.Where(a => a.r.u.Loja.Id == int.Parse(loja));
             }
 
             var relat = query.Select(s => new
             {
-                s.u.Id,
-                s.u.Login,
-                s.u.Nome,
-                Setor = s.o.Nome,
-                s.u.Perfil,
-                s.u.Ativo,
-                s.u.UltimoLogin
+                s.r.u.Id,
+                s.r.u.Login,
+                s.r.u.Nome,
+                Setor = s.r.o.Nome,
+                s.r.u.Perfil,
+                s.r.u.Ativo,
+                s.r.u.UltimoLogin,
+                Loja = s.r.u.Loja.Nome
 
             }).ToList();
 
@@ -76,13 +86,16 @@ namespace OcorrenciasDP.Controllers
                     Perfil = user.Perfil,
                     Ativo = user.Ativo,
                     Setor = user.Setor,
-                    UltimoAcesso = user.UltimoLogin
+                    UltimoAcesso = user.UltimoLogin,
+                    Loja = user.Loja
+                   
                 };
                 usuariosVM.Add(userVM);
             }
 
             ViewBag.PesquisaSetor = setor;
             ViewBag.PesquisaNome = nome;
+            ViewBag.PesquisaLoja = loja;
 
             IPagedList<UsuariosViewModel> resultadoPaginado = usuariosVM.ToPagedList(pageNumber, 5);
 
@@ -94,6 +107,7 @@ namespace OcorrenciasDP.Controllers
         public IActionResult Index(int? page)
         {
             ViewBag.Setores = setores;
+            ViewBag.Lojas = lojas;
             int pageNumber = page ?? 0;
 
 
@@ -109,7 +123,9 @@ namespace OcorrenciasDP.Controllers
                     s.a.Perfil,
                     s.a.Ativo,
                     Setor = s.a.Setor.Nome,
-                    s.a.UltimoLogin
+                    s.a.UltimoLogin,
+                    Loja = s.a.Loja.Nome
+
                 }).ToList();
 
             foreach (var user in relat)
@@ -122,7 +138,8 @@ namespace OcorrenciasDP.Controllers
                     Perfil = user.Perfil,
                     Ativo = user.Ativo,
                     Setor = user.Setor,
-                    UltimoAcesso = user.UltimoLogin
+                    UltimoAcesso = user.UltimoLogin,
+                    Loja = user.Loja
                 };
                 usuariosVM.Add(userVM);
             }
@@ -181,6 +198,7 @@ namespace OcorrenciasDP.Controllers
             ViewBag.User = usuario;
             ViewBag.ConfirmaSenha = usuario.Senha;
             ViewBag.Setores2 = setores2;
+            ViewBag.Lojas = _db.Int_Dp_Lojas.OrderBy(a => a.Id).ToList();
 
             return View("Cadastrar");
         }
@@ -192,8 +210,12 @@ namespace OcorrenciasDP.Controllers
             Setor vSetor = _db.Int_DP_Setores.Find(usuario.Setor.Id);
             usuario.Setor = vSetor;
 
+            Loja vLoja = _db.Int_Dp_Lojas.Find(usuario.Loja.Id);
+            usuario.Loja = vLoja;
+
             ViewBag.User = new Usuario();
             ViewBag.Setores2 = setores2;
+            ViewBag.Lojas = _db.Int_Dp_Lojas.OrderBy(a => a.Id).ToList();
 
             if (ModelState.IsValid)
             {
@@ -215,7 +237,26 @@ namespace OcorrenciasDP.Controllers
                             Usuario vUpdate = _db.Int_DP_Usuarios.Find(usuario.Id);
 
                             Log log = new Log();
-                            bool perfil;
+                            bool perfil, email;
+
+                            if (vUpdate.Email.ToLower() == usuario.Email.ToLower())
+                            {
+                                email = true;
+                            }
+                            else
+                            {
+                                var vEmail = _db.Int_DP_Usuarios.Where(a => a.Email == usuario.Email.ToLower() && a.Ativo == 1).FirstOrDefault();
+
+                                if(vEmail == null)
+                                {
+                                    email = true;
+                                }
+                                else
+                                {
+                                    email = false;
+                                }
+                                
+                            }
                             
                             if (vUpdate.Perfil != usuario.Perfil)
                             {
@@ -226,6 +267,9 @@ namespace OcorrenciasDP.Controllers
                                 perfil = false;
                             }
 
+                            if (email)
+                            {
+
                             vUpdate.Login = usuario.Login;
                             vUpdate.Nome = usuario.Nome;
                             vUpdate.Perfil = usuario.Perfil;
@@ -233,6 +277,7 @@ namespace OcorrenciasDP.Controllers
                             vUpdate.Setor = usuario.Setor;
                             vUpdate.Ativo = usuario.Ativo;
                             vUpdate.Email = usuario.Email;
+                            vUpdate.Loja = usuario.Loja;
 
                             try
                             {
@@ -257,6 +302,15 @@ namespace OcorrenciasDP.Controllers
                             }
 
                             return RedirectToAction("Index");
+
+                            }
+                            else
+                            {
+                                TempData["ExisteUsuario"] = "Já existe um usuário com esse email cadastrado!";
+                                ViewBag.User = usuario;
+                                ViewBag.ConfirmaSenha = usuario.Senha;
+                                return View("Cadastrar");
+                            }
                         }
                         else
                         {
@@ -269,7 +323,7 @@ namespace OcorrenciasDP.Controllers
                     {
                         TempData["ExisteUsuario"] = "Já existe um usuário com esse login, favor escolher outro!";
                         ViewBag.User = usuario;
-                        ViewBag.ConfirmarSenha = usuario.Senha;
+                        ViewBag.ConfirmaSenha = usuario.Senha;
                         return View("Cadastrar");
                     }
 
@@ -280,11 +334,34 @@ namespace OcorrenciasDP.Controllers
                     usuario.Senha = usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").Replace("'", "").ToLower(); //Passa para minúsculo a Senha
                     confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").Replace("'", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
 
+
+
+
                     if (usuario.Senha == confirmasenha)
                     {
-                        bool perfil;
+                        bool perfil, email;
 
                         Usuario vUpdate = _db.Int_DP_Usuarios.Find(usuario.Id);
+
+                        if (vUpdate.Email.ToLower() == usuario.Email.ToLower())
+                        {
+                            email = true;
+                        }
+                        else
+                        {
+                            var vEmail = _db.Int_DP_Usuarios.Where(a => a.Email.ToLower() == usuario.Email.ToLower() && a.Ativo == 1).FirstOrDefault();
+
+                            if (vEmail == null)
+                            {
+                                email = true;
+                            }
+                            else
+                            {
+                                email = false;
+                            }
+
+                        }
+
 
                         if (vUpdate.Perfil != usuario.Perfil)
                         {
@@ -295,6 +372,8 @@ namespace OcorrenciasDP.Controllers
                             perfil = false;
                         }
 
+                        if (email) { 
+
                         vUpdate.Login = usuario.Login;
                         vUpdate.Nome = usuario.Nome;
                         vUpdate.Perfil = usuario.Perfil;
@@ -302,8 +381,9 @@ namespace OcorrenciasDP.Controllers
                         vUpdate.Setor = usuario.Setor;
                         vUpdate.Ativo = usuario.Ativo;
                         vUpdate.Email = usuario.Email;
+                        vUpdate.Loja = usuario.Loja;
 
-                        Log log = new Log();
+                            Log log = new Log();
 
 
                         try
@@ -330,6 +410,15 @@ namespace OcorrenciasDP.Controllers
 
 
                         return RedirectToAction("Index");
+
+                        }
+                        else
+                        {
+                            TempData["ExisteUsuario"] = "Já existe um usuário com esse login, favor escolher outro!";
+                            ViewBag.User = usuario;
+                            ViewBag.ConfirmaSenha = usuario.Senha;
+                            return View("Cadastrar");
+                        }
                     }
                     else
                     {
@@ -348,22 +437,24 @@ namespace OcorrenciasDP.Controllers
         [HttpGet]
         public ActionResult Cadastrar()
         {
-
             ViewBag.User = new Usuario();
             ViewBag.Setores2 = setores2;
+            ViewBag.Lojas = _db.Int_Dp_Lojas.OrderBy(a => a.Id).ToList();
             return View();
-
         }
 
         [HttpPost]
         public ActionResult Cadastrar([FromForm]Usuario usuario, string confirmasenha)
         {
-
             Setor vSetor = _db.Int_DP_Setores.Find(usuario.Setor.Id);
             usuario.Setor = vSetor;
 
+            Loja vLoja = _db.Int_Dp_Lojas.Find(usuario.Loja.Id);
+            usuario.Loja = vLoja;
+
             ViewBag.User = new Usuario();
             ViewBag.Setores2 = setores2;
+            ViewBag.Lojas = _db.Int_Dp_Lojas.OrderBy(a => a.Id).ToList();
 
             if (ModelState.IsValid)
             {
@@ -380,34 +471,52 @@ namespace OcorrenciasDP.Controllers
 
                     if (usuario.Senha == confirmasenha)
                     {
+                        Usuario vEmail = new Usuario();
 
-                        int id_user = HttpContext.Session.GetInt32("ID") ?? 0;
+                        if(usuario.Email != null) { 
 
-                        try
-                        {
-                            _db.Int_DP_Usuarios.Add(usuario);
-                            _db.SaveChanges();
-
-                            Log log = new Log();
-                            log.CadastrarUsuario(id_user, usuario.Id);
-                            _db.Int_DP_Logs.Add(log);
-
-                            TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi cadastrado com sucesso!";
+                        vEmail = _db.Int_DP_Usuarios.Where(a => a.Email == usuario.Email && a.Ativo == 1).FirstOrDefault();
 
                         }
-                        catch (Exception exp)
-                        {
-                            Log log = new Log();
-                            log.CadastrarUsuario_Erro(id_user, usuario.Login, exp);
-                            _db.Int_DP_Logs.Add(log);
-                            TempData["CadastroUserNotOK"] = "Erro ao cadastrar o usuário!";
-                        }
-                        finally
-                        {
-                            _db.SaveChanges();
-                        }
 
-                        return RedirectToAction("Index");
+                        if (vEmail == null)
+                        {
+                            int id_user = HttpContext.Session.GetInt32("ID") ?? 0;
+
+                            try
+                            {
+                                _db.Int_DP_Usuarios.Add(usuario);
+                                _db.SaveChanges();
+
+                                Log log = new Log();
+                                log.CadastrarUsuario(id_user, usuario.Id);
+                                _db.Int_DP_Logs.Add(log);
+
+                                TempData["CadastroUserOK"] = "O usuário '" + usuario.Login + "' foi cadastrado com sucesso!";
+
+                            }
+                            catch (Exception exp)
+                            {
+                                Log log = new Log();
+                                log.CadastrarUsuario_Erro(id_user, usuario.Login, exp);
+                                _db.Int_DP_Logs.Add(log);
+                                TempData["CadastroUserNotOK"] = "Erro ao cadastrar o usuário!";
+                            }
+                            finally
+                            {
+                                _db.SaveChanges();
+                            }
+
+                            return RedirectToAction("Index");
+
+                        }
+                        else
+                        {
+
+                            TempData["ExisteUsuario"] = "Já existe um usuário com esse email cadastrado!";
+                            ViewBag.User = usuario;
+                            return View();
+                        }
 
                     }
                     else

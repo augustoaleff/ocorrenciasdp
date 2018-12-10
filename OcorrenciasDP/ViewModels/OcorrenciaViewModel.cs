@@ -32,6 +32,8 @@ namespace OcorrenciasDP.Models
 
         public string Setor { get; set; } //Setor
 
+        public string Loja { get; set; } //Loja
+
         public string DadosPesquisa { get; set; }
 
         public byte Atrasado { get; set; }

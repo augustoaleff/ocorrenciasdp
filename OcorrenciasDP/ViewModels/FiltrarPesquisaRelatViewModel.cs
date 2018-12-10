@@ -13,5 +13,6 @@ namespace OcorrenciasDP.ViewModels
 
         public string Setor { get; set; }
 
+        public string Loja { get; set; }
     }
 }

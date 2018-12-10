@@ -58,6 +58,7 @@ namespace OcorrenciasDP.Controllers
             ocorrencia.Usuario = usuario;
             ocorrencia.DataEnvio = Globalization.HoraAtualBR();
 
+
             if (ModelState.IsValid)
             {
                 ViewBag.Ocorrencia = new Ocorrencia();
@@ -69,7 +70,25 @@ namespace OcorrenciasDP.Controllers
                 {
                     _db.Int_DP_Ocorrencias.Add(ocorrencia);
                     _db.SaveChanges();
-                    TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
+
+                    OcorrenciasFaltantes();
+
+                    List<DateTime> diasFaltantes = new List<DateTime>();
+
+                    if (ViewBag.Calendario != null)
+                    {
+                        diasFaltantes = ViewBag.Calendario;
+
+                    }
+
+                    if (diasFaltantes.Count < 3)
+                    {
+                        TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
+                    }
+                    else
+                    {
+                        TempData["MsgOcorrenciaAlerta"] = "Ocorrencia Cadastrada com sucesso, porém você ainda tem " + diasFaltantes.Count + " ocorrências para enviar!";
+                    }
 
                     log.IncluirOcorrencia(id_notnull, ocorrencia.Id);
                     _db.Int_DP_Logs.Add(log);
@@ -100,12 +119,11 @@ namespace OcorrenciasDP.Controllers
 
             if (HttpContext.Session.GetString("Perfil") != "admin")
             {
-
                 List<DateTime> dias = new List<DateTime>(); //30 últimos dias
                 List<DateTime> enviados = new List<DateTime>(); //Ultimas ocorrências enviadas
                 List<DateTime> calend = new List<DateTime>(); //Dias - Falta
                 List<DateTime> calend_final = new List<DateTime>(); //Calend - Finais de Semana
-
+                
                 try
                 {
                     int id_user = HttpContext.Session.GetInt32("ID") ?? 0;
@@ -177,7 +195,7 @@ namespace OcorrenciasDP.Controllers
                     }
                     */
 
-                    calend_final.Reverse(); //Reverte a ordem das datas para decrescente
+                    //calend_final.Reverse(); //Reverte a ordem das datas para decrescente
 
                     ViewBag.Calendario = calend_final;
 
@@ -205,6 +223,18 @@ namespace OcorrenciasDP.Controllers
 
             ocorrencia.DataEnvio = Globalization.HoraAtualBR();
 
+            OcorrenciasFaltantes();
+
+            List<DateTime> diasFaltantes = new List<DateTime>();
+
+            if (ViewBag.Calendario != null)
+            {
+                diasFaltantes = ViewBag.Calendario;
+               
+            }
+
+            
+
             if (ModelState.IsValid)
             {
                 //SELECT * FROM INT_DP_OCORRENCIAS WHERE DATA = '" & Format(Data.Text, "YYYYMMDD") & "'";/
@@ -212,7 +242,7 @@ namespace OcorrenciasDP.Controllers
                 Ocorrencia vOcorrencia = _db.Int_DP_Ocorrencias
                                    .Where(o => o.Data.Equals(ocorrencia.Data) && (o.Usuario.Id == ocorrencia.Usuario.Id))
                                    .FirstOrDefault();
-
+                
                 //Se for igual a null, não há nenhuma ocorrencia lançada com a data informada
                 if (vOcorrencia == null || update == "true")
                 {
@@ -225,7 +255,7 @@ namespace OcorrenciasDP.Controllers
                         ViewBag.Ocorrencia.Anexo = anexo.FileName;
                         ocorrencia.Anexo = anexo.FileName;
                         ViewBag.Anexo = anexo;
-                    }
+                    } 
                     try
                     {
                         _db.Int_DP_Ocorrencias.Add(ocorrencia);
@@ -258,10 +288,16 @@ namespace OcorrenciasDP.Controllers
                         UploadFile(anexo);
                     }
 
-                    TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
-
+                    if (diasFaltantes.Count < 3)
+                    {
+                        TempData["MsgOcorrenciaOK"] = "Ocorrência Cadastrada com Sucesso";
+                    }
+                    else
+                    {
+                        TempData["MsgOcorrenciaAlerta"] = "Ocorrencia Cadastrada com sucesso, porém você ainda tem " + diasFaltantes.Count + " ocorrências para enviar!";
+                    }
+                    
                     OcorrenciasFaltantes(); //Atualiza as datas
-
 
                     return View("Index", ocorrencia);
 
@@ -281,7 +317,6 @@ namespace OcorrenciasDP.Controllers
 
                     OcorrenciasFaltantes();
 
-
                     return View("Index", ocorrencia);
                 }
             }
@@ -292,9 +327,7 @@ namespace OcorrenciasDP.Controllers
             {
                 ViewBag.Ocorrencia.Anexo = anexo.FileName;
             }
-
-
-
+            
             OcorrenciasFaltantes();
 
 
@@ -318,22 +351,5 @@ namespace OcorrenciasDP.Controllers
             }
         }
         
-
-        public void VerificarOcorrencias()
-        {
-            int Id;
-            string Nome;
-            DateTime Data;
-            int Nota;
-            string Avaliacao;
-
-            List<string> relat = new List<string>();
-
-            Id = 1;
-            Nome = "Nome";
-            Data = new DateTime(2018,11,21);
-            Nota = 10;
-            Avaliacao = "Avaliação";
-        }
     }
 }

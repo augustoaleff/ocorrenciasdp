@@ -12,18 +12,18 @@
 }
 
 @{
-    /*string filtro = "";
+/*string filtro = "";
 
-    if (Model[0].DadosPesquisa != null)
-    {
-        filtro = Model[0].DadosPesquisa;
-    }*/
+if (Model[0].DadosPesquisa != null)
+{
+    filtro = Model[0].DadosPesquisa;
+}*/
 
 }
 
 @{
     string datainicio, datafim, inform;
-    int setor;
+    int setor, loja;
 
     inform = "Dados da Pesquisa: ";
 
@@ -56,6 +56,20 @@
     {
         setor = 0;
     }
+
+
+    if (ViewBag.Pesquisa.Loja != null)
+    {
+        loja = Int32.Parse(ViewBag.Pesquisa.Loja);
+        inform = inform + " Loja:" + ViewBag.NomeLoja;
+    }
+    else
+    {
+        loja = 0;
+
+    }
+
+
 }
 
 <link href="/OcorrenciasDP/css/PagedList.css" rel="stylesheet" type="text/css" />
@@ -70,9 +84,10 @@
 @if (inform != "Dados da Pesquisa: ")
 {
     <div class="alert alert-info" role="alert">
-        <strong>@inform </strong>
+        <strong>@inform</strong>
     </div>
 }
+
 
 <h2>Relatório</h2>
 <br />
@@ -85,6 +100,24 @@
     <div class="form-group mb-2">
         <label for="datafim">Data Fim</label>
         <input type="date" name="datafim" class="form-control-plaintext" id="datafim" value="@datafim">
+    </div>
+
+    <div class="form-group p-2">
+        <label for="loja">Loja</label>
+        <select name="loja" id="loja" class="form-control mb-2">
+            @foreach (var loja2 in ViewBag.Lojas)
+            {
+                if (loja2.Id == loja)
+                {
+                    <option value="@loja2.Id" selected>@loja2.Nome</option>
+                }
+                else
+                {
+                    <option value="@loja2.Id">@loja2.Nome</option>
+                }
+
+            }
+        </select>
     </div>
 
     <div class="form-group p-2">
@@ -118,6 +151,7 @@
             <th scope="col">#</th>
             <th scope="col">Data</th>
             <th scope="col">Usuario</th>
+            <th scope="col">Loja</th>
             <th scope="col">Setor</th>
             <th scope="col">Ocorrência</th>
             <th scope="col">Anexo</th>
@@ -146,6 +180,7 @@
                 <th scope="row">@ocor.Id</th>
                 <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
                 <td>@ocor.Nome</td>
+                <td>@ocor.Loja</td>
                 <td>@ocor.Setor</td>
                 @if (ocor.Descricao.Length >= 20)
                 {
@@ -186,14 +221,14 @@
     </tbody>
 </table>
 
-<a href="/OcorrenciasDP/Relatorio/Filtrar?pdf=true&setor=@setor&datainicio=@datainicio&datafim=@datafim" type="button" class="btn-default btn"
+<a href="/OcorrenciasDP/Relatorio/Filtrar?pdf=true&setor=@setor&loja=@loja&datainicio=@datainicio&datafim=@datafim" type="button" class="btn-default btn"
    id="exportarPDF"><span class="glyphicon glyphicon-file"></span>Gerar relatório em PDF</a>
 
 
-@if (datafim != null || datainicio != null || setor != 0)
+@if (datafim != null || datainicio != null || setor != 0 || loja != 0)
 {
 
-    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Filtrar", new { datainicio, datafim, setor, page }))
+    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Filtrar", new { datainicio, datafim, setor, loja, page }))
 
 }
 else

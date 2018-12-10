@@ -25,13 +25,12 @@ namespace OcorrenciasDP.Controllers
         public HomeController(DatabaseContext db)
         {
             _db = db;
-            setores = _db.Int_DP_Setores.ToList();
+            setores = _db.Int_DP_Setores.ToList();  
         }
 
         public List<OcorrenciaViewModel> CarregarOcorrencias()
         {
             var usuarios = _db.Int_DP_Usuarios.ToList();
-
             int userID = HttpContext.Session.GetInt32("ID") ?? 0;
 
             // Take(5) = SELECT TOP 5
@@ -174,6 +173,11 @@ namespace OcorrenciasDP.Controllers
                                 HttpContext.Session.SetString("UltimoAcesso", vLogin.UltimoLogin.ToString("dd/MM/yyyy HH:mm:ss"));
                                 HttpContext.Session.SetString("Visualizado", "false");
 
+                                int loja = _db.Int_DP_Usuarios.Where(a => a.Id == vLogin.Id).Select(s => s.Loja.Id).FirstOrDefault();
+
+
+                                HttpContext.Session.SetInt32("Loja", loja);
+                                
                                 vLogin.UltimoLogin = Globalization.HoraAtualBR();
 
                                 Log log = new Log();
@@ -194,7 +198,6 @@ namespace OcorrenciasDP.Controllers
                                 _db.SaveChanges();
                                 HttpContext.Session.Clear(); //Limpa a sessão para voltar ao início
                                 TempData["MensagemErro"] = "Ocorreu um erro ao tentar logar";
-
                                 return RedirectToAction("Index", "Home");
                             }
                         }
@@ -294,7 +297,7 @@ namespace OcorrenciasDP.Controllers
             {
                 vMensagem.Titulo = "Sem Título";
             }
-
+            
             ViewBag.MsgDetalhe = vMensagem;
             //ViewBag.MsgDetalhe.Conteudo = vMensagem.Conteudo.Replace("\r\n", " <br /> ");
             ViewBag.MsgConteudo = vMensagem.Conteudo.Replace("\r\n", " <br /> ");
@@ -303,38 +306,48 @@ namespace OcorrenciasDP.Controllers
             return View("Inicio", ocorVM);
 
         }
-
-
+        
         [HttpPost]
-        public ActionResult TrocarSenha([FromForm]int id, [FromForm]string nome, [FromForm]string email, [FromForm]string senha, [FromForm]string confimarsenha)
+        public ActionResult TrocarSenha([FromForm]int? id,string nome,string email,string senha,string confirmasenha)
         {
-
-            Usuario usuario = new Usuario
-            {
-                Id = id,
-                Nome = nome,
-                Email = email
-            };
-
-            ViewBag.UsuarioSenha = usuario;
+            int id_notnull = id ?? 0;
 
             ViewBag.Senha = senha;
-            
-            if (usuario.Senha.ToLower() == confimarsenha.ToLower())
+            ViewBag.Nome = nome;
+            ViewBag.Email = email;
+            ViewBag.IdSenha = id;
+
+            if (senha.ToLower() == confirmasenha.ToLower())
             {
+                Log log = new Log();
 
-                var vUsuario = _db.Int_DP_Usuarios.Find(usuario.Id);
-                vUsuario.Senha = senha.ToLower();
+                try
+                {
+                    Usuario vUsuario = _db.Int_DP_Usuarios.Find(id);
+                    vUsuario.Senha = senha.ToLower();
 
-                _db.SaveChanges();
+                    _db.SaveChanges();
 
-                TempData["TrocaSenha"] = "Senha Alterada com sucesso";
-                return RedirectToAction("Index");
-                
+                    log.EsqueciMinhaSenha_Troca(vUsuario.Id);
+
+                    TempData["TrocaSenhaOK"] = "Senha Alterada com sucesso";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception exp)
+                {
+                    log.EsqueciMinhaSenha_Troca_Erro(id_notnull, exp);
+
+                    TempData["TrocaSenhaNotOK"] = "Ocorreu um Erro ao tentar redefinir a senha, por favor, tente novamente mais tarde!";
+                    return View();
+                }
+                finally
+                {
+                    _db.Int_DP_Logs.Add(log);
+                    _db.SaveChanges();
+                }
             }
             else
             {
-              
                 TempData["SenhaNaoConfere"] = "Senhas não conferem!";
                 return View();
             }
@@ -354,14 +367,12 @@ namespace OcorrenciasDP.Controllers
 
             DateTime agora = Globalization.HoraAtualBR();
             var vKey = _db.Int_DP_ValidSenhas.Find(key2);
-            //var vKey = _db.Int_DP_ValidSenhas.Where(a => a.Id == key2).FirstOrDefault();
-            //vKey.Usuario.Id = _db.Int_DP_ValidSenhas.Where(a => a.Id == key2).Select(s => s.Usuario.Id).FirstOrDefault();
-
+            
             if(vKey != null)
             {
 
                if(vKey.DataExpiracao >= agora)
-                {
+               {
 
                     if(vKey.Utilizado == 0)
                     {
@@ -371,8 +382,12 @@ namespace OcorrenciasDP.Controllers
                         _db.SaveChanges();
 
                         ViewBag.Senha = "";
-                        ViewBag.UsuarioSenha = usuario;
+                        ViewBag.Nome = usuario.Nome;
+                        ViewBag.Email = usuario.Email;
+                        ViewBag.IdSenha = usuario.Id;
+
                         ViewBag.TrocarSenha = vKey;
+
                         return View();
                     }
                     else
@@ -380,17 +395,12 @@ namespace OcorrenciasDP.Controllers
                         TempData["TrocaSenhaNotOK"] = "Link já Utilizado";
                         return RedirectToAction("Index");
                     }
-
-
                 }
                 else
                 {
                     TempData["TrocaSenhaNotOK"] = "Link Expirado";
                     return RedirectToAction("Index");
                 }
-
-
-
             }
             else
             {
@@ -398,7 +408,6 @@ namespace OcorrenciasDP.Controllers
                 return RedirectToAction("Index");
 
             }
-
         }
 
         [HttpPost]
@@ -406,8 +415,7 @@ namespace OcorrenciasDP.Controllers
         {
             string codigo;
             DateTime agora = Globalization.HoraAtualBR();
-
-
+            
             email.ToLower();
 
             var vEmail = _db.Int_DP_Usuarios.Where(a => a.Email == email && a.Ativo == 1).FirstOrDefault();
@@ -429,11 +437,37 @@ namespace OcorrenciasDP.Controllers
                 _db.Int_DP_ValidSenhas.Add(valid);
                 _db.SaveChanges();
 
-                Library.Mail.EnviarLinkSenha.EnviarLinkTrocarSenha(email, codigo);
+                Log log = new Log();
 
-                TempData["TrocaSenhaOK"] = "Um link foi enviado ao seu e-mail com instruções para trocar a senha";
+                try
+                {
 
-                return RedirectToAction("Index");
+                    Library.Mail.EnviarLinkSenha.EnviarLinkTrocarSenha(email, codigo, vEmail.Nome);
+
+                    log.EsqueciMinhaSenha_Envio(vEmail.Id,codigo);
+
+                    TempData["TrocaSenhaOK"] = "Um link foi enviado ao seu e-mail com instruções para trocar a senha";
+
+                    return RedirectToAction("Index");
+
+
+                }
+                catch(Exception exp)
+                {
+
+                    log.EsqueciMinhaSenha_Envio_Erro(vEmail.Id, codigo, exp);
+
+                    TempData["TrocaSenhaNotOK"] = "Ocorreu um erro ao tentar enviar o link, por favor tente novamente";
+
+                    return RedirectToAction("Index");
+
+                }
+                finally
+                {
+                    _db.Int_DP_Logs.Add(log);
+                    _db.SaveChanges();
+                }
+                
             }
             else
             {
@@ -441,7 +475,6 @@ namespace OcorrenciasDP.Controllers
 
                 return RedirectToAction("Index");
             }
-
         }
 
         public ActionResult Logout()
@@ -451,15 +484,13 @@ namespace OcorrenciasDP.Controllers
 
             try
             {
-                _db.Int_DP_Logs.Add(log);
                 log.LogOut(id);
+                _db.Int_DP_Logs.Add(log);
             }
             catch (Exception exp)
             {
-
                 log.LogOut_Erro(id, exp);
                 _db.Int_DP_Logs.Add(log);
-
             }
             finally
             {

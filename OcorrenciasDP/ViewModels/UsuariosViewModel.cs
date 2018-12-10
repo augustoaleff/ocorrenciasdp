@@ -20,6 +20,8 @@ namespace OcorrenciasDP.ViewModels
         public byte Ativo { get; set; }
 
         public DateTime UltimoAcesso { get; set; }
+
+        public string Loja { get; set; }
        
     }
 }

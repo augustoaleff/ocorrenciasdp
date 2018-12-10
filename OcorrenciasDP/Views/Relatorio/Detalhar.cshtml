@@ -7,7 +7,7 @@
 
 @{
     string datafim, datainico;
-    string setor, pagina;
+    string setor, loja, pagina;
     string acidente, atrasado, cedo, outro, advertencia;
 
     if (ViewBag.PaginaRelat != null)
@@ -26,6 +26,15 @@
     else
     {
         setor = "&setor=0";
+    }
+
+    if (ViewBag.LojaRelat != null)
+    {
+        loja = "&loja=" + ViewBag.LojaRelat;
+    }
+    else
+    {
+        loja = "&loja=0";
     }
 
 
@@ -107,7 +116,7 @@
 <br />
 
 <div>
-    <strong>#ID: </strong> 
+    <strong>#ID: </strong>
     @Model.Id
 </div>
 
@@ -129,6 +138,12 @@
 <div>
     <strong>Nome: </strong>
     @Model.Nome
+</div>
+<br />
+
+<div>
+    <strong>Loja: </strong>
+    @Model.Loja
 </div>
 <br />
 
@@ -188,7 +203,7 @@
 
 <div>
     <strong>Anexo: </strong>
-    <a href="\Relatorio\Download?filename=@string.Concat(Model.Id.ToString(),"_",Model.Anexo)">@Model.Anexo</a>
+    <a href="\OcorrenciasDP\Relatorio\Download?filename=@string.Concat(Model.Id.ToString(),"_",Model.Anexo)">@Model.Anexo</a>
 </div>
 
 
