@@ -15,258 +15,278 @@
     </div>
 }
 
-<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
-    <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
-        <li data-target="#myCarousel" data-slide-to="2"></li>
-    </ol>
-    <div class="carousel-inner" role="listbox">
-        <div class="item active">
-            <img src="~/images/Banner_Ano Novo.jpg" alt="ASP.NET" class="img-responsive" />
-        </div>
-        <!--
-        <div class="item">
-            <img src="~/images/banner2.svg" alt="Visual Studio" class="img-responsive" />
-            <div class="carousel-caption" role="option">
-                <p>
-                    There are powerful new features in Visual Studio for building modern web apps.
-                    <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkID=525030&clcid=0x409">
-                        Learn More
-                    </a>
-                </p>
-            </div>
-        </div>
-        <div class="item">
-            <img src="~/images/banner3.svg" alt="Microsoft Azure" class="img-responsive" />
-            <div class="carousel-caption" role="option">
-                <p>
-                    Learn how Microsoft's Azure cloud platform allows you to build, deploy, and scale web apps.
-                    <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkID=525027&clcid=0x409">
-                        Learn More
-                    </a>
-                </p>
-            </div>
-        </div>
-    </div>
-            -->
-        <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-            <span class="sr-only">Anterior</span>
-        </a>
-        <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-            <span class="sr-only">Próximo</span>
-        </a>
-    </div>
-
-<h3> <span class="glyphicon glyphicon-envelope"></span>  Mensagens</h3>
-<table class="table table-hover" style="padding-top: 15px">
-    <thead>
-        <tr>
-            <th scope="col">Data</th>
-            <th scope="col">Título</th>
-            <th scope="col">Mensagem</th>
-            <th scope="col">Detalhar</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (ViewBag.Msgs.Count > 0)
-        {
-            @foreach (Mensagem msg in ViewBag.Msgs)
-            {
-                <tr>
-                    <th scope="row">@msg.Data.Date.ToString("dd/MM/yyyy")</th>
-                    <td>@msg.Titulo</td>
-                    @if (msg.Conteudo.Length >= 100)
-                    {
-                        <td>@msg.Conteudo.Substring(0, 100)</td>
-                    }
-                    else
-                    {
-                        <td>@msg.Conteudo</td>
-                    }
-                    <td>
-                        <a href="/OcorrenciasDP/Home/DetalharMsg/@msg.Id" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar"
-                           data-valormodal="false" class="btn btn-default btn-sm">
-                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                        </a>
-                    </td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>
-
-<h3> <span class="glyphicon glyphicon-ok"></span>  Últimas Ocorrencias Enviadas</h3>
-
-<table class="table table-hover" style="padding-top: 15px">
-    <thead class="">
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Data</th>
-            <th scope="col">Descrição</th>
-            <th scope="col">Anexo</th>
-        </tr> 
-    </thead>
-    <tbody>
-        @if (Model.Count > 0)
-        {
-            @foreach (var ocor in Model)
-            {
-                <tr>
-                    <th scope="row">@ocor.Id</th>
-                    <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
-                    @if (ocor.Descricao.Length >= 100)
-                    {
-                        <td>@ocor.Descricao.Substring(0, 100)</td>
-                    }
-                    else
-                    {
-                        <td>@ocor.Descricao</td>
-                    }
-
-                    @if (ocor.Anexo != null)
-                    {
-                        <td>
-                            <a href="\OcorrenciasDP\Home\Download?filename=@string.Concat(ocor.Id.ToString(), "_", ocor.Anexo)" aria-label="" alt="download"
-                               type="button" class="btn btn-default btn-sm">
-                                <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
-                            </a>
-                        </td>
-                    }
-                    else
-                    {
-                        <td></td>
-                    }
-                </tr>
-            }
-        }
-
-    </tbody>
-</table>
-
-<!-- Modal Detalhar Mensagem -->
-@if (ViewBag.MsgDetalhe != null)
+@if (ViewBag.Banner != null)
 {
-    <div class="modal fade" id="modalDetalharMensagem" tabindex="-1" role="dialog" aria-labelledby="modalDetalharMensagemTitulo" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="modalDetalharMensagemTitulo">@ViewBag.MsgDetalhe.Titulo</h3>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <strong>Data: </strong>
 
-                    @Globalization.DataHoraExtensoBR(ViewBag.MsgDetalhe.Data)
-                    <br />
-                    <br />
-
-                    <strong>Mensagem: </strong>
-                    <br />
-                    <br />
-                    @Html.Raw(ViewBag.MsgConteudo)
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-}
-<!-- Modal Nova Mensagem -->
-@if (ViewBag.NovaMensagem != null)
-{
-    <div class="modal fade" id="modalNovaMensagem" tabindex="-1" role="dialog" aria-labelledby="modalNovaMensagemTitulo" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                @foreach (var msg in ViewBag.NovaMensagem)
+    <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="4000">
+        @if(ViewBag.Banner.Count > 1) {
+        <ol class="carousel-indicators">
+            @foreach (var imagem in ViewBag.Banner)
+            {
+                if (imagem.Ordem == 1)
                 {
-                    <div class="modal-header">
-                        <h3 class="modal-title" id="modalNovaMensagemTitulo">@msg.Titulo</h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <strong>Data: </strong>
-                        @Globalization.DataHoraExtensoBR(msg.Data)
-                        <br />
-                        <br />
-                        <strong>Mensagem: </strong>
-                        @{
-                            string conteudo = msg.Conteudo.Replace("\r\n", " <br /> ");
-                            //string conteudo = msg.Conteudo;
-                        }
-                        <br />
-                        <br />
-                        @Html.Raw(conteudo) <!--Para dar quebra de linha-->
-                        <br />
-                    </div>
+                    <li data-target="#myCarousel" data-slide-to="@imagem.Ordem" class="active"></li>
                 }
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                else
+                {
+                    <li data-target="#myCarousel" data-slide-to="@imagem.Ordem"></li>
+                }
+            }
+        </ol>
+        }
+        <div class="carousel-inner" role="listbox">
+
+            @foreach (var imagem in ViewBag.Banner)
+            {
+                if (imagem.Ordem == 1)
+                {
+            <div class="item active">
+                <!--Produção-->
+                <img src="@string.Concat("/OcorrenciasDP/images/",@imagem.Path)" alt="@imagem.Nome" class="img-responsive" />
+
+                <!--Desenvolvimento-->
+                @*<img src="@string.Concat("/images/",@imagem.Path)" alt="@imagem.Nome" class="img-responsive" />*@
+            </div>
+        }
+        else
+        {
+            <div class="item">
+                <!--Produção-->
+                <img src="@string.Concat("/OcorrenciasDP/images/",@imagem.Path)" alt="@imagem.Nome" class="img-responsive" />
+                <!--Desenvolvimento-->
+                @*<img src="@string.Concat("/images/",@imagem.Path)" alt="@imagem.Nome" class="img-responsive" />*@
+            </div>
+                        }
+                    }
+                    <!--
+                    <div class="item active">
+                        <img src="~/images/Banner_Ano Novo.jpg" alt="Ano Novo" class="img-responsive" />
+                    </div>
+                        -->
+                    @if (ViewBag.Banner.Count > 1)
+                    {
+                        <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                            <span class="sr-only">Anterior</span>
+                        </a>
+                        <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                            <span class="sr-only">Próximo</span>
+                        </a>
+                    }
+
                 </div>
             </div>
+        }
+        <h3> <span class="glyphicon glyphicon-envelope"></span> Mensagens</h3>
+        <table class="table table-hover" style="padding-top: 15px">
+            <thead>
+                <tr>
+                    <th scope="col">Data</th>
+                    <th scope="col">Título</th>
+                    <th scope="col">Mensagem</th>
+                    <th scope="col">Detalhar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ViewBag.Msgs.Count > 0)
+                {
+                    @foreach (Mensagem msg in ViewBag.Msgs)
+                    {
+                        <tr>
+                            <th scope="row">@msg.Data.Date.ToString("dd/MM/yyyy")</th>
+                            <td>@msg.Titulo</td>
+                            @if (msg.Conteudo.Length >= 100)
+                            {
+                                <td>@msg.Conteudo.Substring(0, 100)</td>
+                            }
+                            else
+                            {
+                                <td>@msg.Conteudo</td>
+                            }
+                            <td>
+                                <a href="/OcorrenciasDP/Home/DetalharMsg/@msg.Id" type="button" alt="detalhar" value="@msg.Id" id="btnDetalhar"
+                                   data-valormodal="false" class="btn btn-default btn-sm">
+                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+        <h3> <span class="glyphicon glyphicon-ok"></span>  Últimas Ocorrencias Enviadas</h3>
+
+        <table class="table table-hover" style="padding-top: 15px">
+            <thead class="">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Descrição</th>
+                    <th scope="col">Anexo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count > 0)
+                {
+                    @foreach (var ocor in Model)
+                    {
+                        <tr>
+                            <th scope="row">@ocor.Id</th>
+                            <td>@ocor.Data.Date.ToString("dd/MM/yyyy")</td>
+                            @if (ocor.Descricao.Length >= 100)
+                            {
+                                <td>@ocor.Descricao.Substring(0, 100)</td>
+                            }
+                            else
+                            {
+                                <td>@ocor.Descricao</td>
+                            }
+
+                            @if (ocor.Anexo != null)
+                            {
+                                <td>
+                                    <a href="\OcorrenciasDP\Home\Download?filename=@string.Concat(ocor.Id.ToString(), "_", ocor.Anexo)" aria-label="" alt="download"
+                                       type="button" class="btn btn-default btn-sm">
+                                        <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
+                                    </a>
+                                </td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+
+        <!-- Modal Detalhar Mensagem -->
+        @if (ViewBag.MsgDetalhe != null)
+        {
+            <div class="modal fade" id="modalDetalharMensagem" tabindex="-1" role="dialog" aria-labelledby="modalDetalharMensagemTitulo" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="modalDetalharMensagemTitulo">@ViewBag.MsgDetalhe.Titulo</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <strong>Data: </strong>
+
+                            @Globalization.DataHoraExtensoBR(ViewBag.MsgDetalhe.Data)
+                            <br />
+                            <br />
+
+                            <strong>Mensagem: </strong>
+                            <br />
+                            <br />
+                            @Html.Raw(ViewBag.MsgConteudo)
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        }
+        <!-- Modal Nova Mensagem -->
+        @if (ViewBag.NovaMensagem != null)
+        {
+            <div class="modal fade" id="modalNovaMensagem" tabindex="-1" role="dialog" aria-labelledby="modalNovaMensagemTitulo" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        @foreach (var msg in ViewBag.NovaMensagem)
+                        {
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="modalNovaMensagemTitulo">@msg.Titulo</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <strong>Data: </strong>
+                                @Globalization.DataHoraExtensoBR(msg.Data)
+                                <br />
+                                <br />
+                                <strong>Mensagem: </strong>
+                                @{
+                                    string conteudo = msg.Conteudo.Replace("\r\n", " <br /> ");
+                                    //string conteudo = msg.Conteudo;
+                                }
+                                <br />
+                                <br />
+                                @Html.Raw(conteudo) <!--Para dar quebra de linha-->
+                                <br />
+                            </div>
+                        }
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @section Scripts{
+            <script type="text/javascript" language="javascript">
+
+                
+
+                $(document).ready(function () {
+                    $('#modalDetalharMensagem').modal('show');
+                    $('#modalNovaMensagem').modal('show');
+                });
+
+            </script>
+        }
+
+        <!--
+
+        <div class="row">
+            <div class="col-md-3">
+                <h2>Application uses</h2>
+                <ul>
+                    <li>Sample pages using ASP.NET Core MVC</li>
+                    <li>Theming using <a href="https://go.microsoft.com/fwlink/?LinkID=398939">Bootstrap</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h2>How to</h2>
+                <ul>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkID=398600">Add a Controller and View</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkId=699315">Manage User Secrets using Secret Manager.</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkId=699316">Use logging to log a message.</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkId=699317">Add packages using NuGet.</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkId=699319">Target development, staging or production environment.</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h2>Overview</h2>
+                <ul>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkId=518008">Conceptual overview of what is ASP.NET Core</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkId=699320">Fundamentals of ASP.NET Core such as Startup and middleware.</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkId=398602">Working with Data</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkId=398603">Security</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkID=699321">Client side development</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkID=699322">Develop on different platforms</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkID=699323">Read more on the documentation site</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h2>Run &amp; Deploy</h2>
+                <ul>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkID=517851">Run your app</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkID=517853">Run tools such as EF migrations and more</a></li>
+                    <li><a href="https://go.microsoft.com/fwlink/?LinkID=398609">Publish to Microsoft Azure Web Apps</a></li>
+                </ul>
+            </div>
         </div>
-    </div>
-}
-
-@section Scripts{
-    <script type="text/javascript" language="javascript">
-
-        $(document).ready(function () {
-            $('#modalDetalharMensagem').modal('show');
-            $('#modalNovaMensagem').modal('show');
-        });
-
-    </script>
-}
-
-<!--
-
-<div class="row">
-    <div class="col-md-3">
-        <h2>Application uses</h2>
-        <ul>
-            <li>Sample pages using ASP.NET Core MVC</li>
-            <li>Theming using <a href="https://go.microsoft.com/fwlink/?LinkID=398939">Bootstrap</a></li>
-        </ul>
-    </div>
-    <div class="col-md-3">
-        <h2>How to</h2>
-        <ul>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=398600">Add a Controller and View</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699315">Manage User Secrets using Secret Manager.</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699316">Use logging to log a message.</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699317">Add packages using NuGet.</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699319">Target development, staging or production environment.</a></li>
-        </ul>
-    </div>
-    <div class="col-md-3">
-        <h2>Overview</h2>
-        <ul>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=518008">Conceptual overview of what is ASP.NET Core</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=699320">Fundamentals of ASP.NET Core such as Startup and middleware.</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=398602">Working with Data</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkId=398603">Security</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=699321">Client side development</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=699322">Develop on different platforms</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=699323">Read more on the documentation site</a></li>
-        </ul>
-    </div>
-    <div class="col-md-3">
-        <h2>Run &amp; Deploy</h2>
-        <ul>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=517851">Run your app</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=517853">Run tools such as EF migrations and more</a></li>
-            <li><a href="https://go.microsoft.com/fwlink/?LinkID=398609">Publish to Microsoft Azure Web Apps</a></li>
-        </ul>
-    </div>
-</div>
-    -->
+            -->

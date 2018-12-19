@@ -55,7 +55,7 @@ namespace OcorrenciasDP.Library.Mail
 
                 Body = saudacao +
                 conteudo + "<br />" +
-                "<a href='http://www.eletroleste.com.br/OcorrenciasDP/'><h2>Clique aqui para enviar<h2></a>" +
+                "<a href='http://www.eletroleste.com.br/Agenda/'><h2>Clique aqui para enviar<h2></a>" +
                 "<br /><br /><font size='1'>Mensagem Automática, favor não responder. Enviada: " + Globalization.Globalization.DataAtualExtensoBR() + "</font>"
 
             };
@@ -72,6 +72,8 @@ namespace OcorrenciasDP.Library.Mail
             smtp.Send(mensagem);
             
         }
+
+       
 
     }
 }

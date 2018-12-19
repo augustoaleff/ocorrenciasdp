@@ -52,7 +52,6 @@ namespace OcorrenciasDP.Controllers
 
             foreach (var func in relat)
             {
-
                 FuncionarioViewModel funcVM = new FuncionarioViewModel
                 {
                     Id = func.Id,
@@ -91,9 +90,9 @@ namespace OcorrenciasDP.Controllers
 
             //Verifica se há um funcionário com o mesmo nome e encarregado cadastrado
             Funcionario vFuncionario = _db.Int_DP_Funcionarios
-                                       .Where(a => a.Nome == func.Nome && a.Encarregado.Id == func.Encarregado.Id)
+                                       .Where(a => a.Nome.Equals(func.Nome) && a.Encarregado.Id.Equals(func.Encarregado.Id))
                                        .FirstOrDefault();
-
+            
             if (vFuncionario == null)
             {
                 Log log = new Log();
@@ -118,11 +117,11 @@ namespace OcorrenciasDP.Controllers
 
                     _db.Int_DP_Funcionarios.Add(func);
                     _db.SaveChanges();
-
                     
-                    TempData["FuncionarioOK"] = "Funcionário cadastrado com sucesso!";
                     log.CadastrarFuncionario(id_notnull, func.Id);
                     _db.SaveChanges();
+
+                    TempData["FuncionarioOK"] = "Funcionário cadastrado com sucesso!";
 
                     return RedirectToAction("Cadastrar");
 
@@ -171,8 +170,7 @@ namespace OcorrenciasDP.Controllers
             ViewBag.Setores = _db.Int_DP_Setores
                               .OrderBy(a => a.Nome)
                               .ToList();
-
-            
+           
             Funcionario func = _db.Int_DP_Funcionarios.Find(id_notnull);
 
             ViewBag.Func = func;
@@ -201,7 +199,6 @@ namespace OcorrenciasDP.Controllers
                                    .OrderBy(a => a.Nome)
                                    .ToList();
 
-
             var query = _db.Int_DP_Funcionarios
                          .AsQueryable();
 
@@ -225,7 +222,6 @@ namespace OcorrenciasDP.Controllers
 
             foreach(Funcionario func in funcionarios)
             {
-
                 FuncionarioViewModel funcVM = new FuncionarioViewModel
                 {
                     Id = func.Id,
@@ -265,6 +261,7 @@ namespace OcorrenciasDP.Controllers
                 func_antigo.Exp_DataFim = func.Exp_DataFim;
                 func_antigo.Exp_DataInicio = func.Exp_DataFim;
 
+                //Férias
                 /*func_antigo.Ferias_DataInicio = func.Ferias_DataInicio;
                 func_antigo.Ferias_DataLimite = func.Ferias_DataLimite;
                 func_antigo.Ferias_Periodo = func.Ferias_Periodo;*/
@@ -281,6 +278,7 @@ namespace OcorrenciasDP.Controllers
                 _db.SaveChanges();
 
                 TempData["FuncionarioNotOK"] = "Ocorreu um erro ao tentar atualizar o funcionário";
+
 
             }
 

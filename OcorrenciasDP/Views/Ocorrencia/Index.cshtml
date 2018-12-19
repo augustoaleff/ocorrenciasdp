@@ -54,7 +54,7 @@
 
 @if (TempData["MsgOcorrenciaAlerta"] != null)
 {
-    <div class="alert alert-warning" role="alert">
+    <div class="alert alert-danger" role="alert">
         @TempData["MsgOcorrenciaAlerta"]
     </div>
 }
@@ -66,6 +66,7 @@
 
     <input type="hidden" id="update" name="update" value="@update" />
     <input type="hidden" name="id" value="@ViewBag.Ocorrencia.Id" />
+    <input type="hidden" name="ativo" value="1" />
 
     <div class="form-row">
         <div class="form-group col-md-auto" style="width:50%">

@@ -12,6 +12,7 @@ using OcorrenciasDP.Library.Filters;
 using OcorrenciasDP.Library.Globalization;
 using OcorrenciasDP.Models;
 using OcorrenciasDP.Library.Mail;
+using OcorrenciasDP.Library;
 
 namespace OcorrenciasDP.Controllers
 {
@@ -36,7 +37,7 @@ namespace OcorrenciasDP.Controllers
             // Take(5) = SELECT TOP 5
 
             var relat = _db.Int_DP_Ocorrencias
-                .Where(a => a.Usuario.Id == userID)
+                .Where(a => a.Usuario.Id == userID && a.Ativo == 1)
                 .OrderByDescending(b => b.Data)
                 .Take(5)
                 .ToList();
@@ -129,6 +130,10 @@ namespace OcorrenciasDP.Controllers
                 VerificarMensagensNovas();
             }
 
+            List<Imagem> banner = _db.Int_DP_Banner.OrderBy(a => a.Ordem).ToList();
+
+            ViewBag.Banner = banner;
+
             return View(ocorVM);
         }
 
@@ -175,7 +180,6 @@ namespace OcorrenciasDP.Controllers
 
                                 int loja = _db.Int_DP_Usuarios.Where(a => a.Id == vLogin.Id).Select(s => s.Loja.Id).FirstOrDefault();
 
-
                                 HttpContext.Session.SetInt32("Loja", loja);
                                 
                                 vLogin.UltimoLogin = Globalization.HoraAtualBR();
@@ -219,7 +223,6 @@ namespace OcorrenciasDP.Controllers
                     TempData["MensagemErro"] = "Usuário não Encontrado";
                     return View(usuario);
                 }
-
             }
 
             return View();
@@ -303,10 +306,71 @@ namespace OcorrenciasDP.Controllers
             ViewBag.MsgConteudo = vMensagem.Conteudo.Replace("\r\n", " <br /> ");
             ProcurarMensagens();
             List<OcorrenciaViewModel> ocorVM = CarregarOcorrencias();
+
+            List<Imagem> banner = _db.Int_DP_Banner.OrderBy(a => a.Ordem).ToList();
+
+            ViewBag.Banner = banner;
+
             return View("Inicio", ocorVM);
 
         }
         
+        //Trocar Senha por escolha do usuário
+        [Login]
+        public ActionResult AlterarMinhaSenha()
+        {
+            return View();
+        }
+
+        [Login]
+        [HttpPost]
+        public ActionResult AlterarMinhaSenha([FromForm]int? id, string senha, string confirmasenha)
+        {
+            ViewBag.Senha = senha;
+
+            int id_notnull = id ?? 0;
+
+            if(senha.ToLower() == confirmasenha.ToLower())
+            {
+                Log log = new Log();
+
+                try
+                {
+                    Usuario usuario = _db.Int_DP_Usuarios.Find(id_notnull);
+
+                    usuario.Senha = senha.ToLower();
+                    _db.SaveChanges();
+
+                    log.AlterarMinhaSenha(id_notnull);
+                    TempData["AlterarMinhaSenhaOK"] = "Senha alterada com sucesso!";
+                    ViewBag.Senha = "";
+
+                }
+                catch (Exception exp)
+                {
+                    log.AlterarMinhaSenha_Erro(id_notnull, exp);
+                    TempData["AlterarMinhaSenhaNotOK"] = "Ocorreu um Erro ao tentar alterar a senha, por favor, tente novamente mais tarde!";
+                }
+                finally
+                {
+                    _db.Int_DP_Logs.Add(log);
+                    _db.SaveChanges();
+                }
+                
+            }
+            else
+            {
+                TempData["SenhaNaoConfere"] = "Senhas não conferem!";
+                
+            }
+            
+            return View();
+
+        }
+
+
+
+        //Trocar Senha por envio e link no email
         [HttpPost]
         public ActionResult TrocarSenha([FromForm]int? id,string nome,string email,string senha,string confirmasenha)
         {
@@ -352,14 +416,15 @@ namespace OcorrenciasDP.Controllers
                 return View();
             }
 
-
         }
 
+        //Trocar Senha por envio e link no email
         public ActionResult TrocarSenha()
         {
             return View();
         }
 
+        //Trocar Senha por envio e link no email
         [HttpGet]
         public ActionResult TrocarSenha(long? key)
         {
@@ -373,7 +438,6 @@ namespace OcorrenciasDP.Controllers
 
                if(vKey.DataExpiracao >= agora)
                {
-
                     if(vKey.Utilizado == 0)
                     {
                         Usuario usuario = _db.Int_DP_Usuarios.Find(vKey.Usuario);
@@ -415,7 +479,7 @@ namespace OcorrenciasDP.Controllers
         {
             string codigo;
             DateTime agora = Globalization.HoraAtualBR();
-            
+
             email.ToLower();
 
             var vEmail = _db.Int_DP_Usuarios.Where(a => a.Email == email && a.Ativo == 1).FirstOrDefault();
@@ -438,18 +502,18 @@ namespace OcorrenciasDP.Controllers
                 _db.SaveChanges();
 
                 Log log = new Log();
-
+                
                 try
                 {
-
-                    Library.Mail.EnviarLinkSenha.EnviarLinkTrocarSenha(email, codigo, vEmail.Nome);
+                    string nome = Shared.PegarPrimeiroNome(vEmail.Nome);
+                   
+                    Library.Mail.EnviarLinkSenha.EnviarLinkTrocarSenha(email, codigo, nome);
 
                     log.EsqueciMinhaSenha_Envio(vEmail.Id,codigo);
 
                     TempData["TrocaSenhaOK"] = "Um link foi enviado ao seu e-mail com instruções para trocar a senha";
 
                     return RedirectToAction("Index");
-
 
                 }
                 catch(Exception exp)
@@ -502,5 +566,30 @@ namespace OcorrenciasDP.Controllers
 
 
         }
+
+        /*
+        
+        public string PegarPrimeiroNome(string nome)
+        {
+           
+            string primeiroNome = "";
+            
+            for (int i = 0; i < nome.Length; i++)
+            {
+                string letras = nome.Substring(i, 1);
+
+                if (letras != " ")
+                {
+                    primeiroNome += letras;
+                }
+                else
+                {
+                    break;
+                }
+
+            }
+
+            return primeiroNome;
+        }*/
     }
 }

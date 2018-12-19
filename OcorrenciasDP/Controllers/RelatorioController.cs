@@ -34,7 +34,7 @@ namespace OcorrenciasDP.Controllers
             ViewBag.Setor = setores;
             setores.Add(new Setor() { Id = 0, Nome = "*Todos*" });
 
-            lojas = _db.Int_Dp_Lojas.OrderBy(a => a.Nome).ToList();
+            lojas = _db.Int_DP_Lojas.OrderBy(a => a.Nome).ToList();
             ViewBag.Loja = lojas;
             lojas.Add(new Loja() { Id = 0, Nome = "*Todas*" });
         }
@@ -50,8 +50,10 @@ namespace OcorrenciasDP.Controllers
 
             try
             {
-                _db.Int_DP_Ocorrencias.Remove(ocorrencia);
+                //_db.Int_DP_Ocorrencias.Remove(ocorrencia);
+                ocorrencia.Ativo = 0;
                 _db.SaveChanges();
+                
 
                 TempData["ErroRelat"] = "Ocorrencia #" + id + " excluida!";
 
@@ -91,7 +93,7 @@ namespace OcorrenciasDP.Controllers
             var relat = _db.Int_DP_Ocorrencias
                .Join(_db.Int_DP_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
                .Join(_db.Int_DP_Setores, a => a.u.Setor.Id, b => b.Id, (a, b) => new { a, b })
-               .Join(_db.Int_Dp_Lojas, r => r.a.u.Loja.Id, s => s.Id, (r, s) => new { r, s })
+               .Join(_db.Int_DP_Lojas, r => r.a.u.Loja.Id, s => s.Id, (r, s) => new { r, s })
                .Where(w => w.r.a.o.Id == id)
                .Select(s => new
                {
@@ -144,7 +146,7 @@ namespace OcorrenciasDP.Controllers
             var query = _db.Int_DP_Ocorrencias
                        .Join(_db.Int_DP_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
                        .Join(_db.Int_DP_Setores, a => a.u.Setor.Id, b => b.Id, (a, b) => new { a, b })
-                       .Join(_db.Int_Dp_Lojas, r => r.a.u.Loja.Id, s => s.Id, (r,s) => new { r, s })
+                       .Join(_db.Int_DP_Lojas, r => r.a.u.Loja.Id, s => s.Id, (r,s) => new { r, s })
                        .OrderByDescending(c => c.r.a.o.Data)
                        .ThenByDescending(a => a.r.a.o.Id)
                        .AsQueryable();
@@ -170,6 +172,8 @@ namespace OcorrenciasDP.Controllers
             {
                 query = query.Where(a => a.r.a.u.Loja.Id == int.Parse(pesquisa.Loja));
             }
+
+            query = query.Where(y => y.r.a.o.Ativo == 1);
 
             DateTime datainicio_notnull = pesquisa.DataInicio ?? DateTime.MinValue;
 
@@ -209,7 +213,7 @@ namespace OcorrenciasDP.Controllers
             
             Setor vPesquisa = _db.Int_DP_Setores.Find(int.Parse(pesquisa.Setor));
 
-            Loja vPesquisa2 = _db.Int_Dp_Lojas.Find(int.Parse(pesquisa.Loja));
+            Loja vPesquisa2 = _db.Int_DP_Lojas.Find(int.Parse(pesquisa.Loja));
 
             if (vPesquisa != null)
             {
@@ -252,6 +256,7 @@ namespace OcorrenciasDP.Controllers
                     TempData["ErroRelat"] = "Ocorreu um erro ao tentar consultar o relatório...";
 
                     return View("Index");
+
                 }
             }
             else
@@ -269,6 +274,7 @@ namespace OcorrenciasDP.Controllers
                         PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
                         CustomSwitches = "--page-offset 0 --footer-left " + data + " --footer-right [page]/[toPage] --footer-font-size 8",
                         PageSize = Rotativa.AspNetCore.Options.Size.A4
+
                     };
 
                     log.ExportarRelatorio(id_notnull, filtros);
@@ -347,7 +353,7 @@ namespace OcorrenciasDP.Controllers
 
             if (loja != null && loja != "0")
             {
-                Loja nome_loja = _db.Int_Dp_Lojas.Find(int.Parse(loja));
+                Loja nome_loja = _db.Int_DP_Lojas.Find(int.Parse(loja));
 
                 if (filtros == "")
                 {
@@ -402,7 +408,8 @@ namespace OcorrenciasDP.Controllers
                     var relat = _db.Int_DP_Ocorrencias
                        .Join(_db.Int_DP_Usuarios, o => o.Usuario.Id, u => u.Id, (o, u) => new { o, u })
                        .Join(_db.Int_DP_Setores, a => a.u.Setor.Id, b => b.Id, (a, b) => new { a, b })
-                       .Join(_db.Int_Dp_Lojas, r => r.a.u.Loja.Id, s => s.Id, (r, s) => new { r, s })
+                       .Join(_db.Int_DP_Lojas, r => r.a.u.Loja.Id, s => s.Id, (r, s) => new { r, s })
+                       .Where(a => a.r.a.o.Ativo == 1)
                        .OrderByDescending(c => c.r.a.o.Data)
                        .ThenByDescending(a => a.r.a.o.Id)
                        .Select(s => new

@@ -23,18 +23,17 @@ namespace OcorrenciasDP.Models
         public Log()
         {
             this.Sistema_Operacional = Environment.OSVersion.VersionString;
+            this.Data = Globalization.HoraAtualBR();
         }
 
         public void LogIn(int usuario)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 2; //Login efetuado com Sucesso 
         }
 
         public void LogIn_Erro(int usuario, Exception e)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Obs = "ERRO: " + e.Message;
             this.Tipo = 1; //Login efetuado com Erro 
@@ -42,14 +41,12 @@ namespace OcorrenciasDP.Models
 
         public void LogOut(int usuario)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 4; //Logout efetuado com Sucesso
         }
 
         public void LogOut_Erro(int usuario, Exception e)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 3; //Logout efetuado com Sucesso
             this.Obs = "ERRO: " + e.Message;
@@ -57,7 +54,6 @@ namespace OcorrenciasDP.Models
 
         public void CadastrarUsuario(int usuario, int usuarioCadastrado)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.UsuarioAlterado = usuarioCadastrado;
             this.Tipo = 302; //Criação de Usuario com Sucesso
@@ -65,15 +61,13 @@ namespace OcorrenciasDP.Models
 
         public void CadastrarUsuario_Erro(int usuario, string loginUsuario, Exception e)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 301; //Criação de Usuário com Erro
             this.Obs = "ERRO: " + e.Message + ", Login Usuário = " + loginUsuario;
         }
-        
+
         public void ExcluirUsuario(int usuario, int usuarioExcluido)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.UsuarioAlterado = usuarioExcluido;
             this.Tipo = 304; //Exclusão de Usuario com Sucesso
@@ -81,7 +75,6 @@ namespace OcorrenciasDP.Models
 
         public void ExcluirUsuario_Erro(int usuario, int usuarioExcluido, Exception e)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.UsuarioAlterado = usuarioExcluido;
             this.Tipo = 303; //Exclusão de Usuario com Erro
@@ -90,7 +83,6 @@ namespace OcorrenciasDP.Models
 
         public void AlterarUsuario(int usuario, int usuarioAlterado, bool alteraPerfil, string perfil)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.UsuarioAlterado = usuarioAlterado;
 
@@ -109,7 +101,6 @@ namespace OcorrenciasDP.Models
         public void AlterarUsuario_Erro(int usuario, int usuarioAlterado, bool alteraPerfil, string perfil, Exception e)
         {
 
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.UsuarioAlterado = usuarioAlterado;
             this.Obs = "ERRO: " + e.Message;
@@ -127,16 +118,14 @@ namespace OcorrenciasDP.Models
 
         public void IncluirOcorrencia(int usuario, long ocorrencia)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Ocorrencia = ocorrencia;
             this.Tipo = 202; //Envio de Ocorrencia com sucesso
 
         }
-        
+
         public void IncluirOcorrencia_Erro(int usuario, Exception e)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 201; //Envio de Ocorrencia com erro
             this.Obs = "ERRO: " + e.Message;
@@ -144,7 +133,6 @@ namespace OcorrenciasDP.Models
 
         public void ExcluirOcorrencia(int usuario, long ocorrencia)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Ocorrencia = ocorrencia;
             this.Tipo = 204; //Exclusão de Ocorrencia com sucesso
@@ -152,7 +140,6 @@ namespace OcorrenciasDP.Models
 
         public void ExcluirOcorrencia_Erro(int usuario, long ocorrencia, Exception e)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Ocorrencia = ocorrencia;
             this.Tipo = 203; //Exclusão de Ocorrencia com erro
@@ -162,7 +149,6 @@ namespace OcorrenciasDP.Models
 
         public void EnviarLembrete(int usuario, int total)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 402; //Envio de Lembrete com Sucesso
             if (total == 1)
@@ -177,7 +163,6 @@ namespace OcorrenciasDP.Models
 
         public void EnviarLembrete_Erro(int usuario, Exception e)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 401; //Envio de Lembrete com Erro
             this.Obs = "ERRO: " + e.Message;
@@ -185,7 +170,6 @@ namespace OcorrenciasDP.Models
 
         public void EnviarMensagem(int usuario, long mensagem)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 404; //Envio de Mensagem com Sucesso
             this.Mensagem = mensagem;
@@ -193,23 +177,20 @@ namespace OcorrenciasDP.Models
 
         public void EnviarMensagem_Erro(int usuario, Exception e)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 403; // Envio de Mensagem com Erro
             this.Obs = "ERRO: " + e.Message;
         }
-        
+
         public void ExportarRelatorio(int usuario, string filtros)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 502; //Exportação de Relatorio em.pdf com sucesso
             this.Obs = "Filtros: " + filtros;
         }
 
-        public void ExportarRelatorio_Erro(int usuario,Exception e)
+        public void ExportarRelatorio_Erro(int usuario, Exception e)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 501; //Exportação de Relatorio em .pdf com erro
             this.Obs = "ERRO: " + e.Message;
@@ -217,7 +198,6 @@ namespace OcorrenciasDP.Models
 
         public void ConsultarRelatorio(int usuario, string filtros)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 504; // Consultar Relatório com sucesso
             this.Obs = "Filtros: " + filtros;
@@ -225,7 +205,6 @@ namespace OcorrenciasDP.Models
 
         public void ConsultarRelatorio_Erro(int usuario, string filtros, Exception e)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 503; //Consultar Relatório com Erro
             this.Obs = "ERRO: " + e.Message + ", Filtros: " + filtros;
@@ -233,7 +212,6 @@ namespace OcorrenciasDP.Models
 
         public void Outro_Sucesso(int usuario, string descricao)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 900; //Outro (Sucesso)
             this.Obs = descricao;
@@ -241,7 +219,6 @@ namespace OcorrenciasDP.Models
 
         public void Outro_Erro(int usuario, string descricao, Exception e)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 901; // Outro (Erro)
             this.Obs = "ERRO: " + e.Message + ", " + descricao;
@@ -249,7 +226,6 @@ namespace OcorrenciasDP.Models
 
         public void CadastrarFuncionario(int usuario, long funcionario)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Funcionario = funcionario;
             this.Tipo = 602; //Criação de Funcionario com Sucesso
@@ -257,7 +233,6 @@ namespace OcorrenciasDP.Models
 
         public void CadastrarFuncionario_Erro(int usuario, long funcionario, Exception exp)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Funcionario = funcionario;
             this.Obs = "ERRO: " + exp.Message;
@@ -266,7 +241,6 @@ namespace OcorrenciasDP.Models
 
         public void AlterarFuncionario(int usuario, long funcionario)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Funcionario = funcionario;
             this.Tipo = 603; //Alteração de Funcionario com Erro
@@ -274,7 +248,6 @@ namespace OcorrenciasDP.Models
 
         public void AlterarFuncionario_Erro(int usuario, long funcionario, Exception exp)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Funcionario = funcionario;
             this.Tipo = 604; //Alteração de Funcionario com Sucesso
@@ -283,15 +256,13 @@ namespace OcorrenciasDP.Models
 
         public void EsqueciMinhaSenha_Envio(int usuario, string codigo)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 6; //Enviado link de redefinição de senha com sucesso
             this.Obs = "Código de Validação: " + codigo;
         }
 
-        public void EsqueciMinhaSenha_Envio_Erro(int usuario, string codigo,Exception exp)
+        public void EsqueciMinhaSenha_Envio_Erro(int usuario, string codigo, Exception exp)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 5; //Enviado link de redefinição de senha com erro
             this.Obs = "ERRO: " + exp.Message + " / Código de Validação: " + codigo;
@@ -299,20 +270,29 @@ namespace OcorrenciasDP.Models
 
         public void EsqueciMinhaSenha_Troca(int usuario)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 8; //Redefinição de senha por link com sucesso
         }
 
         public void EsqueciMinhaSenha_Troca_Erro(int usuario, Exception exp)
         {
-            this.Data = Globalization.HoraAtualBR();
             this.Usuario = usuario;
             this.Tipo = 7; //Redefinição de senha por link com erro
             this.Obs = "ERRO: " + exp.Message;
         }
 
+        public void AlterarMinhaSenha(int usuario)
+        {
+            this.Usuario = usuario;
+            this.Tipo = 10; //Alteração de senha pelo usuário com sucesso
+        }
 
+        public void AlterarMinhaSenha_Erro(int usuario, Exception exp)
+        {
+            this.Usuario = usuario;
+            this.Tipo = 9; //Alteração de senha pelo usuário com erro
+            this.Obs = "ERRO: " + exp.Message;
+        }
 
     }
 }

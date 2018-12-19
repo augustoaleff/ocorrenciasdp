@@ -21,12 +21,11 @@
 
     <input type="hidden" name="id" value="@ViewBag.IdSenha" />
 
-
     <!--Nome-->
     <div class="form-group col-md-auto">
         <label for="nome">Nome</label>
         <input type="text" class="form-control" value="@ViewBag.Nome" disabled />
-        <input type="hidden" name="nome" id="nome" value="@ViewBag.Nome" placeholder="" />
+        <input type="hidden" name="nome" id="nome" value="@ViewBag.Nome"  />
 
     </div>
     @Html.ValidationMessage("nome")
@@ -34,9 +33,8 @@
     <!--Email-->
     <div class="form-group col-md-auto">
         <label for="email">E-mail</label>
-        <input type="text" class="form-control" value="@ViewBag.Email" placeholder="" disabled />
-        <input type="hidden" name="email" id="email" value="@ViewBag.Email" placeholder="" />
-
+        <input type="text" class="form-control" value="@ViewBag.Email"  disabled />
+        <input type="hidden" name="email" id="email" value="@ViewBag.Email"  />
     </div>
     @Html.ValidationMessage("email")
 
@@ -47,14 +45,13 @@
 
         <input type="password" name="senha" class="form-control" id="senha" value="@ViewBag.Senha" placeholder="" required>
 
-
     </div>
     @Html.ValidationMessage("senha")
 
     <!--Confirmar Senha-->
     <div class="form-group col-md-auto">
         <label for="confirmasenha">Confime a Senha</label>
-        <input type="password" name="confirmasenha" class="form-control" id="confirmasenha" value="" onkeydown="return document.getElementById('conferencia').hidden = true; " placeholder="" required>
+        <input type="password" name="confirmasenha" class="form-control" id="confirmasenha" value="" onkeydown="return document.getElementById('conferencia').hidden = true; " required>
     </div>
 
     @if (@TempData["SenhaNaoConfere"] != null)
@@ -70,4 +67,3 @@
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
 
 </form>
-

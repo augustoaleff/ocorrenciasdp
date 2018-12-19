@@ -179,10 +179,10 @@
     </tbody>
 </table>
 
-@if (nome != "" || setor != 0)
+@if (nome != "" || setor != 0 || loja != 0)
 {
 
-    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Filtrar", new { nome, setor, page }))
+    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Filtrar", new { nome, setor, loja, page }))
 
 }
 else

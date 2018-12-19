@@ -73,69 +73,7 @@ namespace OcorrenciasDP.Controllers
                 List<DateTime> diasLista = new List<DateTime>();
                 List<DateTime> feriados = new List<DateTime>();
                 List<int> vUsuariosSemEnvio = new List<int>();
-
-                /*
-                try
-                {
-
-                    for (int i = dias - 1; i >= 0; i--)
-                    {
-                        DateTime data = DateTime.Now.AddDays(i * -1);
-
-                        if (!data.DayOfWeek.Equals(DayOfWeek.Saturday) && !data.DayOfWeek.Equals(DayOfWeek.Sunday))
-                        {
-                            diasLista.Add(data.Date);
-                        }
-                    }
-
-
-                    feriados = _db.Int_Dp_Feriados.Select(s => s.Data).ToList();
-                    diasLista.Except(feriados);
-
-
-                    foreach (var dia in diasLista)
-                    {
-                        var usuarios = _db.Int_DP_Ocorrencias
-                                         .Where(a => a.Data == dia.Date)
-                                         .GroupBy(g => g.Usuario.Id)
-                                         .Select(s => s.Key)
-                                         .ToList();
-
-                        vUsuariosSemEnvio.AddRange(usuarios);
-
-                    }
-
-                    vUsuariosSemEnvio = vUsuariosSemEnvio.Distinct().ToList();
-
-
-                }
-                catch (InvalidCastException exp)
-                {
-                    TempData["LembreteNotOK"] = "Todos os usuários já enviaram as ocorrências no periodo solicitado!";
-
-                    Log log = new Log();
-                    log.EnviarLembrete_Erro(id_user, exp);
-                    _db.SaveChanges();
-
-                    return RedirectToAction("Index");
-                }
-                catch (Exception exp)
-                {
-                    TempData["LembreteNotOK"] = "Ocorreu um erro ao tentar enviar o lembrete!";
-
-                    Log log = new Log();
-                    log.EnviarLembrete_Erro(id_user, exp);
-                    _db.SaveChanges();
-
-                    return RedirectToAction("Index");
-
-                }
-
-                List<int> vUsuariosSemEnvio = new List<int>();
-
-
-                */
-
+         
                 try
                 {
                     DateTime datainicio = (DateTime.Today.Date.AddDays(dias * (-1)));
@@ -204,6 +142,7 @@ namespace OcorrenciasDP.Controllers
 
                         try
                         {
+
                             EnviarLembrete.EnviarMsgLembrete(dias, vEmails);
                             TempData["LembreteOK"] = "Lembrete Enviado!";
 

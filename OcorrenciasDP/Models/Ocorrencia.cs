@@ -30,7 +30,7 @@ namespace OcorrenciasDP.Models
         public byte Acidente { get; set; }
         public byte Outro { get; set; }
 
-        
+        public byte Ativo { get; set; }
 
         public Ocorrencia()
         {

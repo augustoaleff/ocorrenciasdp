@@ -15,17 +15,18 @@ namespace OcorrenciasDP.Library.Mail
             string saudacao, conteudo;
             DateTime agora = Globalization.Globalization.HoraAtualBR();
 
+
             if (agora.Hour >= 3 && agora.Hour <= 11) //Entre 3h e meio-dia ==> Bom Dia
             {
-                saudacao = "Bom Dia " +  nome +"<br />";
+                saudacao = "Bom Dia " +  nome +",<br />";
             }
             else if (agora.Hour >= 12 && agora.Hour <= 17) //Entre meio-dia e 18h ==> Boa Tarde
             {
-                saudacao = "Boa Tarde " + nome + "<br />";
+                saudacao = "Boa Tarde " + nome + ",<br />";
             }
             else //Entre 18h e 3h ==> Boa Noite
             {
-                saudacao = "Boa Noite " + nome + "<br />";
+                saudacao = "Boa Noite " + nome + ",<br />";
             }
 
             conteudo = "<br />  <a href='http://www.eletroleste.com.br/OcorrenciasDP/Home/TrocarSenha?key=" + codigo + "'>Clique Aqui </a> e siga as instuções para redefinir a sua senha: <br />" +
@@ -53,6 +54,8 @@ namespace OcorrenciasDP.Library.Mail
             smtp.Send(mensagem);
 
         }
+
+        
 
     }
 }

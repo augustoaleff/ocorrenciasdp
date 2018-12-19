@@ -1,0 +1,89 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewData["Title"] = "Alterar Minha Senha";
+    int id_login = Context.Session.GetInt32("ID") ?? 0;
+    string nome_login = Context.Session.GetString("Login");
+    string loja_login = Context.Session.GetString("Loja");
+    string setor_login = Context.Session.GetString("Setor");
+
+    string senha;
+
+    if (ViewBag.Senha != null)
+    {
+        senha = ViewBag.Senha;
+    }
+    else
+    {
+        senha = "";
+    }
+}
+
+@if (TempData["AlterarMinhaSenhaNotOK"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["AlterarMinhaSenhaNotOK"]
+    </div>
+}
+
+@if (TempData["AlterarMinhaSenhaOK"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["AlterarMinhaSenhaOK"]
+    </div>
+}
+
+<h2>Alterar Minha Senha</h2>
+<br />
+
+<br />
+
+
+<form method="post" action="/OcorrenciasDP/Home/AlterarMinhaSenha" style="width:50%">
+
+    <input type="hidden" name="id" value="@id_login" />
+
+    <!--Nome-->
+    <div class="form-group col-md-auto">
+        <label for="nome">Nome</label>
+        <input type="text" class="form-control" value="@nome_login" disabled />
+    </div>
+
+    <!--Setor-->
+    <div class="form-group col-md-auto">
+        <label for="setor">Setor</label>
+        <input type="text" class="form-control" value="@setor_login" disabled />
+
+    </div>
+
+    <!--Senha-->
+
+    <div class="form-group col-md-auto">
+        <label for="senha">Senha</label>
+
+        <input type="password" name="senha" class="form-control" id="senha" value="@senha" placeholder="" required>
+
+    </div>
+    @Html.ValidationMessage("senha")
+
+    <!--Confirmar Senha-->
+    <div class="form-group col-md-auto">
+        <label for="confirmasenha">Confime a Senha</label>
+        <input type="password" name="confirmasenha" class="form-control" id="confirmasenha" value="" onkeydown="return document.getElementById('conferencia').hidden = true; " required>
+    </div>
+
+    @if (@TempData["SenhaNaoConfere"] != null)
+    {
+
+        <div>
+            <b id="conferencia" style="color:red">@TempData["SenhaNaoConfere"]  </b>
+        </div>
+
+        <br />
+    }
+
+    <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
+
+</form>

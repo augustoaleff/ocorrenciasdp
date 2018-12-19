@@ -29,8 +29,6 @@ namespace OcorrenciasDP.Models
         public DateTime DataCadastro { get; set; }
         public Loja Loja { get; set; }
        
-
-        [EmailAddress]
         public string Email { get; set; }
 
     }

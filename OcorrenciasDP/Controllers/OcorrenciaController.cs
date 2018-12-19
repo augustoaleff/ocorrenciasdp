@@ -57,8 +57,7 @@ namespace OcorrenciasDP.Controllers
 
             ocorrencia.Usuario = usuario;
             ocorrencia.DataEnvio = Globalization.HoraAtualBR();
-
-
+            
             if (ModelState.IsValid)
             {
                 ViewBag.Ocorrencia = new Ocorrencia();
@@ -94,13 +93,14 @@ namespace OcorrenciasDP.Controllers
                     _db.Int_DP_Logs.Add(log);
 
                 }
-                catch (Exception e)
+                catch (Exception exp)
                 {
                     //MsgOcorrenciaNotOK já está em uso!
                     TempData["MsgOcorrenciaNotOK2"] = "Ocorreu um erro ao enviar, por favor, tente novamente...";
 
-                    log.IncluirOcorrencia_Erro(id_notnull, e);
+                    log.IncluirOcorrencia_Erro(id_notnull, exp);
                     _db.Int_DP_Logs.Add(log);
+
                 }
                 finally
                 {
@@ -166,7 +166,7 @@ namespace OcorrenciasDP.Controllers
                     }
 
                     enviados = _db.Int_DP_Ocorrencias
-                               .Where(a => a.Data >= dataInicial && a.Usuario.Id == usuario)
+                               .Where(a => a.Data >= dataInicial && a.Usuario.Id == usuario && a.Ativo == 1)
                                .OrderByDescending(a => a.Data)
                                .Select(a => a.Data)
                                .ToList();
@@ -184,17 +184,7 @@ namespace OcorrenciasDP.Controllers
                             calend_final.Add(dia);
                         }
                     }
-
-                    /*
-                    foreach(DateTime dia in calend)
-                    {
-                        if(!dia.DayOfWeek.Equals(DayOfWeek.Saturday) && !dia.DayOfWeek.Equals(DayOfWeek.Sunday))
-                        {
-                            calend.Remove(dia);
-                        }
-                    }
-                    */
-
+                    
                     //calend_final.Reverse(); //Reverte a ordem das datas para decrescente
 
                     ViewBag.Calendario = calend_final;
@@ -230,17 +220,14 @@ namespace OcorrenciasDP.Controllers
             if (ViewBag.Calendario != null)
             {
                 diasFaltantes = ViewBag.Calendario;
-               
             }
-
             
-
             if (ModelState.IsValid)
             {
-                //SELECT * FROM INT_DP_OCORRENCIAS WHERE DATA = '" & Format(Data.Text, "YYYYMMDD") & "'";/
+                //SELECT * FROM INT_DP_OCORRENCIAS WHERE DATA = '" & Format(Data.Text, "YYYYMMDD") & "'";
 
                 Ocorrencia vOcorrencia = _db.Int_DP_Ocorrencias
-                                   .Where(o => o.Data.Equals(ocorrencia.Data) && (o.Usuario.Id == ocorrencia.Usuario.Id))
+                                   .Where(o => o.Data.Equals(ocorrencia.Data) && (o.Usuario.Id == ocorrencia.Usuario.Id) && o.Ativo == 1)
                                    .FirstOrDefault();
                 
                 //Se for igual a null, não há nenhuma ocorrencia lançada com a data informada
@@ -255,7 +242,7 @@ namespace OcorrenciasDP.Controllers
                         ViewBag.Ocorrencia.Anexo = anexo.FileName;
                         ocorrencia.Anexo = anexo.FileName;
                         ViewBag.Anexo = anexo;
-                    } 
+                    }
                     try
                     {
                         _db.Int_DP_Ocorrencias.Add(ocorrencia);
@@ -329,7 +316,6 @@ namespace OcorrenciasDP.Controllers
             }
             
             OcorrenciasFaltantes();
-
 
             return View();
         }
