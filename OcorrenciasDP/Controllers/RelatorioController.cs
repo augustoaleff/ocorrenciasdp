@@ -54,7 +54,6 @@ namespace OcorrenciasDP.Controllers
                 ocorrencia.Ativo = 0;
                 _db.SaveChanges();
                 
-
                 TempData["ErroRelat"] = "Ocorrencia #" + id + " excluida!";
 
                 log.ExcluirOcorrencia(user_id, id);
@@ -458,7 +457,7 @@ namespace OcorrenciasDP.Controllers
                 TempData["ErroRelat"] = "Ocorreu um erro ao tentar consultar o relatório...";
 
                 return View();
-            
+
             }
         }
             

@@ -90,12 +90,12 @@ namespace OcorrenciasDP.Controllers
                 msgVM.Add(mensagem);
 
                 ViewBag.Msgs = msgVM;
+
             }
         }
 
         public void VerificarMensagensNovas()
         {
-
             int userId = HttpContext.Session.GetInt32("ID") ?? 0;
 
             DateTime dataUltimoAcesso = _db.Int_DP_Usuarios
@@ -241,7 +241,6 @@ namespace OcorrenciasDP.Controllers
                            Directory.GetCurrentDirectory(),
                            "wwwroot", "uploads", filename);
 
-            Request.ToString();
 
             if (System.IO.File.Exists(path)) //Se o arquivo existir
             {
@@ -489,6 +488,7 @@ namespace OcorrenciasDP.Controllers
                 codigo = vEmail.Id.ToString() + agora.Minute.ToString() + agora.Month.ToString() + agora.Day.ToString() +
                          agora.Year.ToString() + agora.Second.ToString() + agora.Hour.ToString();
 
+
                 ValidacaoSenha valid = new ValidacaoSenha
                 {
                     Id = long.Parse(codigo),
@@ -514,17 +514,15 @@ namespace OcorrenciasDP.Controllers
                     TempData["TrocaSenhaOK"] = "Um link foi enviado ao seu e-mail com instruções para trocar a senha";
 
                     return RedirectToAction("Index");
-
+                    
                 }
                 catch(Exception exp)
                 {
-
                     log.EsqueciMinhaSenha_Envio_Erro(vEmail.Id, codigo, exp);
 
                     TempData["TrocaSenhaNotOK"] = "Ocorreu um erro ao tentar enviar o link, por favor tente novamente";
 
                     return RedirectToAction("Index");
-
                 }
                 finally
                 {
@@ -536,7 +534,6 @@ namespace OcorrenciasDP.Controllers
             else
             {
                 TempData["TrocaSenhaNotOK"] = "Esta email não está cadastrado no sistema";
-
                 return RedirectToAction("Index");
             }
         }
@@ -563,10 +560,9 @@ namespace OcorrenciasDP.Controllers
             }
 
             return RedirectToAction("Index", "Home");
-
-
+            
         }
-
+        
         /*
         
         public string PegarPrimeiroNome(string nome)

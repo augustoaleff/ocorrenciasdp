@@ -51,7 +51,6 @@
     </div>
 }
 
-
 @if (TempData["MsgOcorrenciaAlerta"] != null)
 {
     <div class="alert alert-danger" role="alert">
@@ -88,15 +87,15 @@
     <br />
 
     <!-- Experiencia -->
-    @if (ViewBag.Experiencia != null)
+    @if (ViewBag.Experiencia != null && ViewBag.Experiencia.Count > 0)
     {
-        @foreach (var exp in ViewBag.Experiencia)
+        @foreach (Funcionario exp in ViewBag.Experiencia)
         {
             <b>Nome: </b>
             @exp.Nome
 
             <b>Data Início:</b>
-            @exp.Data
+            @exp.Exp_DataInicio
 
             <div style="border:thin;border-color:black;border-collapse:initial">
 
@@ -106,8 +105,9 @@
                 <textarea class="form-control" name="exp_cod" placeholder="Digite a Avaliação do Funcionário..." required></textarea>
 
                 <br />
-            </div>
 
+            </div>
+            
         }
     }
 
@@ -312,6 +312,7 @@
                     <label class="form-check-label" for="outra_nao">Não</label>
                 </div>
             }
+
         </div>
     </div>
 
@@ -341,7 +342,6 @@
         <h3>Faltam enviar as seguintes ocorrências: </h3>
 
         <div style="display:block;width:75%">
-
 
             @{
                 List<DateTime> dias = ViewBag.Calendario;
@@ -449,15 +449,23 @@
                 descricao_text.required = false; //Deixa como não Obrigatório
             }
         }
+        
+        //Mostrar a descrição se tiver algo e voltar a tela
+        $("#descricao").ready(function () {
 
+            if ($("#descricao").text() != "" && $("#descricao").text() != "Não houve ocorrências") {
+
+                $("#textarea_descricao").prop('hidden', false);
+                $("#descricao").prop('required', true);
+         
+            }
+   
+        });
+        
         function mostraAlerta() {
-            alert("Você possui ocorrencias à serem entregas");
+            alert("Você possui ocorrencias à serem entregues");
         }
-
-        function trocarData() {
-
-        }
-
+        
     </script>
-
+                
 }

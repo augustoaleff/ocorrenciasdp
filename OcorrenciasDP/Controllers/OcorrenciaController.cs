@@ -13,7 +13,6 @@ using OcorrenciasDP.Models;
 
 namespace OcorrenciasDP.Controllers
 {
-
     [Login]
     public class OcorrenciaController : Controller
     {
@@ -31,19 +30,16 @@ namespace OcorrenciasDP.Controllers
             ViewBag.Ocorrencia = new Ocorrencia();
             ViewBag.Ocorrencia.Data = Globalization.HoraAtualBR();
             ViewBag.Anexo = "";
-
-
+            
             OcorrenciasFaltantes();
-
-
+            
             return View(new Ocorrencia());
         }
 
         public ActionResult Atualizar([FromForm]Ocorrencia ocorrencia)
         {
-
-            //POST - Request.Form
-            //GET - Request.QueryString
+            //POST - Request.Form (HTML)
+            //GET - Request.QueryString (URL)
 
             //Ocorrencia ocorrencia = new Ocorrencia();
 
@@ -77,7 +73,6 @@ namespace OcorrenciasDP.Controllers
                     if (ViewBag.Calendario != null)
                     {
                         diasFaltantes = ViewBag.Calendario;
-
                     }
 
                     if (diasFaltantes.Count < 3)
@@ -113,6 +108,7 @@ namespace OcorrenciasDP.Controllers
             return View();
 
         }
+        
 
         public void OcorrenciasFaltantes()
         {
@@ -123,7 +119,8 @@ namespace OcorrenciasDP.Controllers
                 List<DateTime> enviados = new List<DateTime>(); //Ultimas ocorrências enviadas
                 List<DateTime> calend = new List<DateTime>(); //Dias - Falta
                 List<DateTime> calend_final = new List<DateTime>(); //Calend - Finais de Semana
-                
+              
+              
                 try
                 {
                     int id_user = HttpContext.Session.GetInt32("ID") ?? 0;
@@ -197,6 +194,11 @@ namespace OcorrenciasDP.Controllers
             }
         }
 
+        public void MostrarAvaliacao(int id_func)
+        {
+            Funcionario func = _db.Int_DP_Funcionarios.Find(id_func);
+        }
+
         [HttpPost]
         public ActionResult Index([FromForm]Ocorrencia ocorrencia, IFormFile anexo, string update)
         {
@@ -204,7 +206,7 @@ namespace OcorrenciasDP.Controllers
             {
                 ocorrencia.Descricao = "Não houve ocorrências";
             }
-
+            
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
 
             Usuario usuario = _db.Int_DP_Usuarios.Find(id_notnull);
@@ -236,7 +238,7 @@ namespace OcorrenciasDP.Controllers
                     ViewBag.Ocorrencia = new Ocorrencia();
                     ViewBag.Ocorrencia.Data = Globalization.HoraAtualBR();
                     Log log = new Log();
-
+                    
                     if (anexo != null)
                     {
                         ViewBag.Ocorrencia.Anexo = anexo.FileName;
@@ -250,7 +252,7 @@ namespace OcorrenciasDP.Controllers
 
                         log.IncluirOcorrencia(ocorrencia.Usuario.Id, ocorrencia.Id);
                         _db.Int_DP_Logs.Add(log);
-
+                        
                     }
                     catch (Exception exp)
                     {
@@ -262,6 +264,7 @@ namespace OcorrenciasDP.Controllers
                         OcorrenciasFaltantes();
 
                         return View("Index", ocorrencia);
+
                     }
                     finally
                     {
@@ -298,8 +301,9 @@ namespace OcorrenciasDP.Controllers
                         ViewBag.Ocorrencia.Anexo = anexo.FileName;
                     }
 
-                    //### Gerar alerta para o usuário perguntado se ele quer que atualize a pagina, se sim, executa este código, senão, não executa e volta pra View;
+                    //### Gerar alerta para o usuário perguntando se ele quer que atualize a pagina, se sim, executa este código, senão, não executa e volta pra View;
                     TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrencia cadastrada para esta data!";
+                    TempData["MsgOcorrenciaNotOK"] = "Já";
                     //Retorna o valor como Objeto Ocorrencia para a View
 
                     OcorrenciasFaltantes();
@@ -307,6 +311,8 @@ namespace OcorrenciasDP.Controllers
                     return View("Index", ocorrencia);
                 }
             }
+
+            ViewBag.Anexo = anexo.ContentDisposition;
 
             ViewBag.Ocorrencia = ocorrencia;
 
@@ -319,7 +325,6 @@ namespace OcorrenciasDP.Controllers
 
             return View();
         }
-
 
         //Upload
         public async void UploadFile(IFormFile file)
@@ -336,6 +341,5 @@ namespace OcorrenciasDP.Controllers
                 }
             }
         }
-        
     }
 }

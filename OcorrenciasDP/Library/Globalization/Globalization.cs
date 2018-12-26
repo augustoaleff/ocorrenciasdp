@@ -68,5 +68,6 @@ namespace OcorrenciasDP.Library.Globalization
             string data = string.Concat(HoraAtualBR().ToString("d", culture),"_",HoraAtualBR().ToString("t",culture));
             return data; // 19/09/2018_14:30
         }
+        
     }
 }

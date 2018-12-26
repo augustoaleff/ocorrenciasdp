@@ -182,6 +182,7 @@ namespace OcorrenciasDP.Controllers
                                    .ToList();
             
             return View("Cadastrar");
+
         }
 
         public ActionResult Filtrar(string nome, int? setor, int? encarregado, int? page)
@@ -231,12 +232,13 @@ namespace OcorrenciasDP.Controllers
                 };
 
                 funcionariosVM.Add(funcVM);
+
             }
 
             IPagedList<FuncionarioViewModel> resultadoPaginado = funcionariosVM.ToPagedList(pageNumber, 10);
-
-            return View("Index",resultadoPaginado);
             
+            return View("Index",resultadoPaginado);
+
         }
 
         [HttpPost]
@@ -250,10 +252,12 @@ namespace OcorrenciasDP.Controllers
             
             ViewBag.Func = func;
 
+            Log log = new Log();
+
             try
             {
                 Funcionario func_antigo = _db.Int_DP_Funcionarios.Find(func.Id);
-
+                
                 func_antigo.Nome = func.Nome;
                 func_antigo.Setor = func.Setor;
                 func_antigo.Encarregado = func.Encarregado;
@@ -267,18 +271,21 @@ namespace OcorrenciasDP.Controllers
                 func_antigo.Ferias_Periodo = func.Ferias_Periodo;*/
 
                 _db.SaveChanges();
+                log.AlterarFuncionario(id_notnull, func.Id);
+
                 TempData["FuncionarioNotOK"] = "Funcionário Atualizado com Sucesso";
                 
             }
             catch (Exception exp)
-            {
-
-                Log log = new Log();
+            {  
                 log.AlterarFuncionario_Erro(id_notnull, func.Id, exp);
-                _db.SaveChanges();
 
                 TempData["FuncionarioNotOK"] = "Ocorreu um erro ao tentar atualizar o funcionário";
 
+            }
+            finally{
+
+                _db.SaveChanges();
 
             }
 

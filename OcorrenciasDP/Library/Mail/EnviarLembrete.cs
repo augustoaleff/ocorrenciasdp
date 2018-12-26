@@ -66,7 +66,6 @@ namespace OcorrenciasDP.Library.Mail
                 {
                     mensagem.Bcc.Add(email);
                 }
-
             }
             
             smtp.Send(mensagem);

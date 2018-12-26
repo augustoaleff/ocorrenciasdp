@@ -12,6 +12,10 @@
 <h2>Funcionários</h2>
 <br />
 
+<div style="display:flex; justify-content:flex-end">
+    <a href="/OcorrenciasDP/Funcionarios/Cadastrar" class="btn btn-success">Cadastrar</a>
+</div>
+
 <div style="display:flex;justify-content:space-between">
 
     <div>
@@ -40,8 +44,7 @@
             <button type="reset" class="btn btn-default">Limpar Tela</button>
         </form>
     </div>
-
-    <a href="/OcorrenciasDP/Funcionarios/Cadastrar" class="btn btn-success">Cadastrar</a>
+    
 </div>
 
 <br />
@@ -90,7 +93,8 @@
                         Alterar
                     </a>
 
-                    <a href="/OcorrenciasDP/Funcionarios/Excluir/@func.Id/" value="@func.Id" onclick="return confirmaApagar();" on class="btn btn-danger btn-sm">
+                    <a href="/OcorrenciasDP/Funcionarios/Excluir/@func.Id/" value="@func.Id" onclick="return confirmaApagar();"
+                       class="btn btn-danger btn-sm">
                         Excluir
                     </a>
                 </td>
@@ -101,6 +105,7 @@
 </table>
 
 @section Scripts{
+
     <script language="javascript">
         function confirmaApagar() {
             return confirm("Confirma Exclusão?");
