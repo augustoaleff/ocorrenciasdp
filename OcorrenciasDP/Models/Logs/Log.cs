@@ -294,5 +294,21 @@ namespace OcorrenciasDP.Models
             this.Obs = "ERRO: " + exp.Message;
         }
 
+        public void EnviarAvaliacao(int usuario, long funcionario)
+        {
+            this.Usuario = usuario;
+            this.Funcionario = funcionario; 
+            this.Tipo = 606; //Envio de Avaliação de Funcionário com Sucesso
+        }
+
+        public void EnviarAvaliacao_Erro(int usuario, long funcionario, Exception exp)
+        {
+            this.Usuario = usuario;
+            this.Funcionario = funcionario;
+            this.Tipo = 605; //Envio de Avaliação de Funcionário com Erro
+            this.Obs = "ERRO: " + exp.Message;
+
+        }
+
     }
 }

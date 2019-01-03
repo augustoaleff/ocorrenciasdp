@@ -101,7 +101,6 @@
                             </a>
                             break;
                     }
-
                 }
 
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -123,8 +122,7 @@
                             <li><a asp-area="" asp-controller="Relatorio" asp-action="Index">Relatório</a></li>
                             <li><a asp-area="" asp-controller="Usuarios" asp-action="Index">Usuários</a></li>
                             <li><a asp-area="" asp-controller="Mensagens" asp-action="Index">Mensagens</a></li>
-                            <!--
-                            <li><a asp-area="" asp-controller="Funcionarios" asp-action="Index">Funcionários</a></li>-->
+                            @*<li><a asp-area="" asp-controller="Funcionarios" asp-action="Index">Funcionários</a></li>*@
                         }
                         <li class="nav-item"><a asp-area="" asp-controller="Home" asp-action="AlterarMinhaSenha">Alterar Minha Senha</a></li>
                         <li class="nav-item"><a asp-area="" asp-controller="Home" asp-action="Logout">Logout</a></li>
@@ -135,11 +133,9 @@
                         <li><a asp-area="" asp-controller="Home" asp-action="Index">Login</a></li>
                     }
   
-
-
                 </ul>
-                <span class="badge bg-primary">@Login</span>
 
+                <span class="badge bg-primary">@Login</span>
 
             </div>
         </div>

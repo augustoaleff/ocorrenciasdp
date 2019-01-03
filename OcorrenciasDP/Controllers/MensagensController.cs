@@ -73,13 +73,14 @@ namespace OcorrenciasDP.Controllers
                 List<DateTime> diasLista = new List<DateTime>();
                 List<DateTime> feriados = new List<DateTime>();
                 List<int> vUsuariosSemEnvio = new List<int>();
-         
+                DateTime hoje = Globalization.HojeBR();
+
                 try
                 {
-                    DateTime datainicio = (DateTime.Today.Date.AddDays(dias * (-1)));
+                    DateTime datainicio = (hoje.AddDays(dias * (-1)));
 
                     vUsuariosSemEnvio = _db.Int_DP_Ocorrencias
-                                       .Where(a => a.Data >= datainicio && a.Data <= DateTime.Today.Date)
+                                       .Where(a => a.Data >= datainicio && a.Data < hoje)
                                        .GroupBy(g => g.Usuario.Id)
                                        .Select(s => s.Key)
                                        .ToList();
@@ -135,6 +136,8 @@ namespace OcorrenciasDP.Controllers
                     }
 
                     vEmails.RemoveAll(item => item == null); //Remove os valores nulos da lista
+                    vEmails.RemoveAll(item => item == string.Empty); //Remove os valores de string vazia
+                    vEmails.RemoveAll(item => item == ""); //Remove os valores de string vazia
 
                     if (vEmails.Count > 0)
                     {
@@ -167,8 +170,7 @@ namespace OcorrenciasDP.Controllers
                     {
                         TempData["LembreteNotOK"] = "Não há e-mails cadastrados para envio";
                     }
-
-
+                    
                     return RedirectToAction("Index");
 
                 }
@@ -223,7 +225,7 @@ namespace OcorrenciasDP.Controllers
         {
             return RedirectToAction("Index");
         }
-
+        
         [HttpPost]
         public ActionResult Cadastrar([FromForm]Mensagem mensagem)
         {
@@ -268,7 +270,6 @@ namespace OcorrenciasDP.Controllers
             }
             else
             {
-
                 TempData["MensagemNaoEnviada"] = "Ocorreu um erro ao enviar a mensagem, por favor, envie novamente!";
                 return RedirectToAction("Index");
 

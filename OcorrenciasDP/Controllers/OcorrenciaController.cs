@@ -303,7 +303,6 @@ namespace OcorrenciasDP.Controllers
 
                     //### Gerar alerta para o usuário perguntando se ele quer que atualize a pagina, se sim, executa este código, senão, não executa e volta pra View;
                     TempData["MsgOcorrenciaNotOK"] = "Já existe uma ocorrencia cadastrada para esta data!";
-                    TempData["MsgOcorrenciaNotOK"] = "Já";
                     //Retorna o valor como Objeto Ocorrencia para a View
 
                     OcorrenciasFaltantes();
@@ -311,9 +310,7 @@ namespace OcorrenciasDP.Controllers
                     return View("Index", ocorrencia);
                 }
             }
-
-            ViewBag.Anexo = anexo.ContentDisposition;
-
+            
             ViewBag.Ocorrencia = ocorrencia;
 
             if (anexo != null)

@@ -39,26 +39,28 @@
                     </select>
                 </div>
             }
-
             <button type="submit" class="btn btn-primary">Pesquisar</button>
             <button type="reset" class="btn btn-default">Limpar Tela</button>
         </form>
     </div>
-    
 </div>
 
 <br />
 <br />
 
 <div style="display:flex;justify-content:flex-end">
-    @if (Model.Count == 1)
-    {
-        <b>Encontrado 1 Resultado</b>
-    }
-    else
-    {
-        <b>Encontrado @Model.Count Resultados</b>
-    }
+
+    
+        @if (Model.Count == 1)
+        {
+            <b>Encontrado 1 Resultado</b>
+        }
+        else
+        {
+            <b>Encontrado @Model.Count Resultados</b>
+        }
+
+    
 
 
 </div>
@@ -68,6 +70,8 @@
         <tr>
             <th scope="col">#</th>
             <th scope="col">Nome</th>
+            <th scope="col">Loja</th>
+            <th scope="col">Setor</th>
             <th scope="col">Encarregado</th>
             <th scope="col">Experiência?</th>
             <th scope="col">Ações</th>
@@ -76,29 +80,32 @@
     <tbody>
         @foreach (var func in Model)
         {
-            <tr>
-                <th scope="row">@func.Id</th>
-                <td>@func.Nome</td>
-                <td>@func.Encarregado</td>
-                @if (func.Experiencia == 1)
-                {
-                    <td><font color="red"><strong>Sim</strong></font></td>
-                }
-                else
-                {
-                    <td>Não</td>
-                }
-                <td>
-                    <a href="/OcorrenciasDP/Funcionarios/Atualizar/@func.Id/" value="@func.Id" class="btn btn-warning btn-sm">
-                        Alterar
-                    </a>
+        <tr>
+            <th scope="row">@func.Id</th>
+            <td>@func.Nome</td>
+            <td>@func.Loja</td>
+            <td>@func.Setor</td>
+            <td>@func.Encarregado</td>
 
-                    <a href="/OcorrenciasDP/Funcionarios/Excluir/@func.Id/" value="@func.Id" onclick="return confirmaApagar();"
-                       class="btn btn-danger btn-sm">
-                        Excluir
-                    </a>
-                </td>
-            </tr>
+            @if (func.Experiencia == 1)
+            {
+                <td><font color="red"><strong>Sim</strong></font></td>
+            }
+            else
+            {
+                <td>Não</td>
+            }
+            <td>
+                <a href="/OcorrenciasDP/Funcionarios/Atualizar/@func.Id/" value="@func.Id" class="btn btn-warning btn-sm">
+                    Alterar
+                </a>
+
+                <a href="/OcorrenciasDP/Funcionarios/Excluir/@func.Id/" value="@func.Id" onclick="return confirmaApagar();"
+                   class="btn btn-danger btn-sm">
+                    Excluir
+                </a>
+            </td>
+        </tr>
         }
 
     </tbody>

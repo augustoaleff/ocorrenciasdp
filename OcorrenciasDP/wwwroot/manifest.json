@@ -16,7 +16,7 @@
     }
   ],
   "name": "OcorrenciasDP",
-  "short_name": "DP",
-  "start_url": "/OcorrenciasDP/Home/Inicio",
+  "short_name": "Agenda",
+  "start_url": "/OcorrenciasDP/Home/Index",
   "theme_color": "#FFFFFF"
 }

@@ -56,7 +56,11 @@ namespace OcorrenciasDP
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1); //Adiciona o serviço do MVC
             services.AddDistributedMemoryCache();
 
-            services.AddSession();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromHours(12);
+            });
+
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddProgressiveWebApp();
             services.AddServiceWorker();

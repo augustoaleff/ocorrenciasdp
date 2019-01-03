@@ -78,7 +78,7 @@ namespace OcorrenciasDP.Controllers
                                    .Where(a => a.Perfil.Equals("usuario") && a.Ativo == 1)
                                    .OrderBy(a => a.Nome)
                                    .ToList();
-
+        
             return View();
         }
 
@@ -242,10 +242,10 @@ namespace OcorrenciasDP.Controllers
         }
 
         [HttpPost]
-        public ActionResult Atualizar([FromForm]Funcionario func)
+        public ActionResult Atualizar([FromForm]Funcionario func, bool experiencia, int exp_periodo)
         {
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
-
+            
             ViewBag.Setores = _db.Int_DP_Setores
                               .OrderBy(a => a.Nome)
                               .ToList();
@@ -256,15 +256,25 @@ namespace OcorrenciasDP.Controllers
 
             try
             {
+                func.Setor = _db.Int_DP_Setores.Find(func.Setor.Id);
+                func.Encarregado = _db.Int_DP_Usuarios.Find(func.Encarregado.Id);
+
                 Funcionario func_antigo = _db.Int_DP_Funcionarios.Find(func.Id);
                 
-                func_antigo.Nome = func.Nome;
                 func_antigo.Setor = func.Setor;
                 func_antigo.Encarregado = func.Encarregado;
-                func_antigo.Experiencia = func.Experiencia;
-                func_antigo.Exp_DataFim = func.Exp_DataFim;
-                func_antigo.Exp_DataInicio = func.Exp_DataFim;
-
+                func_antigo.Exp_DataInicio = func.Exp_DataInicio;
+                func_antigo.Exp_DataFim = func.Exp_DataInicio.AddDays(exp_periodo);
+                
+                if (experiencia)
+                {
+                    func_antigo.Experiencia = 1;
+                }
+                else
+                {
+                    func_antigo.Experiencia = 0;
+                }
+                
                 //Férias
                 /*func_antigo.Ferias_DataInicio = func.Ferias_DataInicio;
                 func_antigo.Ferias_DataLimite = func.Ferias_DataLimite;

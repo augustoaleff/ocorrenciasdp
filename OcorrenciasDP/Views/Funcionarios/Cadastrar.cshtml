@@ -6,11 +6,11 @@
 }
 
 @{
-    int setor2,enc2;
-    string acao, experiencia,data_exp;
+    int setor2, enc2;
+    string acao, experiencia, data_exp;
     int periodo_dias = 0;
 
-    if (ViewBag.Func.Setor != null)
+    if (ViewBag.Func.Setor.Id != null && ViewBag.Func.Setor.Id != 0)
     {
         setor2 = ViewBag.Func.Setor.Id;
     }
@@ -54,7 +54,8 @@
         data_exp = Globalization.HoraAtualBR().ToString("yyyy-MM-dd");
     }
 
-    if (ViewBag.Func.Encarregado != null)
+
+    if (ViewBag.Func.Encarregado.Id != null && ViewBag.Func.Encarregado.Id != 0)
     {
         enc2 = ViewBag.Func.Encarregado.Id;
     }
@@ -142,8 +143,10 @@
             }
             else
             {
-               <input type="checkbox" name="experiencia" class="checkbox" id="experiencia" value="@experiencia" onclick="return funcExperiencia();" placeholder="" checked>
-            }Experiência ?
+                <input type="checkbox" name="experiencia" class="checkbox" id="experiencia" value="@experiencia" onclick="return funcExperiencia();" placeholder="" checked>
+            }
+
+            Experiência ?
 
         </label>
 
@@ -154,14 +157,12 @@
         <div id="exp_div" hidden>
             <div class="form-group col-md-auto">
                 <label for="datainicio">Data Início</label>
-                <input type="date" name="exp_datainicio" class="form-control" id="datainicio" value="@data_exp" placeholder="">
+                <input type="date" name="exp_datainicio" class="form-control" id="datainicio" value="@data_exp">
             </div>
 
             <div class="form-group col-md-auto">
                 <label for="periodo">Período (dias)</label>
                 <div class="input-group">
-                    <input type="number" name="exp_periodo" class="form-control" id="periodo" value="@periodo_dias" placeholder="">
-                    <div class="input-group-addon">dias</div>
                 </div>
             </div>
 
@@ -170,28 +171,26 @@
     else
     {
         <div id="exp_div">
-
             <div class="form-group col-md-auto">
                 <label for="datainicio">Data Início</label>
-                <input type="date" name="exp_datainicio" class="form-control" id="datainicio" value="@data_exp" placeholder="">
+                <input type="date" name="exp_datainicio" class="form-control" id="datainicio" value="@data_exp">
             </div>
 
             <div class="form-group col-md-auto">
                 <label for="periodo">Período (dias)</label>
                 <div class="input-group">
-                    <input type="number" name="exp_periodo" class="form-control" id="periodo" value="@periodo_dias" placeholder="">
+                    <input type="number" name="exp_periodo" class="form-control" id="periodo" value="@periodo_dias">
                     <div class="input-group-addon">dias</div>
                 </div>
             </div>
-
         </div>
     }
 
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
     <button type="reset" class="btn btn-default">Limpa Tela</button>
-    
+
 </form>
-    
+
 <script type="text/javascript" language="javascript">
 
     function funcExperiencia() {
@@ -202,18 +201,19 @@
         var div_exp = document.getElementById("exp_div");
 
         if (experiencia.checked) {
-        
+
             div_exp.hidden = false;
 
             datainicio.required = true;
             periodo.required = true;
 
-        }else{
+        } else {
 
             div_exp.hidden = true;
 
             datainicio.required = false;
             periodo.required = false;
+
         }
     }
 

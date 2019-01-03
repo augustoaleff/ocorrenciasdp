@@ -26,7 +26,7 @@ namespace OcorrenciasDP.Controllers
         public HomeController(DatabaseContext db)
         {
             _db = db;
-            setores = _db.Int_DP_Setores.ToList();  
+            setores = _db.Int_DP_Setores.ToList();
         }
 
         public List<OcorrenciaViewModel> CarregarOcorrencias()
@@ -125,6 +125,8 @@ namespace OcorrenciasDP.Controllers
 
             ProcurarMensagens();
 
+            VerificarExperiencias();
+
             if (HttpContext.Session.GetString("Visualizado") == "false")
             {
                 VerificarMensagensNovas();
@@ -154,7 +156,7 @@ namespace OcorrenciasDP.Controllers
         [HttpPost]
         public ActionResult Index([FromForm]Usuario usuario)
         {
-            if(ModelState.IsValid) //Se a autenticação é válida
+            if (ModelState.IsValid) //Se a autenticação é válida
             {
                 //Verifica se o login existe no banco
                 Usuario vLogin = _db.Int_DP_Usuarios.Where(a => a.Login.Equals(usuario.Login)).FirstOrDefault();
@@ -166,7 +168,7 @@ namespace OcorrenciasDP.Controllers
                     if (vLogin.Ativo == 1)
                     {
                         //Verifica se a senha está correta
-                        if (Equals(vLogin.Senha, usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").Replace("'","").ToLower()))
+                        if (Equals(vLogin.Senha, usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").Replace("'", "").ToLower()))
                         {
                             try
                             {
@@ -181,7 +183,7 @@ namespace OcorrenciasDP.Controllers
                                 int loja = _db.Int_DP_Usuarios.Where(a => a.Id == vLogin.Id).Select(s => s.Loja.Id).FirstOrDefault();
 
                                 HttpContext.Session.SetInt32("Loja", loja);
-                                
+
                                 vLogin.UltimoLogin = Globalization.HoraAtualBR();
 
                                 Log log = new Log();
@@ -299,11 +301,13 @@ namespace OcorrenciasDP.Controllers
             {
                 vMensagem.Titulo = "Sem Título";
             }
-            
+
             ViewBag.MsgDetalhe = vMensagem;
             //ViewBag.MsgDetalhe.Conteudo = vMensagem.Conteudo.Replace("\r\n", " <br /> ");
             ViewBag.MsgConteudo = vMensagem.Conteudo.Replace("\r\n", " <br /> ");
+
             ProcurarMensagens();
+
             List<OcorrenciaViewModel> ocorVM = CarregarOcorrencias();
 
             List<Imagem> banner = _db.Int_DP_Banner.OrderBy(a => a.Ordem).ToList();
@@ -313,7 +317,7 @@ namespace OcorrenciasDP.Controllers
             return View("Inicio", ocorVM);
 
         }
-        
+
         //Trocar Senha por escolha do usuário
         [Login]
         public ActionResult AlterarMinhaSenha()
@@ -329,7 +333,7 @@ namespace OcorrenciasDP.Controllers
 
             int id_notnull = id ?? 0;
 
-            if(senha.ToLower() == confirmasenha.ToLower())
+            if (senha.ToLower() == confirmasenha.ToLower())
             {
                 Log log = new Log();
 
@@ -355,14 +359,14 @@ namespace OcorrenciasDP.Controllers
                     _db.Int_DP_Logs.Add(log);
                     _db.SaveChanges();
                 }
-                
+
             }
             else
             {
                 TempData["SenhaNaoConfere"] = "Senhas não conferem!";
-                
+
             }
-            
+
             return View();
 
         }
@@ -371,7 +375,7 @@ namespace OcorrenciasDP.Controllers
 
         //Trocar Senha por envio e link no email
         [HttpPost]
-        public ActionResult TrocarSenha([FromForm]int? id,string nome,string email,string senha,string confirmasenha)
+        public ActionResult TrocarSenha([FromForm]int? id, string nome, string email, string senha, string confirmasenha)
         {
             int id_notnull = id ?? 0;
 
@@ -414,7 +418,6 @@ namespace OcorrenciasDP.Controllers
                 TempData["SenhaNaoConfere"] = "Senhas não conferem!";
                 return View();
             }
-
         }
 
         //Trocar Senha por envio e link no email
@@ -432,15 +435,15 @@ namespace OcorrenciasDP.Controllers
             DateTime agora = Globalization.HoraAtualBR();
             var vKey = _db.Int_DP_ValidSenhas.Find(key2);
             
-            if(vKey != null)
+            if (vKey != null)
             {
 
-               if(vKey.DataExpiracao >= agora)
-               {
-                    if(vKey.Utilizado == 0)
+                if (vKey.DataExpiracao >= agora)
+                {
+                    if (vKey.Utilizado == 0)
                     {
                         Usuario usuario = _db.Int_DP_Usuarios.Find(vKey.Usuario);
-                  
+
                         vKey.Utilizado = 1;
                         _db.SaveChanges();
 
@@ -455,6 +458,7 @@ namespace OcorrenciasDP.Controllers
                     }
                     else
                     {
+                        //Quando o link já está sendo utilizado
                         TempData["TrocaSenhaNotOK"] = "Link já Utilizado";
                         return RedirectToAction("Index");
                     }
@@ -470,6 +474,96 @@ namespace OcorrenciasDP.Controllers
                 TempData["TrocaSenhaNotOK"] = "Link Inválido";
                 return RedirectToAction("Index");
 
+            }
+        }
+
+
+        public void VerificarExperiencias()
+        {
+
+            int diasAvaliacao = 7;   //A cada quantos dias a avaliação deve ser requisitada
+            int id_user = HttpContext.Session.GetInt32("ID") ?? 0;
+
+            DateTime hoje = Globalization.HoraAtualBR();
+            List<Funcionario> lista_funcionarios = new List<Funcionario>();
+
+            List<Funcionario> funcs_exp = _db.Int_DP_Funcionarios
+                .Where(a => a.Encarregado.Id == id_user && a.Exp_DataInicio <= hoje && a.Exp_DataFim >= hoje)
+                .OrderBy(o => o.Nome)
+                .ToList();
+
+            if (funcs_exp.Count > 0)
+            {
+                foreach (var func in funcs_exp)
+                {
+                    DateTime ultimaAvaliacao = _db.Int_DP_Avaliacoes
+                        .Where(a => a.Funcionario.Id == func.Id)
+                        .OrderByDescending(o => o.DataAvaliacao)
+                        .Select(s => s.DataAvaliacao)
+                        .FirstOrDefault();
+
+                    if (ultimaAvaliacao <= hoje.AddDays(diasAvaliacao * -1) || ultimaAvaliacao == null)
+                    {
+                        lista_funcionarios.Add(func);
+                    }
+
+                }
+
+                if (lista_funcionarios.Count > 0)
+                {
+                    ViewBag.Experiencia = lista_funcionarios;
+                }
+                else
+                {
+                    ViewBag.Experiencia = null;
+                }
+            }
+            else
+            {
+                ViewBag.Experiencia = null;
+            }
+
+        }
+
+        [HttpPost]
+        public ActionResult Avaliacao([FromForm]Avaliacao avaliacao)
+        {
+
+            Log log = new Log();
+            int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
+
+            try
+            {
+                avaliacao.DataAvaliacao = Globalization.HoraAtualBR();
+
+                avaliacao.Funcionario = _db.Int_DP_Funcionarios.Find(avaliacao.Funcionario.Id);
+
+                _db.Int_DP_Avaliacoes.Add(avaliacao);
+
+                _db.SaveChanges();
+
+                TempData["AvaliacaoOK"] = "Avaliação enviada com sucesso!";
+
+                log.EnviarAvaliacao(id_notnull, avaliacao.Funcionario.Id);
+
+                _db.Int_DP_Logs.Add(log);
+
+                _db.SaveChanges();
+
+                return RedirectToAction("Inicio");
+
+            }
+            catch (Exception exp)
+            {
+                TempData["AvaliacaoNotOK"] = "Ocorreu um erro ao tentar enviar a avaliação, por favor, tente novamente!";
+
+                log.EnviarAvaliacao_Erro(id_notnull, avaliacao.Funcionario.Id, exp);
+
+                _db.Int_DP_Logs.Add(log);
+
+                _db.SaveChanges();
+
+                return RedirectToAction("Inicio");
             }
         }
 
@@ -502,21 +596,21 @@ namespace OcorrenciasDP.Controllers
                 _db.SaveChanges();
 
                 Log log = new Log();
-                
+
                 try
                 {
                     string nome = Shared.PegarPrimeiroNome(vEmail.Nome);
-                   
+
                     Library.Mail.EnviarLinkSenha.EnviarLinkTrocarSenha(email, codigo, nome);
 
-                    log.EsqueciMinhaSenha_Envio(vEmail.Id,codigo);
+                    log.EsqueciMinhaSenha_Envio(vEmail.Id, codigo);
 
                     TempData["TrocaSenhaOK"] = "Um link foi enviado ao seu e-mail com instruções para trocar a senha";
 
                     return RedirectToAction("Index");
-                    
+
                 }
-                catch(Exception exp)
+                catch (Exception exp)
                 {
                     log.EsqueciMinhaSenha_Envio_Erro(vEmail.Id, codigo, exp);
 
@@ -529,7 +623,7 @@ namespace OcorrenciasDP.Controllers
                     _db.Int_DP_Logs.Add(log);
                     _db.SaveChanges();
                 }
-                
+
             }
             else
             {
@@ -560,9 +654,9 @@ namespace OcorrenciasDP.Controllers
             }
 
             return RedirectToAction("Index", "Home");
-            
+
         }
-        
+
         /*
         
         public string PegarPrimeiroNome(string nome)

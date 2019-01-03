@@ -17,9 +17,11 @@ namespace OcorrenciasDP.Database
         public DbSet<Log> Int_DP_Logs { get; set; }
         public DbSet<Feriado> Int_DP_Feriados { get; set; }
         public DbSet<Funcionario> Int_DP_Funcionarios { get; set; }
+        public DbSet<Avaliacao> Int_DP_Avaliacoes { get; set; }
         public DbSet<ValidacaoSenha> Int_DP_ValidSenhas { get; set; }
         public DbSet<Loja> Int_DP_Lojas { get; set; }
         public DbSet<Imagem> Int_DP_Banner { get; set; }
+        
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
