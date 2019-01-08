@@ -194,7 +194,7 @@ namespace OcorrenciasDP.Controllers
             int pageNumber = page ?? 1;
 
             List<Mensagem> msgVM = ConsultarMensagens();
-
+            
             var resultadoPaginado = msgVM.ToPagedList(pageNumber, paginasPagedList);
             return View("Index", resultadoPaginado);
         }

@@ -179,7 +179,7 @@ namespace OcorrenciasDP.Controllers
                                 HttpContext.Session.SetInt32("ID", vLogin.Id);
                                 HttpContext.Session.SetString("UltimoAcesso", vLogin.UltimoLogin.ToString("dd/MM/yyyy HH:mm:ss"));
                                 HttpContext.Session.SetString("Visualizado", "false");
-
+                                
                                 int loja = _db.Int_DP_Usuarios.Where(a => a.Id == vLogin.Id).Select(s => s.Loja.Id).FirstOrDefault();
 
                                 HttpContext.Session.SetInt32("Loja", loja);
@@ -283,7 +283,15 @@ namespace OcorrenciasDP.Controllers
                 {".jpeg", "image/jpeg"},
                 {".gif", "image/gif"},
                 {".csv", "text/csv"},
-                {".tiff", "image/tiff"}
+                {".wmv", "audio/wave"},
+                {".mp3", "audio/mpeg"},
+                {".mp4", "video/mp4"},
+                {".tif", "image/tiff"},
+                {".tiff", "image/tiff"},
+                {".zip", "application/zip"},
+                {".wav", "audio/x-wav"},
+                {".ppt", "application/vnd.ms-powerpoint"},
+                {".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"},
             };
         }
 
@@ -581,8 +589,7 @@ namespace OcorrenciasDP.Controllers
             {
                 codigo = vEmail.Id.ToString() + agora.Minute.ToString() + agora.Month.ToString() + agora.Day.ToString() +
                          agora.Year.ToString() + agora.Second.ToString() + agora.Hour.ToString();
-
-
+                
                 ValidacaoSenha valid = new ValidacaoSenha
                 {
                     Id = long.Parse(codigo),
@@ -617,6 +624,7 @@ namespace OcorrenciasDP.Controllers
                     TempData["TrocaSenhaNotOK"] = "Ocorreu um erro ao tentar enviar o link, por favor tente novamente";
 
                     return RedirectToAction("Index");
+
                 }
                 finally
                 {
@@ -682,4 +690,5 @@ namespace OcorrenciasDP.Controllers
             return primeiroNome;
         }*/
     }
+
 }

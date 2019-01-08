@@ -55,14 +55,23 @@
     }
 
 
-    if (ViewBag.Func.Encarregado.Id != null && ViewBag.Func.Encarregado.Id != 0)
-    {
-        enc2 = ViewBag.Func.Encarregado.Id;
+    if(ViewBag.Func != null) {
+
+        if (ViewBag.Func.Encarregado != null && ViewBag.Func.Encarregado != 0)
+        {
+            enc2 = ViewBag.Func.Encarregado.Id;
+        }
+        else
+        {
+            enc2 = 0;
+        }
+
     }
     else
     {
         enc2 = 0;
     }
+
 
 
 }
@@ -87,11 +96,11 @@
 
         @if (ViewBag.Func.Id != 0 && ViewBag.Func.Id != null)
         {
-            <input type="text" name="nome" class="form-control" id="nome" value="@ViewBag.Func.Nome" placeholder="" disabled>
+            <input type="text" name="nome" class="form-control" id="nome" value="@ViewBag.Func.Nome" disabled>
         }
         else
         {
-            <input type="text" name="nome" class="form-control" id="nome" value="@ViewBag.Func.Nome" placeholder="" required>
+            <input type="text" name="nome" class="form-control" id="nome" value="@ViewBag.Func.Nome" required>
         }
 
     </div>
@@ -139,11 +148,11 @@
         <label>
             @if (ViewBag.Func.Experiencia == 0)
             {
-                <input type="checkbox" name="experiencia" class="checkbox" id="experiencia" value="@experiencia" onclick="return funcExperiencia();" placeholder="">
+                <input type="checkbox" name="experiencia" class="checkbox" id="cboxExperiencia" value="@experiencia" onclick="return mostrarExperiencia();" placeholder="">
             }
             else
             {
-                <input type="checkbox" name="experiencia" class="checkbox" id="experiencia" value="@experiencia" onclick="return funcExperiencia();" placeholder="" checked>
+                <input type="checkbox" name="experiencia" class="checkbox" id="cboxExperiencia" value="@experiencia" onclick="return mostrarExperiencia();" placeholder="" checked>
             }
 
             Experiência ?
@@ -152,39 +161,20 @@
 
     </div>
 
-    @if (ViewBag.Func.Experiencia == 0)
-    {
-        <div id="exp_div" hidden>
-            <div class="form-group col-md-auto">
-                <label for="datainicio">Data Início</label>
-                <input type="date" name="exp_datainicio" class="form-control" id="datainicio" value="@data_exp">
-            </div>
-
-            <div class="form-group col-md-auto">
-                <label for="periodo">Período (dias)</label>
-                <div class="input-group">
-                </div>
-            </div>
-
+    <div id="exp_div">
+        <div class="form-group col-md-auto">
+            <label for="datainicio">Data Início</label>
+            <input type="date" name="exp_datainicio" class="form-control" id="datainicio" value="@data_exp">
         </div>
-    }
-    else
-    {
-        <div id="exp_div">
-            <div class="form-group col-md-auto">
-                <label for="datainicio">Data Início</label>
-                <input type="date" name="exp_datainicio" class="form-control" id="datainicio" value="@data_exp">
-            </div>
 
-            <div class="form-group col-md-auto">
-                <label for="periodo">Período (dias)</label>
-                <div class="input-group">
-                    <input type="number" name="exp_periodo" class="form-control" id="periodo" value="@periodo_dias">
-                    <div class="input-group-addon">dias</div>
-                </div>
+        <div class="form-group col-md-auto">
+            <label for="periodo">Período (dias)</label>
+            <div class="input-group">
+                <input type="number" name="exp_periodo" class="form-control" id="periodo" value="@periodo_dias">
+                <div class="input-group-addon">dias</div>
             </div>
         </div>
-    }
+    </div>
 
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
     <button type="reset" class="btn btn-default">Limpa Tela</button>
@@ -193,6 +183,7 @@
 
 <script type="text/javascript" language="javascript">
 
+    /*
     function funcExperiencia() {
 
         var experiencia = document.getElementById("experiencia");
@@ -214,6 +205,34 @@
             datainicio.required = false;
             periodo.required = false;
 
+       }
+    }*/
+
+
+    $(document).ready(function () {
+
+        mostrarExperiencia();
+
+    });
+
+    function mostrarExperiencia() {
+
+        if ($('#cboxExperiencia').is(':checked')) {
+
+            $('#exp_div').show();
+
+            $('#datainicio').attr('required', true);
+            $('#periodo').attr('required', true);
+            $('#exp_div').attr('disabled', false)
+
+        } else {
+
+            $('#exp_div').hide();
+
+            $('#datainicio').attr('required', false);
+            $('#periodo').attr('required', false);
+            $('#exp_div').attr('disabled', false)
+            
         }
     }
 

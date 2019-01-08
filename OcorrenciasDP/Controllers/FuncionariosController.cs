@@ -73,6 +73,7 @@ namespace OcorrenciasDP.Controllers
         public ActionResult Cadastrar()
         {
             ViewBag.Func = new Funcionario();
+            ViewBag.Setores = setores;
             ViewBag.Setores2 = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
             ViewBag.Encarregados = _db.Int_DP_Usuarios
                                    .Where(a => a.Perfil.Equals("usuario") && a.Ativo == 1)
@@ -81,7 +82,7 @@ namespace OcorrenciasDP.Controllers
         
             return View();
         }
-
+            
         [HttpPost]
         public ActionResult Cadastrar([FromForm]Funcionario func, bool experiencia, int exp_periodo)
         {
@@ -128,7 +129,6 @@ namespace OcorrenciasDP.Controllers
                 }
                 catch (Exception exp)
                 {
-                    
                     log.CadastrarFuncionario_Erro(id_notnull, func.Id, exp);
                     _db.SaveChanges();
 
@@ -232,7 +232,6 @@ namespace OcorrenciasDP.Controllers
                 };
 
                 funcionariosVM.Add(funcVM);
-
             }
 
             IPagedList<FuncionarioViewModel> resultadoPaginado = funcionariosVM.ToPagedList(pageNumber, 10);
@@ -294,7 +293,8 @@ namespace OcorrenciasDP.Controllers
 
             }
             finally{
-
+                
+                _db.Int_DP_Logs.Add(log);
                 _db.SaveChanges();
 
             }

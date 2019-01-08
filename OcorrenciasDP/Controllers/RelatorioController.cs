@@ -206,7 +206,7 @@ namespace OcorrenciasDP.Controllers
             
             if (relatorioVM.Count > 0)
             {
-                filtros = GerarFiltros(datainicio_notnull, datafim_notnull, loja, setor);
+                filtros = GerarFiltros(datainicio_notnull, datafim_notnull, setor, loja);
                 relatorioVM[0].DadosPesquisa = filtros; //Armazena os dados que veio do filtro no primeiro index do modelo (.pdf)
             }
             
@@ -235,7 +235,7 @@ namespace OcorrenciasDP.Controllers
             if (pdf != true)
             {
                 ViewBag.Pesquisa = pesquisa;
-
+            
                 try
                 {
                     IPagedList<OcorrenciaViewModel> resultadoPaginado = relatorioVM.ToPagedList(pageNumber, paginasPagedList);
@@ -426,7 +426,6 @@ namespace OcorrenciasDP.Controllers
                     {
                         OcorrenciaViewModel ocorVM = new OcorrenciaViewModel
                         {
-
                             Nome = linha.Nome,
                             Loja = linha.Loja,
                             Setor = linha.Setor,
@@ -434,7 +433,6 @@ namespace OcorrenciasDP.Controllers
                             Data = linha.Data,
                             Id = linha.Id,
                             Anexo = linha.Anexo
-                            
                         };
                         relatorioVM.Add(ocorVM);
                     }
@@ -520,7 +518,9 @@ namespace OcorrenciasDP.Controllers
                 {".tif", "image/tiff"},
                 {".tiff", "image/tiff"},
                 {".zip", "application/zip"},
-                { ".wav", "audio/x-wav"},
+                {".wav", "audio/x-wav"},
+                {".ppt", "application/vnd.ms-powerpoint"},
+                {".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"},
             };
         }
     }

@@ -101,7 +101,7 @@
     </thead>
     <tbody>
         @if (ViewBag.Msgs.Count > 0)
-        {   
+        {
             @foreach (Mensagem msg in ViewBag.Msgs)
             {
                 <tr>
@@ -136,6 +136,7 @@
             <th scope="col">Data</th>
             <th scope="col">Descrição</th>
             <th scope="col">Anexo</th>
+            <th scope="col">Detahar</th>
         </tr>
     </thead>
     <tbody>
@@ -157,17 +158,29 @@
 
                     @if (ocor.Anexo != null)
                     {
+
+
                         <td>
                             <a href="\OcorrenciasDP\Home\Download?filename=@string.Concat(ocor.Id.ToString(), "_", ocor.Anexo)" aria-label=""
                                alt="download" type="button" class="btn btn-default btn-sm">
                                 <span class="glyphicon glyphicon-paperclip" aria-hidden="true" alt="@ocor.Anexo"></span>
                             </a>
                         </td>
+
                     }
                     else
                     {
                         <td></td>
                     }
+                    <td>
+                        @*
+
+                        *@
+                        <button type="button" class="btn btn-default" data-toggle="popover" title="@ocor.Data.Date.ToString("dd/MM/yyyy")"
+                                data-content="@ocor.Descricao" data-placement="left">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        </button>
+                    </td>
                 </tr>
             }
         }
@@ -311,8 +324,6 @@
                     </div>
 
                 </form>
-                }
-
             </div>
         </div>
     </div>
@@ -327,9 +338,12 @@
             $('#modalNovaMensagem').modal('show');
             $('#modalAvaliacaoFunc').modal('show');
         });
-        
-    </script>
 
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
+
+    </script>
 }
 
 <!--

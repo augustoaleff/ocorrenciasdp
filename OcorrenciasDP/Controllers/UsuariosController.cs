@@ -255,7 +255,6 @@ namespace OcorrenciasDP.Controllers
                                 }
                                 else
                                 {
-
                                     var vEmail = _db.Int_DP_Usuarios.Where(a => a.Email == usuario.Email.ToLower() && a.Ativo == 1).FirstOrDefault();
 
                                     if (vEmail == null)
@@ -266,7 +265,6 @@ namespace OcorrenciasDP.Controllers
                                     {
                                         email = false;
                                     }
-
                                 }
                             }
                             else
@@ -351,7 +349,6 @@ namespace OcorrenciasDP.Controllers
                     usuario.Senha = usuario.Senha.Replace(";", "").Replace(",", "").Replace(".", "").Replace("'", "").ToLower(); //Passa para minúsculo a Senha
                     confirmasenha = confirmasenha.Replace(";", "").Replace(",", "").Replace(".", "").Replace("'", "").ToLower(); //Passa para minúsculo a Confirmação da Senha
 
-
                     if (usuario.Senha == confirmasenha)
                     {
                         bool perfil, email;
@@ -360,8 +357,7 @@ namespace OcorrenciasDP.Controllers
 
 
                         Usuario vUpdate = _db.Int_DP_Usuarios.Where(a => a.Id == usuario.Id).FirstOrDefault();
-
-
+                        
                         if (usuario.Email != null && usuario.Email != "")
                         {
 
@@ -382,7 +378,6 @@ namespace OcorrenciasDP.Controllers
                                     email = false;
                                 }
                             }
-
                         }
                         else
                         {

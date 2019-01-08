@@ -30,9 +30,9 @@ namespace OcorrenciasDP.Controllers
             ViewBag.Ocorrencia = new Ocorrencia();
             ViewBag.Ocorrencia.Data = Globalization.HoraAtualBR();
             ViewBag.Anexo = "";
-            
+
             OcorrenciasFaltantes();
-            
+
             return View(new Ocorrencia());
         }
 
@@ -53,7 +53,7 @@ namespace OcorrenciasDP.Controllers
 
             ocorrencia.Usuario = usuario;
             ocorrencia.DataEnvio = Globalization.HoraAtualBR();
-            
+
             if (ModelState.IsValid)
             {
                 ViewBag.Ocorrencia = new Ocorrencia();
@@ -108,7 +108,7 @@ namespace OcorrenciasDP.Controllers
             return View();
 
         }
-        
+
 
         public void OcorrenciasFaltantes()
         {
@@ -119,8 +119,8 @@ namespace OcorrenciasDP.Controllers
                 List<DateTime> enviados = new List<DateTime>(); //Ultimas ocorrências enviadas
                 List<DateTime> calend = new List<DateTime>(); //Dias - Falta
                 List<DateTime> calend_final = new List<DateTime>(); //Calend - Finais de Semana
-              
-              
+
+
                 try
                 {
                     int id_user = HttpContext.Session.GetInt32("ID") ?? 0;
@@ -181,7 +181,7 @@ namespace OcorrenciasDP.Controllers
                             calend_final.Add(dia);
                         }
                     }
-                    
+
                     //calend_final.Reverse(); //Reverte a ordem das datas para decrescente
 
                     ViewBag.Calendario = calend_final;
@@ -206,7 +206,7 @@ namespace OcorrenciasDP.Controllers
             {
                 ocorrencia.Descricao = "Não houve ocorrências";
             }
-            
+
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
 
             Usuario usuario = _db.Int_DP_Usuarios.Find(id_notnull);
@@ -223,7 +223,7 @@ namespace OcorrenciasDP.Controllers
             {
                 diasFaltantes = ViewBag.Calendario;
             }
-            
+
             if (ModelState.IsValid)
             {
                 //SELECT * FROM INT_DP_OCORRENCIAS WHERE DATA = '" & Format(Data.Text, "YYYYMMDD") & "'";
@@ -231,14 +231,14 @@ namespace OcorrenciasDP.Controllers
                 Ocorrencia vOcorrencia = _db.Int_DP_Ocorrencias
                                    .Where(o => o.Data.Equals(ocorrencia.Data) && (o.Usuario.Id == ocorrencia.Usuario.Id) && o.Ativo == 1)
                                    .FirstOrDefault();
-                
+
                 //Se for igual a null, não há nenhuma ocorrencia lançada com a data informada
                 if (vOcorrencia == null || update == "true")
                 {
                     ViewBag.Ocorrencia = new Ocorrencia();
                     ViewBag.Ocorrencia.Data = Globalization.HoraAtualBR();
                     Log log = new Log();
-                    
+
                     if (anexo != null)
                     {
                         ViewBag.Ocorrencia.Anexo = anexo.FileName;
@@ -252,7 +252,7 @@ namespace OcorrenciasDP.Controllers
 
                         log.IncluirOcorrencia(ocorrencia.Usuario.Id, ocorrencia.Id);
                         _db.Int_DP_Logs.Add(log);
-                        
+
                     }
                     catch (Exception exp)
                     {
@@ -286,7 +286,7 @@ namespace OcorrenciasDP.Controllers
                     {
                         TempData["MsgOcorrenciaAlerta"] = "Ocorrencia Cadastrada com sucesso, porém você ainda tem " + diasFaltantes.Count + " ocorrências para enviar!";
                     }
-                    
+
                     OcorrenciasFaltantes(); //Atualiza as datas
 
                     return View("Index", ocorrencia);
@@ -310,21 +310,23 @@ namespace OcorrenciasDP.Controllers
                     return View("Index", ocorrencia);
                 }
             }
-            
+
             ViewBag.Ocorrencia = ocorrencia;
 
             if (anexo != null)
             {
                 ViewBag.Ocorrencia.Anexo = anexo.FileName;
             }
-            
+
             OcorrenciasFaltantes();
 
             return View();
         }
 
+        /*
         //Upload
-        public async void UploadFile(IFormFile file)
+        [RequestFormLimits(MultipartBodyLengthLimit = 209715200)]
+        public async void Upload(IFormFile file)
         {
             if (file != null || file.Length != 0)
             {
@@ -337,6 +339,24 @@ namespace OcorrenciasDP.Controllers
                     await file.CopyToAsync(stream);
                 }
             }
+        }*/
+
+        [RequestFormLimits(MultipartBodyLengthLimit = 209715200)]
+        public void UploadFile(IFormFile file)
+        {
+            string path = Path.Combine(
+                            Directory.GetCurrentDirectory(), "wwwroot/uploads",
+                            string.Concat(idOcorrencia, file.FileName));
+
+            
+
+            using (FileStream fs = System.IO.File.Create(path))
+            {
+                file.CopyTo(fs);
+                fs.Flush();
+            }
+            
         }
+
     }
 }
