@@ -631,7 +631,6 @@ namespace OcorrenciasDP.Controllers
                     _db.Int_DP_Logs.Add(log);
                     _db.SaveChanges();
                 }
-
             }
             else
             {
@@ -662,14 +661,12 @@ namespace OcorrenciasDP.Controllers
             }
 
             return RedirectToAction("Index", "Home");
-
         }
 
         /*
         
         public string PegarPrimeiroNome(string nome)
         {
-           
             string primeiroNome = "";
             
             for (int i = 0; i < nome.Length; i++)
@@ -684,7 +681,6 @@ namespace OcorrenciasDP.Controllers
                 {
                     break;
                 }
-
             }
 
             return primeiroNome;
