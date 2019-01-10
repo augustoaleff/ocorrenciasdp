@@ -1,39 +1,49 @@
 ﻿@using OcorrenciasDP.Library.Globalization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "Cadastrar Funcionário";
-
 }
 
 @{
-    int setor2, enc2;
-    string acao, experiencia, data_exp;
-    int periodo_dias = 0;
+    ViewData["Title"] = "Cadastrar Funcionário";
+}
 
-    if (ViewBag.Func.Setor.Id != null && ViewBag.Func.Setor.Id != 0)
+@{
+    string acao, data;
+    int loja, setor, periodo;
+    bool experiencia;
+
+
+
+    if (ViewBag.Func.Setor != null)
     {
-        setor2 = ViewBag.Func.Setor.Id;
+        setor = ViewBag.Func.Setor.Id;
     }
     else
     {
-        setor2 = 0;
+        setor = 0;
     }
 
-    if (ViewBag.Func.Experiencia == 1)
+    if (ViewBag.Func.Loja != null)
     {
-        experiencia = "true";
-
-        //TimeSpan periodo = ViewBag.Func.Exp_DataFim - ViewBag.Func.Exp_DataInicio;
-        periodo_dias = ViewBag.Func.Exp_DataFim.Subtract(ViewBag.Func.Exp_DataInicio).Days;
-        //periodo_dias = periodo.Days;
-
+        loja = ViewBag.Func.Loja.Id;
     }
     else
     {
-        experiencia = "";
-        //experiencia = "true";
+        loja = 0;
     }
 
+    if (ViewBag.Func.Experiencia == 0)
+    {
+        experiencia = false;
+        periodo = 0;
+    }
+    else
+    {
+        experiencia = true;
+
+        TimeSpan diff = ViewBag.Func.Exp_DataFim - ViewBag.Func.Exp_DataInicio;
+        periodo = diff.Days;
+    }
 
     if (ViewBag.Func.Id != null && ViewBag.Func.Id != 0)
     {
@@ -42,36 +52,16 @@
     else
     {
         acao = "/OcorrenciasDP/Funcionarios/Cadastrar";
-        experiencia = "true";
     }
 
-    if (ViewBag.Func != null)
+    if (ViewBag.Func.Exp_DataInicio != null && ViewBag.Func.Exp_DataInicio != DateTime.MinValue)
     {
-        data_exp = ViewBag.Func.Exp_DataInicio.ToString("yyyy-MM-dd");
+        data = ViewBag.Func.Exp_DataInicio.ToString("yyyy-MM-dd");
     }
     else
     {
-        data_exp = Globalization.HoraAtualBR().ToString("yyyy-MM-dd");
+        data = Globalization.HoraAtualBR().ToString("yyyy-MM-dd");
     }
-
-
-    if(ViewBag.Func != null) {
-
-        if (ViewBag.Func.Encarregado != null && ViewBag.Func.Encarregado != 0)
-        {
-            enc2 = ViewBag.Func.Encarregado.Id;
-        }
-        else
-        {
-            enc2 = 0;
-        }
-
-    }
-    else
-    {
-        enc2 = 0;
-    }
-
 
 
 }
@@ -86,136 +76,131 @@
     </a>
 </div>
 
-<form action="@acao" method="post" style="width:50%">
+<br />
 
-    <input type="hidden" name="id" value="@ViewBag.Func.Id" />
+<form method="post" action="@acao" style="width:50%">
+
     <input type="hidden" name="ativo" value="1" />
 
+
+    <!--Nome-->
+    @if (ViewBag.Func.Id != 0)
+    {
+
+        <div class="form-group col-md-auto">
+            <label for="nome">Nome</label>
+            <input type="text" name="nome" class="form-control" id="nome" value="@ViewBag.Func.Nome" placeholder="" disabled>
+        </div>
+    }
+    else
+    {
+
+        <div class="form-group col-md-auto">
+            <label for="nome">Nome</label>
+            <input type="text" name="nome" class="form-control" id="nome" value="@ViewBag.Func.Nome" placeholder="" required>
+        </div>
+
+    }
+
+
+    <!--Loja-->
     <div class="form-group col-md-auto">
-        <label for="nome">Nome</label>
-
-        @if (ViewBag.Func.Id != 0 && ViewBag.Func.Id != null)
-        {
-            <input type="text" name="nome" class="form-control" id="nome" value="@ViewBag.Func.Nome" disabled>
-        }
-        else
-        {
-            <input type="text" name="nome" class="form-control" id="nome" value="@ViewBag.Func.Nome" required>
-        }
-
+        <label for="perfil">Loja</label>
+        <select name="loja.id" id="loja" class="form-control mb-2" required>
+            @foreach (var loja2 in ViewBag.Lojas)
+            {
+                if (loja2.Id == loja)
+                {
+                    <option value="@loja2.Id" selected>@loja2.Nome</option>
+                }
+                else
+                {
+                    <option value="@loja2.Id">@loja2.Nome</option>
+                }
+            }
+        </select>
     </div>
 
+
+    <!--Setor-->
     <div class="form-group p-2">
         <label for="setor">Setor</label>
         <select name="setor.id" id="setor" class="form-control mb-2" required>
-            @foreach (var setor in ViewBag.Setores2)
+            @foreach (var depto in ViewBag.Setores2)
             {
-
-                if (setor.Id == setor2)
+                if (depto.Id == setor)
                 {
-                    <option value="@setor.Id" selected>@setor.Nome</option>
+                    <option value="@depto.Id" selected>@depto.Nome</option>
                 }
                 else
                 {
-                    <option value="@setor.Id">@setor.Nome</option>
-                }
-
-            }
-        </select>
-
-    </div>
-
-    <div class="form-group p-2">
-        <label for="encarregado">Encarregado</label>
-        <select name="encarregado.id" id="encarregado" class="form-control mb-2" required>
-            @foreach (var enc in ViewBag.Encarregados)
-            {
-                if (enc.Id == enc2)
-                {
-                    <option value="@enc.Id" selected>@enc.Nome</option>
-                }
-                else
-                {
-                    <option value="@enc.Id">@enc.Nome</option>
+                    <option value="@depto.Id">@depto.Nome</option>
                 }
             }
-
         </select>
-
     </div>
 
-    <div class="checkbox">
-        <label>
-            @if (ViewBag.Func.Experiencia == 0)
+    <!--Experiência-->
+
+    <div class="row">
+        <div class="col-lg-6">
+
+            @if (experiencia)
             {
-                <input type="checkbox" name="experiencia" class="checkbox" id="cboxExperiencia" value="@experiencia" onclick="return mostrarExperiencia();" placeholder="">
+                <input type="checkbox" id="cboxExperiencia" aria-label="Experiência" checked>
             }
             else
             {
-                <input type="checkbox" name="experiencia" class="checkbox" id="cboxExperiencia" value="@experiencia" onclick="return mostrarExperiencia();" placeholder="" checked>
+                <input type="checkbox" id="cboxExperiencia" aria-label="Experiência">
             }
-
-            Experiência ?
-
-        </label>
-
+            
+            <label for="cboxExperiencia">Experiência?</label>
+        </div>
     </div>
+
+    <br />
 
     <div id="exp_div">
-        <div class="form-group col-md-auto">
+
+        <!--Data Início-->
+        <div class="form-group" style="width:50%">
             <label for="datainicio">Data Início</label>
-            <input type="date" name="exp_datainicio" class="form-control" id="datainicio" value="@data_exp">
+            <input type="date" name="data" value="@data" class="form-control" id="datainicio">
+            <strong style="color:#FF0000">@Html.ValidationMessage("data")</strong>
         </div>
 
-        <div class="form-group col-md-auto">
-            <label for="periodo">Período (dias)</label>
-            <div class="input-group">
-                <input type="number" name="exp_periodo" class="form-control" id="periodo" value="@periodo_dias">
-                <div class="input-group-addon">dias</div>
-            </div>
+        <!--Período-->
+        <label for="periodo">Período</label>
+        <div class="input-group col-lg-6">
+            <input type="number" min="0" max="1000" class="form-control" id="periodo" value="@periodo">
+            <span class="input-group-addon">dias</span>
         </div>
+
     </div>
 
+    <br />
+    <br />
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
-    <button type="reset" class="btn btn-default">Limpa Tela</button>
-
+    
 </form>
 
-<script type="text/javascript" language="javascript">
+<script>
 
-    /* 
-    function funcExperiencia() {
-
-        var experiencia = document.getElementById("experiencia");
-        var datainicio = document.getElementById("datainicio");
-        var periodo = document.getElementById("periodo");
-        var div_exp = document.getElementById("exp_div");
-
-        if (experiencia.checked) {
-
-            div_exp.hidden = false;
-
-            datainicio.required = true;
-            periodo.required = true;
-
-        } else {
-
-            div_exp.hidden = true;
-
-            datainicio.required = false;
-            periodo.required = false;
-
-       }
-    }*/
-
+   
 
     $(document).ready(function () {
-
         mostrarExperiencia();
-
     });
 
+    $('#cboxExperiencia').click(function () {
+        mostrarExperiencia();
+    })
+
+    $('#cboxExperiencia').change(function () {
+        mostrarExperiencia();
+    })    
     function mostrarExperiencia() {
+
 
         if ($('#cboxExperiencia').is(':checked')) {
 
@@ -232,7 +217,7 @@
             $('#datainicio').attr('required', false);
             $('#periodo').attr('required', false);
             $('#exp_div').attr('disabled', false)
-            
+
         }
     }
 

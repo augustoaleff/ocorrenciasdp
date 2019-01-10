@@ -1,6 +1,6 @@
 ﻿
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml"; ;
+    Layout = "~/Views/Shared/_Layout.cshtml"; 
 }
 @{
     ViewData["Title"] = "Cadastrar Usuário";
@@ -80,6 +80,7 @@
         <input type="email" name="email" class="form-control" id="email" value="@ViewBag.User.Email" placeholder="">
     </div>
     @Html.ValidationMessage("email")
+
     <!--Senha-->
 
     <div class="form-group col-md-auto">
@@ -155,4 +156,30 @@
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
 
 </form>
+
+<script>
+
+    function mostrarExperiencia() {
+
+        if ($('#cboxExperiencia').is(':checked')) {
+
+            $('#exp_div').show();
+
+            $('#datainicio').attr('required', true);
+            $('#periodo').attr('required', true);
+            $('#exp_div').attr('disabled', false)
+
+        } else {
+
+            $('#exp_div').hide();
+
+            $('#datainicio').attr('required', false);
+            $('#periodo').attr('required', false);
+            $('#exp_div').attr('disabled', false)
+
+        }
+    }
+
+</script>
+
 

@@ -20,31 +20,57 @@ namespace OcorrenciasDP.Controllers
     {
         private DatabaseContext _db;
         private List<Setor> setores;
+        private List<Usuario> encarregados;
+        private List<Setor> setores2;
+        private List<Loja> lojas;
+
 
         public FuncionariosController(DatabaseContext db)
         {
             _db = db;
+
+            setores2 = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
+
+
+            setores = setores2;
+            setores.Add(new Setor() { Id = 0, Nome = "*Todos*" });
+
+            lojas = _db.Int_DP_Lojas.OrderBy(a => a.Id).ToList();
+            lojas.Add(new Loja() { Id = 0, Nome = "*Todas*" });
+            
+            encarregados = _db.Int_DP_Usuarios
+                                   .Where(a => a.Perfil.Equals("usuario") && a.Ativo == 1)
+                                   .OrderBy(a => a.Nome)
+                                   .ToList();
+
+            ViewBag.Setores = setores;  //Setores com "*todos*"
+            ViewBag.Setores2 = setores2; //Setores sem "*todos*"
+            ViewBag.Lojas = lojas; //Lojas sem "*todos*"
+            ViewBag.Encarregados = encarregados; //Encarregados sem "*todos*"
+
         }
         
         public IActionResult Index(int? page)
         {
 
-            setores = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
-            ViewBag.Setores = setores;
+            //setores = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
+            //ViewBag.Setores = setores;
 
             int pageNumber = page ?? 1;
 
             var relat = _db.Int_DP_Funcionarios
-                        .Join(_db.Int_DP_Usuarios, a => a.Encarregado.Id, b => b.Id, (a, b) => new { a, b })
-                        .Where(u => u.a.Ativo == 1)
-                        .OrderBy(o => o.a.Nome)
-                        .OrderBy(o => o.a.Id)
+                        .Join(_db.Int_DP_Lojas, a => a.Loja.Id, b => b.Id, (a, b) => new { a, b })
+                        .Join(_db.Int_DP_Setores, c => c.a.Setor.Id, d => d.Id, (c, d) => new { c, d })
+                        .Where(u => u.c.a.Ativo == 1)
+                        .OrderBy(o => o.c.a.Nome)
+                        .OrderBy(o => o.c.a.Id)
                         .Select(s => new
                         {
-                            s.a.Nome,
-                            s.a.Id,
-                            s.a.Experiencia,
-                            Encarregado = s.b.Nome
+                            s.c.a.Nome,
+                            s.c.a.Id,
+                            s.c.a.Experiencia,
+                            Setor = s.d.Nome,
+                            Loja = s.c.b.Nome
                         })
                         .ToList();
 
@@ -56,8 +82,10 @@ namespace OcorrenciasDP.Controllers
                 {
                     Id = func.Id,
                     Nome = func.Nome,
-                    Encarregado = func.Encarregado,
-                    Experiencia = func.Experiencia
+                    Experiencia = func.Experiencia,
+                    Setor = func.Setor,
+                    Loja = func.Loja
+                    
                 };
 
                 relatVM.Add(funcVM);
@@ -69,24 +97,23 @@ namespace OcorrenciasDP.Controllers
 
         }
 
-        [HttpGet]
+        
         public ActionResult Cadastrar()
         {
             ViewBag.Func = new Funcionario();
-            ViewBag.Setores = setores;
-            ViewBag.Setores2 = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
-            ViewBag.Encarregados = _db.Int_DP_Usuarios
-                                   .Where(a => a.Perfil.Equals("usuario") && a.Ativo == 1)
-                                   .OrderBy(a => a.Nome)
-                                   .ToList();
-        
+
+            ViewBag.Setores = setores;  //Setores com "*todos*"
+            ViewBag.Setores2 = setores2; //Setores sem "*todos*"
+            ViewBag.Lojas = lojas; //Lojas sem "*todos*"
+            ViewBag.Encarregados = encarregados; //Encarregados sem "*todos*"
+
             return View();
         }
             
         [HttpPost]
         public ActionResult Cadastrar([FromForm]Funcionario func, bool experiencia, int exp_periodo)
         {
-            ViewBag.Func = func;
+            ViewBag.Func = new Funcionario();
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 1;
 
             //Verifica se há um funcionário com o mesmo nome e encarregado cadastrado
@@ -167,68 +194,87 @@ namespace OcorrenciasDP.Controllers
         {
             long id_notnull = id ?? 0;
 
-            ViewBag.Setores = _db.Int_DP_Setores
+            /*ViewBag.Setores = _db.Int_DP_Setores
                               .OrderBy(a => a.Nome)
-                              .ToList();
+                              .ToList();*/
            
             Funcionario func = _db.Int_DP_Funcionarios.Find(id_notnull);
 
             ViewBag.Func = func;
 
-            ViewBag.Setores2 = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
+            /*ViewBag.Setores2 = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
             ViewBag.Encarregados = _db.Int_DP_Usuarios
                                    .Where(a => a.Perfil.Equals("usuario") && a.Ativo == 1)
                                    .OrderBy(a => a.Nome)
-                                   .ToList();
-            
+                                   .ToList();*/
+
+            ViewBag.Setores = setores;  //Setores com "*todos*"
+            ViewBag.Setores2 = setores2; //Setores sem "*todos*"
+            ViewBag.Lojas = lojas; //Lojas sem "*todos*"
+            ViewBag.Encarregados = encarregados; //Encarregados sem "*todos*"
+
             return View("Cadastrar");
 
         }
 
-        public ActionResult Filtrar(string nome, int? setor, int? encarregado, int? page)
+        public ActionResult Filtrar(string nome, int?loja, int? setor, int? page)
         {
+
+            var relat = _db.Int_DP_Funcionarios
+                        .Join(_db.Int_DP_Lojas, a => a.Loja.Id, b => b.Id, (a, b) => new { a, b })
+                        .Join(_db.Int_DP_Setores, c => c.a.Setor.Id, d => d.Id, (c, d) => new { c, d })
+                        .Where(u => u.c.a.Ativo == 1)
+                        .OrderBy(o => o.c.a.Nome)
+                        .OrderBy(o => o.c.a.Id)
+                        .Select(s => new
+                        {
+                            s.c.a.Nome,
+                            s.c.a.Id,
+                            s.c.a.Experiencia,
+                            Setor = s.d.Nome,
+                            Loja = s.c.b.Nome
+                        })
+                        .ToList();
+
             int pageNumber = page ?? 1;
-
-            ViewBag.Setores = _db.Int_DP_Setores
-                              .OrderBy(a => a.Nome)
-                              .ToList();
-
-            ViewBag.Setores2 = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
-
-            ViewBag.Encarregados = _db.Int_DP_Usuarios
-                                   .Where(a => a.Perfil.Equals("usuario") && a.Ativo == 1)
-                                   .OrderBy(a => a.Nome)
-                                   .ToList();
-
+            
             var query = _db.Int_DP_Funcionarios
-                         .AsQueryable();
+                        .Join(_db.Int_DP_Lojas, a => a.Loja.Id, b => b.Id, (a, b) => new { a, b })
+                        .Join(_db.Int_DP_Setores, c => c.a.Setor.Id, d => d.Id, (c, d) => new { c, d })
+                        .Where(u => u.c.a.Ativo == 1)
+                        .OrderBy(o => o.c.a.Nome)
+                        .OrderBy(o => o.c.a.Id)
+                        .AsQueryable();
 
             if(nome != null)
             {
-                query.Where(a => a.Nome.ToLower() == nome.ToLower());
+                query.Where(a => a.c.a.Nome.ToLower() == nome.ToLower());
             }
 
             if(setor != null)
             {
-                query.Where(a => a.Setor.Id == setor);
+                query.Where(a => a.c.a.Setor.Id == setor);
             }
 
-            if(encarregado != null)
+            if (loja != null)
             {
-                query.Where(a => a.Encarregado.Id == encarregado);
+                query.Where(a => a.c.a.Loja.Id == loja);
             }
 
-            List<Funcionario> funcionarios = query.ToList();
+            var funcionarios = query.ToList();
             List<FuncionarioViewModel> funcionariosVM = new List<FuncionarioViewModel>();
 
-            foreach(Funcionario func in funcionarios)
+            foreach(var func in funcionarios)
             {
+               
                 FuncionarioViewModel funcVM = new FuncionarioViewModel
                 {
-                    Id = func.Id,
-                    Nome = func.Nome,
-                    Encarregado = func.Encarregado.Nome,
-                    Experiencia = func.Experiencia
+                    Id = func.c.a.Id,
+                    Nome = func.c.a.Nome,
+                    Experiencia = func.c.a.Experiencia,
+                    Setor = func.d.Nome,
+                    Loja = func.c.b.Nome,
+
                 };
 
                 funcionariosVM.Add(funcVM);
@@ -245,9 +291,9 @@ namespace OcorrenciasDP.Controllers
         {
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 0;
             
-            ViewBag.Setores = _db.Int_DP_Setores
+           /* ViewBag.Setores = _db.Int_DP_Setores
                               .OrderBy(a => a.Nome)
-                              .ToList();
+                              .ToList();*/
             
             ViewBag.Func = func;
 
@@ -281,9 +327,9 @@ namespace OcorrenciasDP.Controllers
 
                 _db.SaveChanges();
                 log.AlterarFuncionario(id_notnull, func.Id);
-
-                TempData["FuncionarioNotOK"] = "Funcionário Atualizado com Sucesso";
                 
+                TempData["FuncionarioNotOK"] = "Funcionário Atualizado com Sucesso";
+
             }
             catch (Exception exp)
             {  
@@ -300,7 +346,6 @@ namespace OcorrenciasDP.Controllers
             }
 
             return RedirectToAction("Index");
-
         }
     }
 }
