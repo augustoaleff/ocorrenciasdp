@@ -1,0 +1,135 @@
+﻿@using OcorrenciasDP.Library.Globalization;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Detalhar Funcionário";
+}
+
+<h2>Detalhe de Funcionário</h2>
+
+<br />
+
+<!--Voltar a página-->
+<div>
+    <a href="javascript:window.history.go(-1)" class="btn btn-default btn-lg">
+        <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+    </a>
+</div>
+
+<br />
+<br />
+
+<b>Nome: </b>@ViewBag.DetalharFunc.Nome
+<br />
+<b>Data Início:</b> @Globalization.DataCurtaBR(ViewBag.DetalharFunc.Exp_DataInicio)
+<br />
+@if (ViewBag.Exp_Periodo == 1)
+{
+    <b>Período:</b> @string.Concat("1 dia", "");
+}
+else if (ViewBag.Exp_Periodo > 1)
+{
+    <b>Período:</b> @string.Concat(ViewBag.Exp_Periodo, " dias");
+}
+else
+{
+    <b>Período:</b> @ViewBag.Exp_Periodo
+}
+
+<br />
+<b>Data Fim:</b> @Globalization.DataCurtaBR(ViewBag.DetalharFunc.Exp_DataFim)
+<br />
+<br />
+
+<b size="2">Últimas Notas</b>
+<br />
+<table id="cartGrid" class="table table-hover" style="padding-top: 15px">
+    <thead>
+        <tr>
+            <th scope="col">Data</th>
+            <th scope="col">Nota</th>
+            <th scope="col">Enviado Por</th>
+            <th scope="col">Comentário</th>
+
+        </tr>
+    </thead>
+    @foreach (var nota in ViewBag.FuncNotas)
+    {
+        <tr>
+            <td>@Globalization.DataCurtaBR(nota.DataAvaliacao)</td>
+            <td>@nota.Nota</td>
+            <td>
+                @nota.Encarregado.Nome
+            </td>
+            <td>
+                @if (nota.Comentario.Length >= 25)
+                {
+                    @nota.Comentario.Substring(0, 25)
+                }
+                else
+                {
+                    @nota.Comentario
+                }
+                <button type="button" class="btn btn-default" data-toggle="popover" title="@Globalization.DataCurtaBR(nota.DataAvaliacao)"
+                        data-content="@nota.Comentario" data-placement="left">
+
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
+            </td>
+
+        </tr>
+    }
+</table>
+
+<div id="chart_div" style="width: 100%; height: 500px;"></div>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    var myTableArray = [
+        ['Data', 'Nota']
+    ];
+
+    $(document).ready(function () {
+
+        $("table#cartGrid tr").each(function () {
+            var arrayOfThisRow = [];
+            
+            var tableData = $(this).find('td');
+            if (tableData.length > 0) {
+                tableData.each(function () {
+                    
+                    if ($.isNumeric(parseInt($(this).text()))) { //Verifica se é número ou data
+
+                        if ($(this).text().length < 5) { //Verificar se é data
+                            arrayOfThisRow.push(parseInt($(this).text()));
+                        } else {
+                            arrayOfThisRow.push($(this).text());
+                        }
+                    }
+                });
+
+                myTableArray.push(arrayOfThisRow);
+            }
+        });
+    });
+   
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
+
+    function drawChart() {
+
+        var data = google.visualization.arrayToDataTable(myTableArray);
+
+        var options = {
+            title: 'Nota do Funciónário',
+            hAxis: { title: 'Data', titleTextStyle: { color: '#333' } },
+            vAxis: { minValue: 0, maxValue: 10}
+        };
+
+        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+</script>

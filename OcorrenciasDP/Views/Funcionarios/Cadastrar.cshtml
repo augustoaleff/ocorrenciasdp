@@ -62,8 +62,14 @@
     {
         data = Globalization.HoraAtualBR().ToString("yyyy-MM-dd");
     }
+    
+}
 
-
+@if (TempData["FuncionarioNotOK"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["FuncionarioNotOK"]
+    </div>
 }
 
 <h2>Cadastro de Funcionário</h2>
@@ -81,6 +87,7 @@
 <form method="post" action="@acao" style="width:50%">
 
     <input type="hidden" name="ativo" value="1" />
+    <input type="hidden" name="id" value="@ViewBag.Func.Id" />
 
 
     <!--Nome-->
@@ -102,12 +109,11 @@
 
     }
 
-
     <!--Loja-->
     <div class="form-group col-md-auto">
         <label for="perfil">Loja</label>
         <select name="loja.id" id="loja" class="form-control mb-2" required>
-            @foreach (var loja2 in ViewBag.Lojas)
+            @foreach (var loja2 in ViewBag.Lojas2)
             {
                 if (loja2.Id == loja)
                 {
@@ -120,7 +126,6 @@
             }
         </select>
     </div>
-
 
     <!--Setor-->
     <div class="form-group p-2">
@@ -153,7 +158,7 @@
             {
                 <input type="checkbox" id="cboxExperiencia" aria-label="Experiência">
             }
-            
+
             <label for="cboxExperiencia">Experiência?</label>
         </div>
     </div>
@@ -165,14 +170,14 @@
         <!--Data Início-->
         <div class="form-group" style="width:50%">
             <label for="datainicio">Data Início</label>
-            <input type="date" name="data" value="@data" class="form-control" id="datainicio">
+            <input type="date" name="exp_datainicio" value="@data" class="form-control" id="datainicio">
             <strong style="color:#FF0000">@Html.ValidationMessage("data")</strong>
         </div>
 
         <!--Período-->
         <label for="periodo">Período</label>
         <div class="input-group col-lg-6">
-            <input type="number" min="0" max="1000" class="form-control" id="periodo" value="@periodo">
+            <input type="number" name="exp_periodo" min="0" max="1000" class="form-control" id="periodo" value="@periodo">
             <span class="input-group-addon">dias</span>
         </div>
 
@@ -181,12 +186,10 @@
     <br />
     <br />
     <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
-    
+
 </form>
 
 <script>
-
-   
 
     $(document).ready(function () {
         mostrarExperiencia();
@@ -198,9 +201,10 @@
 
     $('#cboxExperiencia').change(function () {
         mostrarExperiencia();
-    })    
-    function mostrarExperiencia() {
+    })
 
+    function mostrarExperiencia() {
+        var data = new Date();
 
         if ($('#cboxExperiencia').is(':checked')) {
 
@@ -208,7 +212,7 @@
 
             $('#datainicio').attr('required', true);
             $('#periodo').attr('required', true);
-            $('#exp_div').attr('disabled', false)
+            $('#exp_div').attr('disabled', false);
 
         } else {
 
@@ -216,7 +220,9 @@
 
             $('#datainicio').attr('required', false);
             $('#periodo').attr('required', false);
-            $('#exp_div').attr('disabled', false)
+            $('#exp_div').attr('disabled', false);
+            $('#periodo').attr('value', '0');
+            $('#datainicio').attr('value', data.getFullYear() + '-' + ("00" + (data.getMonth() + 1)).slice(-2) + '-' + data.getDate());
 
         }
     }

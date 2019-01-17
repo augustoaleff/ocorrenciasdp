@@ -53,7 +53,7 @@ namespace OcorrenciasDP.Controllers
                 query = query.Where(a => a.r.u.Nome.ToLower().Contains(nome.ToLower()));
             }
 
-            if (setor != null && setor != "0")
+            if (setor != null && setor != "0") 
             {
                 query = query.Where(a => a.r.u.Setor.Id == int.Parse(setor));
 

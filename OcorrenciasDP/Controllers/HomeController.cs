@@ -488,15 +488,20 @@ namespace OcorrenciasDP.Controllers
 
         public void VerificarExperiencias()
         {
-
             int diasAvaliacao = 7;   //A cada quantos dias a avaliação deve ser requisitada
             int id_user = HttpContext.Session.GetInt32("ID") ?? 0;
+
+            Usuario encarregado = _db.Int_DP_Usuarios.Find(id_user);
+
+            int loja = _db.Int_DP_Usuarios.Where(a => a.Id == id_user).Select(s => s.Loja.Id).FirstOrDefault();
+
+            encarregado.Loja = _db.Int_DP_Lojas.Find(loja);
 
             DateTime hoje = Globalization.HoraAtualBR();
             List<Funcionario> lista_funcionarios = new List<Funcionario>();
 
             List<Funcionario> funcs_exp = _db.Int_DP_Funcionarios
-                .Where(a => a.Encarregado.Id == id_user && a.Exp_DataInicio <= hoje && a.Exp_DataFim >= hoje)
+                .Where(a => a.Setor.Id == encarregado.Setor.Id && a.Loja.Id == encarregado.Loja.Id && a.Exp_DataInicio <= hoje && a.Exp_DataFim >= hoje)
                 .OrderBy(o => o.Nome)
                 .ToList();
 
@@ -545,6 +550,8 @@ namespace OcorrenciasDP.Controllers
                 avaliacao.DataAvaliacao = Globalization.HoraAtualBR();
 
                 avaliacao.Funcionario = _db.Int_DP_Funcionarios.Find(avaliacao.Funcionario.Id);
+
+                avaliacao.Encarregado = _db.Int_DP_Usuarios.Find(id_notnull);
 
                 _db.Int_DP_Avaliacoes.Add(avaliacao);
 

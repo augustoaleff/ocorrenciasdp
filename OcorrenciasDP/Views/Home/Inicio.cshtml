@@ -269,7 +269,7 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h3 class="modal-title" id="modalmodalAvaliacaoFuncTitulo">@ViewBag.Experiencia[0].Nome</h3>
+                    <h3 class="modal-title" id="modalmodalAvaliacaoFuncTitulo">Avaliação Semanal de Funcionário em Experiência</h3>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -278,6 +278,9 @@
                     <div class="modal-body">
                         <input type="hidden" name="funcionario.Id" value="@ViewBag.Experiencia[0].Id" />
                         <div>
+                            <strong>Nome: </strong>
+                            @ViewBag.Experiencia[0].Nome
+                            <br />
                             <strong>Período do Experência: </strong>
                             @string.Concat(Globalization.DataCurtaBR(ViewBag.Experiencia[0].Exp_DataInicio), " à ", Globalization.DataCurtaBR(ViewBag.Experiencia[0].Exp_DataFim))
                             <br />

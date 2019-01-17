@@ -1,4 +1,5 @@
-﻿@model X.PagedList.IPagedList<OcorrenciasDP.ViewModels.FuncionarioViewModel>;
+﻿@model X.PagedList.IPagedList<OcorrenciasDP.ViewModels.FuncionarioViewModel>
+@using X.PagedList;
 @using X.PagedList.Mvc.Core;
 @using OcorrenciasDP.Library.Globalization;
 @{
@@ -9,6 +10,54 @@
     ViewData["Title"] = "Funcionários";
 }
 
+@if (TempData["FuncionarioNotOK"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["FuncionarioNotOK"]
+    </div>
+}
+
+@if (TempData["FuncionarioOK"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["FuncionarioOK"]
+    </div>
+}
+
+@{
+    string nome;
+    int setor_1, loja;
+
+    if (ViewBag.PesquisaNome != null)
+    {
+        nome = ViewBag.PesquisaNome;
+    }
+    else
+    {
+        nome = "";
+    }
+
+    if (ViewBag.PesquisaLoja != null)
+    {
+        loja = int.Parse(ViewBag.PesquisaLoja);
+    }
+    else
+    {
+        loja = 0;
+    }
+
+    if (ViewBag.PesquisaSetor != null)
+    {
+        setor_1 = int.Parse(ViewBag.PesquisaSetor);
+    }
+
+    else
+    {
+        setor_1 = 0;
+    }
+
+}
+
 <h2>Funcionários</h2>
 <br />
 
@@ -17,6 +66,8 @@
 </div>
 
 <div style="display:flex;justify-content:space-between">
+
+
     <div>
         <form class="form-inline" method="get" action="/OcorrenciasDP/Funcionarios/Filtrar">
             <div class="form-group mb-2">
@@ -48,14 +99,14 @@
 
 <div style="display:flex;justify-content:flex-end">
 
-        @if (Model.Count == 1)
-        {
-            <b>Encontrado 1 Resultado</b>
-        }
-        else
-        {
-            <b>Encontrado @Model.Count Resultados</b>
-        }
+    @if (Model.Count == 1)
+    {
+        <b>Encontrado 1 Resultado</b>
+    }
+    else
+    {
+        <b>Encontrado @Model.Count Resultados</b>
+    }
 
 </div>
 
@@ -73,35 +124,67 @@
     <tbody>
         @foreach (var func in Model)
         {
-        <tr>
-            <th scope="row">@func.Id</th>
-            <td>@func.Nome</td>
-            <td>@func.Loja</td>
-            <td>@func.Setor</td>
+            <tr>
+                <th scope="row">@func.Id</th>
+                <td>@func.Nome</td>
+                <td>@func.Loja</td>
+                <td>@func.Setor</td>
 
-            @if (func.Experiencia == 1)
-            {
-                <td><font color="red"><strong>Sim</strong></font></td>
-            }
-            else
-            {
-                <td>Não</td>
-            }
-            <td>
-                <a href="/OcorrenciasDP/Funcionarios/Atualizar/@func.Id/" value="@func.Id" class="btn btn-warning btn-sm">
-                    Alterar
-                </a>
+                @if (func.Experiencia == 1)
+                {
+                    <td><font color="red"><strong>Sim</strong></font></td>
+                }
+                else
+                {
+                    <td>Não</td>
+                }
 
-                <a href="/OcorrenciasDP/Funcionarios/Excluir/@func.Id/" value="@func.Id" onclick="return confirmaApagar();"
-                   class="btn btn-danger btn-sm">
-                    Excluir
-                </a>
-            </td>
-        </tr>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                <span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li>
+                                    <a href="/OcorrenciasDP/Funcionarios/Atualizar/@func.Id/" value="@func.Id" class="btn btn-sm">
+                                        <b>Alterar</b>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="/OcorrenciasDP/Funcionarios/Excluir/@func.Id/" value="@func.Id" onclick="return confirmaApagar();"
+                                       class="btn btn-sm">
+                                        <b>Excluir</b> 
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="/OcorrenciasDP/Funcionarios/Detalhar/@func.Id/" value="@func.Id" onclick=""
+                                       class="btn btn-sm">
+                                        <b>Detalhar</b>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </td>
+            </tr>
         }
 
     </tbody>
 </table>
+
+@if (nome != "" || setor_1 != 0 || loja != 0)
+{
+
+    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Filtrar", new { nome, setor_1, loja, page }))
+
+}
+else
+{
+    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page }))
+}
+
 
 @section Scripts{
 
@@ -109,6 +192,11 @@
         function confirmaApagar() {
             return confirm("Confirma Exclusão?");
         }
+
+        $('.dropdown-toggle').dropdown()
+        
     </script>
+
+
 
 }

@@ -121,7 +121,7 @@
     <div class="form-group col-md-auto">
         <label for="perfil">Loja</label>
         <select name="loja.id" id="loja" class="form-control mb-2" required>
-            @foreach (var loja2 in ViewBag.Lojas)
+            @foreach (var loja2 in ViewBag.Lojas2)
             {
                 if (loja2.Id == loja)
                 {
@@ -139,7 +139,7 @@
     <div class="form-group p-2">
         <label for="setor">Setor</label>
         <select name="setor.id" id="setor" class="form-control mb-2" required>
-            @foreach (var depto in ViewBag.Setores2)
+            @foreach (var depto in ViewBag.Setores)
             {
                 if (depto.Id == setor)
                 {
