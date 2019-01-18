@@ -466,7 +466,7 @@ namespace OcorrenciasDP.Controllers
                     }
                     else
                     {
-                        //Quando o link já está sendo utilizado
+                        //Quando o link já foi utilizado
                         TempData["TrocaSenhaNotOK"] = "Link já Utilizado";
                         return RedirectToAction("Index");
                     }
@@ -615,7 +615,7 @@ namespace OcorrenciasDP.Controllers
                 {
                     string nome = Shared.PegarPrimeiroNome(vEmail.Nome);
 
-                    Library.Mail.EnviarLinkSenha.EnviarLinkTrocarSenha(email, codigo, nome);
+                    Library.Mail.EnviarLinkSenha.EnviarLinkTrocarSenha(email, codigo, nome, vEmail.Login);
 
                     log.EsqueciMinhaSenha_Envio(vEmail.Id, codigo);
 

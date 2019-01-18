@@ -310,5 +310,19 @@ namespace OcorrenciasDP.Models
 
         }
 
+        public void VisualizacaoDetalhe(int usuario, long funcionario)
+        {
+            this.Usuario = usuario;
+            this.Funcionario = funcionario;
+            this.Tipo = 607; //Visualização de Detalhes de Funcionário com Sucesso
+        }
+
+        public void VisualizacaoDetalhe_Erro(int usuario, long funcionario, Exception exp)
+        {
+            this.Usuario = usuario;
+            this.Funcionario = funcionario;
+            this.Tipo = 608; //Visualização de Detalhes de Funcionário com Erro
+        }
+
     }
 }

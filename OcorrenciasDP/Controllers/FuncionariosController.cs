@@ -10,6 +10,7 @@ using OcorrenciasDP.Library.Filters;
 using OcorrenciasDP.Library.Globalization;
 using OcorrenciasDP.Models;
 using OcorrenciasDP.ViewModels;
+using Rotativa.AspNetCore;
 using X.PagedList;
 
 namespace OcorrenciasDP.Controllers
@@ -19,17 +20,22 @@ namespace OcorrenciasDP.Controllers
     public class FuncionariosController : Controller
     {
         private DatabaseContext _db;
-        private readonly List<Setor> setores;
-        private readonly List<Usuario> encarregados;
-        private readonly List<Setor> setores2;
-        private readonly List<Loja> lojas;
-        private readonly List<Loja> lojas2;
 
 
         public FuncionariosController(DatabaseContext db)
         {
             _db = db;
+            DeclararViewBags();  //Função para estabelecer as ViewBags Necessárias para as abrir as Views
+        }
 
+        public void DeclararViewBags()
+        {
+            List<Setor> setores;
+            List<Usuario> encarregados;
+            List<Setor> setores2;
+            List<Loja> lojas;
+            List<Loja> lojas2;
+            
             setores = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
             setores2 = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
             setores.Add(new Setor() { Id = 0, Nome = "*Todos*" });
@@ -37,39 +43,26 @@ namespace OcorrenciasDP.Controllers
             lojas = _db.Int_DP_Lojas.OrderBy(a => a.Id).ToList();
             lojas2 = _db.Int_DP_Lojas.OrderBy(a => a.Id).ToList();
             lojas.Add(new Loja() { Id = 0, Nome = "*Todas*" });
-
-
+            
             encarregados = _db.Int_DP_Usuarios
                                    .Where(a => a.Perfil.Equals("usuario") && a.Ativo == 1)
                                    .OrderBy(a => a.Nome)
                                    .ToList();
-
+            
             ViewBag.Setores = setores;  //Setores com "*todos*"
             ViewBag.Setores2 = setores2; //Setores sem "*todos*"
-            ViewBag.Lojas2 = lojas2; //Lojas sem "*todos*"
             ViewBag.Lojas = lojas; //Lojas com "*todos*"
+            ViewBag.Lojas2 = lojas2; //Lojas sem "*todos*"
             ViewBag.Encarregados = encarregados; //Encarregados sem "*todos*"
-
         }
 
-        public IActionResult Index(int? page)
+        public void AtualizarExperiencia()
         {
-            ViewBag.Setores = setores;  //Setores com "*todos*"
-            ViewBag.Setores2 = setores2; //Setores sem "*todos*"
-            ViewBag.Lojas = lojas; //Lojas com "*todos*"
-            ViewBag.Lojas2 = lojas2; //Lojas sem "*todos*"
-            ViewBag.Encarregados = encarregados; //Encarregados sem "*todos*"
-
-            //setores = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
-            //ViewBag.Setores = setores;
-            
-            int pageNumber = page ?? 1;
-
-            var func__exp = _db.Int_DP_Funcionarios.ToList();
+            List<Funcionario> func_exp = _db.Int_DP_Funcionarios.ToList();
 
             DateTime hoje = Globalization.HojeBR();
 
-            foreach (var func in func__exp)
+            foreach (var func in func_exp)
             {
                 if (func.Exp_DataInicio.Date <= hoje & func.Exp_DataFim.Date >= hoje)
                 {
@@ -82,6 +75,18 @@ namespace OcorrenciasDP.Controllers
 
                 _db.SaveChanges();
             }
+        }
+
+        public IActionResult Index(int? page)
+        {
+            DeclararViewBags();
+
+            //setores = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
+            //ViewBag.Setores = setores;
+
+            int pageNumber = page ?? 1;
+
+            AtualizarExperiencia();
 
             var relat = _db.Int_DP_Funcionarios
                         .Join(_db.Int_DP_Lojas, a => a.Loja.Id, b => b.Id, (a, b) => new { a, b })
@@ -115,24 +120,17 @@ namespace OcorrenciasDP.Controllers
                 relatVM.Add(funcVM);
 
             }
-
             
-
             IPagedList<FuncionarioViewModel> resultadoPaginado = relatVM.ToPagedList(pageNumber, 10);
             return View(resultadoPaginado);
 
         }
-
-
+        
         public ActionResult Cadastrar()
         {
             ViewBag.Func = new Funcionario();
 
-            ViewBag.Setores = setores;  //Setores com "*todos*"
-            ViewBag.Setores2 = setores2; //Setores sem "*todos*"
-            ViewBag.Lojas = lojas; //Lojas com "*todos*"
-            ViewBag.Lojas2 = lojas2; //Lojas sem "*todos*"
-            ViewBag.Encarregados = encarregados; //Encarregados sem "*todos*"
+            DeclararViewBags();
 
             return View();
         }
@@ -140,12 +138,7 @@ namespace OcorrenciasDP.Controllers
         [HttpPost]
         public ActionResult Cadastrar([FromForm]Funcionario func, int exp_periodo)
         {
-
-            ViewBag.Setores = setores;  //Setores com "*todos*"
-            ViewBag.Setores2 = setores2; //Setores sem "*todos*"
-            ViewBag.Lojas = lojas; //Lojas com "*todos*"
-            ViewBag.Lojas2 = lojas2; //Lojas sem "*todos*"
-            ViewBag.Encarregados = encarregados; //Encarregados sem "*todos*"
+            DeclararViewBags();
 
             ViewBag.Func = new Funcionario();
             int id_notnull = HttpContext.Session.GetInt32("ID") ?? 1;
@@ -171,11 +164,8 @@ namespace OcorrenciasDP.Controllers
                     func.CadastradoPor = _db.Int_DP_Usuarios.Find(id_user);
                     func.Exp_DataFim = func.Exp_DataInicio.AddDays(exp_periodo);
 
-
-
                     if (exp_periodo != 0)
                     {
-
                         if (func.Exp_DataFim >= hoje && func.Exp_DataInicio <= hoje)
                         {
                             func.Experiencia = 1;
@@ -184,7 +174,6 @@ namespace OcorrenciasDP.Controllers
                         {
                             func.Experiencia = 0;
                         }
-
                     }
                     else
                     {
@@ -259,24 +248,18 @@ namespace OcorrenciasDP.Controllers
 
             ViewBag.Func = func;
 
-            ViewBag.Setores = setores;  //Setores com "*todos*"
-            ViewBag.Setores2 = setores2; //Setores sem "*todos*"
-            ViewBag.Lojas = lojas; //Lojas com "*todos*"
-            ViewBag.Lojas2 = lojas2; //Lojas sem "*todos*"
-            ViewBag.Encarregados = encarregados; //Encarregados sem "*todos*"
+            DeclararViewBags();
 
             return View("Cadastrar");
 
         }
 
         [HttpGet]
-        public ActionResult Filtrar(string nome, string loja, string setor, int? page)
+        public ActionResult Filtrar(string nome, int? loja, int? setor, int? page)
         {
-            ViewBag.Setores = setores;  //Setores com "*todos*"
-            ViewBag.Setores2 = setores2; //Setores sem "*todos*"
-            ViewBag.Lojas = lojas; //Lojas com "*todos*"
-            ViewBag.Lojas2 = lojas2; //Lojas sem "*todos*"
-            ViewBag.Encarregados = encarregados; //Encarregados sem "*todos*"
+            DeclararViewBags();
+
+            AtualizarExperiencia();
 
             int pageNumber = page ?? 1;
 
@@ -286,25 +269,24 @@ namespace OcorrenciasDP.Controllers
                         .Where(u => u.c.a.Ativo == 1)
                         .AsQueryable();
 
-            if (nome != null)
+            string nome1 = nome;
+            int loja1 = loja ?? 0;
+            int setor1 = setor ?? 0;
+            int page1 = page ?? 0;
+
+
+            if (nome1 != null)
             {
-                query.Where(a => a.c.a.Nome.ToLower().Equals(nome.ToLower()));
+                query = query.Where(a => a.c.a.Nome.ToLower().Contains(nome1.ToLower()));
             }
 
-            if (setor != null)
+            if (setor1 != 0)
             {
-                if (setor != "" && setor != "0")
-                {
-                    query.Where(a => a.c.a.Setor.Id == int.Parse(setor));
-                }
+                query = query.Where(a => a.c.a.Setor.Id == setor1);
             }
-
-            if (loja != null)
+            if (loja1 != 0)
             {
-                if (loja != "" && loja != "0")
-                {
-                    query.Where(a => a.c.a.Loja.Id == int.Parse(loja));
-                }
+                query = query.Where(a => a.c.a.Loja.Id == loja1);
             }
 
             var relat = query.Select(s => new
@@ -333,53 +315,112 @@ namespace OcorrenciasDP.Controllers
                 funcionariosVM.Add(funcVM);
             }
 
-            ViewBag.PesquisaSetor = setor;
-            ViewBag.PesquisaNome = nome;
-            ViewBag.PesquisaLoja = loja;
+            ViewBag.PesquisaSetor = setor1;
+            ViewBag.PesquisaNome = nome1;
+            ViewBag.PesquisaLoja = loja1;
             
             IPagedList<FuncionarioViewModel> resultadoPaginado = funcionariosVM.ToPagedList(pageNumber, 10);
 
             return View("Index", resultadoPaginado);
 
         }
-        
+
         [HttpGet]
         public ActionResult Detalhar(long? id)
         {
+
             long id_notnull = id ?? 0;
+
+            int user_id = HttpContext.Session.GetInt32("ID") ?? 0;
 
             int periodo = 0;
 
-            Funcionario func = _db.Int_DP_Funcionarios.Find(id_notnull);
+            Log log = new Log();
 
-            if (func.Experiencia == 1)
+            try
             {
-                periodo = func.Exp_DataFim.Subtract(func.Exp_DataInicio).Days;
+                Funcionario func = _db.Int_DP_Funcionarios.Find(id_notnull);
+                
+                if (func.Experiencia == 1)
+                {
+                    periodo = func.Exp_DataFim.Subtract(func.Exp_DataInicio).Days;
+                }
+
+                ViewBag.DetalharFunc = func;
+                ViewBag.Exp_Periodo = periodo;
+
+                List<Avaliacao> avaliacao = _db.Int_DP_Avaliacoes
+                    .Where(a => a.Funcionario.Id == id_notnull)
+                    .OrderByDescending(o => o.DataAvaliacao)
+                    .ToList();
+
+                foreach (var nota in avaliacao)
+                {
+                    int encarregado = _db.Int_DP_Avaliacoes.Where(a => a.Id == nota.Id).Select(s => s.Encarregado.Id).FirstOrDefault();
+
+                    nota.Encarregado = _db.Int_DP_Usuarios.Find(encarregado);
+                    nota.Funcionario = _db.Int_DP_Funcionarios.Find(nota.Funcionario.Id);
+
+                }
+
+                ViewBag.FuncNotas = avaliacao;
+                log.VisualizacaoDetalhe(user_id, id_notnull);
+
             }
-            
-            ViewBag.DetalharFunc = func;
-            ViewBag.Exp_Periodo = periodo;
 
-            List<Avaliacao> avaliacao = _db.Int_DP_Avaliacoes
-                .Where(a => a.Funcionario.Id == id_notnull)
-                .OrderByDescending(o => o.DataAvaliacao)
-                .ToList();
-
-            foreach (var nota in avaliacao)
+            catch (Exception exp)
             {
-                int encarregado = _db.Int_DP_Avaliacoes.Where(a => a.Id == nota.Id).Select(s => s.Encarregado.Id).FirstOrDefault();
-
-                nota.Encarregado = _db.Int_DP_Usuarios.Find(encarregado);
-                nota.Funcionario = _db.Int_DP_Funcionarios.Find(nota.Funcionario.Id);
-
+                log.VisualizacaoDetalhe_Erro(user_id, id_notnull, exp);
             }
-
-            ViewBag.FuncNotas = avaliacao;
+            finally
+            {
+                _db.SaveChanges();
+            }
 
             return View();
         }
 
+        public IActionResult ImprimirDetalhes(long? id)
+        {
+            long id_notnull = id ?? 0;
 
+            int user_id = HttpContext.Session.GetInt32("ID") ?? 0;
+
+            string data = Globalization.DataRelatorioPdfBR();
+
+            Funcionario func = _db.Int_DP_Funcionarios.Find(id_notnull);
+
+            func.Loja = _db.Int_DP_Lojas.Where(a => a.Id == func.Loja.Id).FirstOrDefault();
+            func.Setor = _db.Int_DP_Setores.Where(a => a.Id == func.Setor.Id).FirstOrDefault();
+
+            List<Avaliacao> avaliacoes = _db.Int_DP_Avaliacoes
+                .Where(a => a.Funcionario.Id == func.Id)
+                .OrderByDescending(o => o.DataAvaliacao)
+                .ToList(); 
+
+
+            DetalhesFuncViewModel detalhesVM = new DetalhesFuncViewModel
+            {
+                Funcionario = func,
+                Usuario = _db.Int_DP_Usuarios.Find(user_id),
+                Avaliacoes = avaliacoes,
+                Data = Globalization.HoraAtualBR()
+            };
+
+            ViewAsPdf relatorioPDF = new ViewAsPdf
+            {
+                WkhtmlPath = "~/OcorrenciasDP/wwwroot/Rotativa",
+                ViewName = "DetalhesEmPDF",
+                IsGrayScale = false,
+                Model = detalhesVM,
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+                CustomSwitches = "--page-offset 0 --footer-left " + data + " --footer-right [page]/[toPage] --footer-font-size 8",
+                PageSize = Rotativa.AspNetCore.Options.Size.A4
+            };
+
+            return relatorioPDF;
+        }
+        
         [HttpPost]
         public ActionResult Atualizar([FromForm]Funcionario func, int exp_periodo)
         {

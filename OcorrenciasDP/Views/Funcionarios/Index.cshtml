@@ -39,7 +39,7 @@
 
     if (ViewBag.PesquisaLoja != null)
     {
-        loja = int.Parse(ViewBag.PesquisaLoja);
+        loja = ViewBag.PesquisaLoja;
     }
     else
     {
@@ -48,7 +48,7 @@
 
     if (ViewBag.PesquisaSetor != null)
     {
-        setor_1 = int.Parse(ViewBag.PesquisaSetor);
+        setor_1 = ViewBag.PesquisaSetor;
     }
 
     else
@@ -67,23 +67,51 @@
 
 <div style="display:flex;justify-content:space-between">
 
-
     <div>
         <form class="form-inline" method="get" action="/OcorrenciasDP/Funcionarios/Filtrar">
             <div class="form-group mb-2">
                 <label for="nome">Nome</label>
-                <input type="text" name="nome" class="form-control-plaintext" id="nome">
+                <input type="text" name="nome" class="form-control-plaintext" id="nome" value="@nome">
             </div>
 
+            @if(ViewBag.Lojas != null)
+            {
+                <div class="form-group p-2">
+                    <label for="loja">Loja</label>
+                    <select name="loja" id="loja" class="form-control mb-2">
+
+                        @foreach (var loja2 in ViewBag.Lojas)
+                        {
+                            if (loja2.Id == loja)
+                            {
+                                <option value="@loja2.Id" selected>@loja2.Nome</option>
+                            }
+                            else
+                            {
+                                <option value="@loja2.Id">@loja2.Nome</option>
+                            }
+                        }
+                    </select>
+                </div>
+            }
+            
             @if (ViewBag.Setores != null)
             {
+
                 <div class="form-group p-2">
                     <label for="setor">Setor</label>
                     <select name="setor" id="setor" class="form-control mb-2">
 
-                        @foreach (var setor in ViewBag.Setores)
+                        @foreach (var depto in ViewBag.Setores)
                         {
-                            <option value="@setor.Id">@setor.Nome</option>
+                            if (depto.Id == setor_1)
+                            {
+                                <option value="@depto.Id" selected>@depto.Nome</option>
+                            }
+                            else
+                            {
+                                <option value="@depto.Id">@depto.Nome</option>
+                            }
                         }
 
                     </select>
@@ -132,7 +160,7 @@
 
                 @if (func.Experiencia == 1)
                 {
-                    <td><font color="red"><strong>Sim</strong></font></td>
+                    <td><font color="red"><b></b><strong>Sim</strong></font></td>
                 }
                 else
                 {

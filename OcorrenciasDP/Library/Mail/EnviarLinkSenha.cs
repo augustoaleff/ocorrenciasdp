@@ -10,12 +10,12 @@ namespace OcorrenciasDP.Library.Mail
 {
     public class EnviarLinkSenha
     {
-        public static void EnviarLinkTrocarSenha(string email, string codigo, string nome)
+        public static void EnviarLinkTrocarSenha(string email, string codigo, string nome, string login)
         {
             string saudacao, conteudo;
             DateTime agora = Globalization.Globalization.HoraAtualBR();
 
-
+            
             if (agora.Hour >= 3 && agora.Hour <= 11) //Entre 3h e meio-dia ==> Bom Dia
             {
                 saudacao = "Bom Dia " +  nome +",<br />";
@@ -49,13 +49,8 @@ namespace OcorrenciasDP.Library.Mail
                 "<br /><br /><font size='1'>Mensagem Automática, favor não responder. Enviada: " + Globalization.Globalization.DataAtualExtensoBR() + "</font>"
 
             };
-
             mensagem.Bcc.Add(email);
             smtp.Send(mensagem);
-
         }
-
-        
-
     }
 }

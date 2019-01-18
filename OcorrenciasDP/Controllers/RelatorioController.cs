@@ -273,7 +273,6 @@ namespace OcorrenciasDP.Controllers
                         PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
                         CustomSwitches = "--page-offset 0 --footer-left " + data + " --footer-right [page]/[toPage] --footer-font-size 8",
                         PageSize = Rotativa.AspNetCore.Options.Size.A4
-
                     };
 
                     log.ExportarRelatorio(id_notnull, filtros);
@@ -290,7 +289,7 @@ namespace OcorrenciasDP.Controllers
                     _db.SaveChanges();
 
                     TempData["ErroRelat"] = "Ocorreu um erro ao tentar exportar o relátório, por favor, tente novamente...";
-        
+                    
                     return RedirectToAction("Index");
                 }
             }

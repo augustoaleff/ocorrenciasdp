@@ -15,6 +15,14 @@
     </a>
 </div>
 
+<div style="display:flex;justify-content:flex-end">
+    <a href="/OcorrenciasDP/Funcionarios/ImprimirDetalhes/@ViewBag.DetalharFunc.Id" class="btn btn-default btn-lg">
+        Imprimir
+        <span class="glyphicon glyphicon-print" aria-hidden="true"> 
+        </span>
+    </a>
+</div>
+
 <br />
 <br />
 
@@ -24,7 +32,7 @@
 <br />
 @if (ViewBag.Exp_Periodo == 1)
 {
-    <b>Período:</b> @string.Concat("1 dia", "");
+    <b>Período:</b> @string.Concat("1 dia", "");       
 }
 else if (ViewBag.Exp_Periodo > 1)
 {

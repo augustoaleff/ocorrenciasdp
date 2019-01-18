@@ -10,8 +10,6 @@
 
     if (Context.Session.GetString("UltimoAcesso") != null)
     {
-        //CultureInfo culture = new CultureInfo("pt-BR");
-        //UltimoLogin = Globalization.DataExtensoBR(DateTime.Parse(Context.Session.GetString("UltimoAcesso"),culture));
         UltimoLogin = Globalization.DataHoraExtensoBR(Globalization.ConverterData(Context.Session.GetString("UltimoAcesso")));
     }
 
@@ -55,8 +53,8 @@
     <link href="/OcorrenciasDP/manifest.json" rel="manifest" />
     <link href="~/favicon.ico" type="image/x-icon" rel="icon" />
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Meu App">
+    <meta name="apple-mobile-web-app-status-bar-style" content="white">
+    <meta name="apple-mobile-web-app-title" content="Agenda DP">
     <link rel="apple-touch-icon" href="http://www.eletroleste.com.br/OcorrenciasDP/192.png">
 
 
@@ -122,14 +120,7 @@
                             <li><a asp-area="" asp-controller="Relatorio" asp-action="Index">Relatório</a></li>
                             <li><a asp-area="" asp-controller="Usuarios" asp-action="Index">Usuários</a></li>
                             <li><a asp-area="" asp-controller="Mensagens" asp-action="Index">Mensagens</a></li>
-                            
-                            <environment include="Development">
-
-                                @*Menu Funcionários - Em construção*@
-                                <li><a asp-area="" asp-controller="Funcionarios" asp-action="Index">Funcionários</a></li>
-
-                            </environment>
-                            
+                            <li><a asp-area="" asp-controller="Funcionarios" asp-action="Index">Funcionários</a></li>
                         }
                         <li class="nav-item"><a asp-area="" asp-controller="Home" asp-action="AlterarMinhaSenha">Alterar Minha Senha</a></li>
                         <li class="nav-item"><a asp-area="" asp-controller="Home" asp-action="Logout">Logout</a></li>

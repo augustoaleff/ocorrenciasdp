@@ -1,0 +1,147 @@
+﻿@model OcorrenciasDP.ViewModels.DetalhesFuncViewModel
+@using Microsoft.AspNetCore.Http;
+@using OcorrenciasDP.Library.Globalization;
+@{
+    Layout = null;
+}
+
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>Relatório de Ocorrências</title>
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment exclude="Development">
+
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+    <header>
+        <small>Emitido Por: @Model.Usuario.Nome</small>
+        <h1 style="text-align:center">Detalhes de Funcionário</h1>
+
+
+
+        <br />
+
+        <b>Nome: </b> @Model.Funcionario.Nome
+        <br />
+        <b>Loja: </b> @Model.Funcionario.Loja.Nome
+        <br />
+        <b>Setor: </b> @Model.Funcionario.Setor.Nome
+        <br />
+        <b>Data de Início da Experiência: </b> @Globalization.DataCurtaBR(Model.Funcionario.Exp_DataInicio)
+        <br />
+        <b>Data de Fim da Experiência: </b> @Globalization.DataCurtaBR(Model.Funcionario.Exp_DataFim)
+        <br />
+
+        <br />
+
+    </header>
+
+    <article>
+
+        <!--Tabela-->
+        <table class="table table-striped col-md-2">
+            <thead>
+                <tr>
+                    <th scope="col">Data</th>
+                    <th scope="col">Nota</th>
+                    <th scope="col">Enviado Por</th>
+                    <th scope="col">Comentário</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var nota in Model.Avaliacoes)
+                {
+                    <tr>
+                        <td>@Globalization.DataCurtaBR(nota.DataAvaliacao)</td>
+                        <td>@nota.Nota</td>
+                        <td>
+                            @nota.Encarregado.Nome
+                        </td>
+                        <td>
+                            @nota.Comentario
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+    </article>
+
+    <div id="chart_div" style="width: 100%; height: 500px;"></div>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        var myTableArray = [
+            ['Data', 'Nota']
+        ];
+        
+        $(document).ready(function () {
+
+            $("table#cartGrid tr").each(function () {
+                var arrayOfThisRow = [];
+
+                var tableData = $(this).find('td');
+                if (tableData.length > 0) {
+                    tableData.each(function () {
+
+                        if ($.isNumeric(parseInt($(this).text()))) { //Verifica se é número ou data
+
+                            if ($(this).text().length < 5) { //Verificar se é data
+                                arrayOfThisRow.push(parseInt($(this).text()));
+                            } else {
+                                arrayOfThisRow.push($(this).text());
+                            }
+                        }
+                    });
+
+                    myTableArray.push(arrayOfThisRow);
+                }
+            });
+        });
+
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
+
+        function drawChart() {
+
+            var data = google.visualization.arrayToDataTable(myTableArray);
+
+            var options = {
+                title: 'Nota do Funciónário',
+                hAxis: { title: 'Data', titleTextStyle: { color: '#333' } },
+                vAxis: { minValue: 0, maxValue: 10 }
+            };
+
+            var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+    </script>
+
+</body>
+</html>  
+
+
+
