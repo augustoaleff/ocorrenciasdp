@@ -22,6 +22,8 @@ namespace OcorrenciasDP.Database
         public DbSet<Loja> Int_DP_Lojas { get; set; }
         public DbSet<Imagem> Int_DP_Banner { get; set; }
         
+        //RHOnline
+        public DbSet<RHO_Usuario> Int_RH_Usuarios { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {

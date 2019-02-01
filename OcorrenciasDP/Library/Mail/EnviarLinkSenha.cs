@@ -12,9 +12,8 @@ namespace OcorrenciasDP.Library.Mail
     {
         public static void EnviarLinkTrocarSenha(string email, string codigo, string nome, string login)
         {
-            string saudacao, conteudo;
+            string saudacao, conteudo, rodape;
             DateTime agora = Globalization.Globalization.HoraAtualBR();
-
             
             if (agora.Hour >= 3 && agora.Hour <= 11) //Entre 3h e meio-dia ==> Bom Dia
             {
@@ -30,8 +29,11 @@ namespace OcorrenciasDP.Library.Mail
             }
 
             conteudo = "<br />  <a href='http://www.eletroleste.com.br/OcorrenciasDP/Home/TrocarSenha?key=" + codigo + "'>Clique Aqui </a> e siga as instuções para redefinir a sua senha: <br />" +
-                " <br / >Não foi você que solicitou a troca de senha? Entre em contato com o TI!";
-            
+                "<br /><br /><b>Login: </b>" + login.ToLower() + 
+                " <br /><br />Não foi você que solicitou a troca de senha? Entre em contato com o TI!";
+
+            rodape = "<br /><br /><font size='1'>Mensagem Automática, favor não responder. Enviada: " + Globalization.Globalization.DataAtualExtensoBR() + "</font>";
+
             SmtpClient smtp = new SmtpClient(Constants.ServidorSMTP, Constants.PortaSMTP)
             {
                 EnableSsl = true,
@@ -44,10 +46,9 @@ namespace OcorrenciasDP.Library.Mail
                 From = new MailAddress("no-reply@eletroleste.com.br", "Eletroleste"),
                 Subject = "Redefinição de Senha",
                 IsBodyHtml = true,
-                Body = saudacao +
+                Body = saudacao + 
                 conteudo + 
-                "<br /><br /><font size='1'>Mensagem Automática, favor não responder. Enviada: " + Globalization.Globalization.DataAtualExtensoBR() + "</font>"
-
+                rodape 
             };
             mensagem.Bcc.Add(email);
             smtp.Send(mensagem);

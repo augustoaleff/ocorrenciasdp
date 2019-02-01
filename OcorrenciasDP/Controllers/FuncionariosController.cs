@@ -20,8 +20,7 @@ namespace OcorrenciasDP.Controllers
     public class FuncionariosController : Controller
     {
         private DatabaseContext _db;
-
-
+        
         public FuncionariosController(DatabaseContext db)
         {
             _db = db;
@@ -80,10 +79,7 @@ namespace OcorrenciasDP.Controllers
         public IActionResult Index(int? page)
         {
             DeclararViewBags();
-
-            //setores = _db.Int_DP_Setores.OrderBy(a => a.Nome).ToList();
-            //ViewBag.Setores = setores;
-
+            
             int pageNumber = page ?? 1;
 
             AtualizarExperiencia();
@@ -325,6 +321,75 @@ namespace OcorrenciasDP.Controllers
 
         }
 
+        public ActionResult RHO_EnviarArquivo()
+        {
+            return View();
+        }
+
+        //Incluir novo funcionário no RHOnline
+        public ActionResult RHO_Incluir()
+        {
+            DeclararViewBags();
+
+            ViewBag.RHOFunc = new RHO_Usuario();
+    
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult RHO_Incluir([FromForm]RHO_Usuario usuario)
+        {
+            DeclararViewBags();
+
+            ViewBag.RHOFunc = usuario;
+
+            usuario.CPF = usuario.CPF.Replace(".", "").Replace("-", "").Replace("/", "").Replace("\\", "").Replace(",", "").Trim();
+
+            RHO_Usuario vUsuario = _db.Int_RH_Usuarios.Where(a => a.CPF.Equals(usuario.CPF)).FirstOrDefault();
+
+            if (vUsuario == null)
+            {
+                usuario.DataCadastro = Globalization.HoraAtualBR();
+                usuario.UltimoAcesso = Globalization.HoraAtualBR();
+                usuario.Nivel = 2;
+                usuario.Ativo = 1;
+                usuario.Cadastrado = 0;
+
+                ViewBag.RHOFunc = usuario;
+
+                if (usuario.CPF.Length == 11)
+                {
+                    try
+                    {
+                        _db.Int_RH_Usuarios.Add(usuario);
+
+                        _db.SaveChanges();
+
+                        TempData["RHO_IncluirOK"] = "Inclusão efetuada com sucesso, código: " + usuario.CodigoAtivacao;
+
+                        return RedirectToAction("RHO_Incluir");
+
+                    }
+                    catch (Exception exp)
+                    {
+                        TempData["RHO_IncluirNotOK"] = "Ocorreu um Erro ao tentar incluir o funcionário";
+                        return View("RHO_Incluir");
+                    }
+                }
+                else
+                {
+                    TempData["RHO_IncluirNotOK"] = "CPF não valido";
+
+                    return View("RHO_Incluir");
+                }
+            }
+            else
+            {
+                TempData["RHO_IncluirNotOK"] = "CPF já cadastrado no sistema!";
+                return View("RHO_Incluir");
+            }
+        }
+
         [HttpGet]
         public ActionResult Detalhar(long? id)
         {
@@ -351,7 +416,7 @@ namespace OcorrenciasDP.Controllers
 
                 List<Avaliacao> avaliacao = _db.Int_DP_Avaliacoes
                     .Where(a => a.Funcionario.Id == id_notnull)
-                    .OrderByDescending(o => o.DataAvaliacao)
+                    .OrderBy(o => o.DataAvaliacao)
                     .ToList();
 
                 foreach (var nota in avaliacao)

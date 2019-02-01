@@ -434,6 +434,7 @@ namespace OcorrenciasDP.Controllers
             return View();
         }
 
+
         //Trocar Senha por envio e link no email
         [HttpGet]
         public ActionResult TrocarSenha(long? key)
@@ -501,7 +502,8 @@ namespace OcorrenciasDP.Controllers
             List<Funcionario> lista_funcionarios = new List<Funcionario>();
 
             List<Funcionario> funcs_exp = _db.Int_DP_Funcionarios
-                .Where(a => a.Setor.Id == encarregado.Setor.Id && a.Loja.Id == encarregado.Loja.Id && a.Exp_DataInicio <= hoje && a.Exp_DataFim >= hoje)
+                .Where(a => a.Setor.Id == encarregado.Setor.Id && a.Loja.Id == encarregado.Loja.Id
+                && a.Exp_DataInicio <= hoje && a.Exp_DataFim >= hoje && a.Ativo == 1)
                 .OrderBy(o => o.Nome)
                 .ToList();
 

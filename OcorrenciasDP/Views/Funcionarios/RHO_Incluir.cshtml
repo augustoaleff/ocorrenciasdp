@@ -1,0 +1,113 @@
+﻿
+@{
+    ViewData["Title"] = "RHO_Incluir";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    int setor, loja;
+
+
+    if (ViewBag.RHOFunc.Setor != null)
+    {
+        setor = ViewBag.RHOFunc.Setor.Id;
+    }
+    else
+    {
+        setor = 0;
+    }
+
+    if (ViewBag.RHOFunc.Loja != null)
+    {
+        loja = ViewBag.RHOFunc.Loja.Id;
+    }
+    else
+    {
+        loja = 0;
+    }
+
+}
+
+@if (TempData["RHO_IncluirNotOK"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["RHO_IncluirNotOK"]
+    </div>
+}
+
+
+@if (TempData["RHO_IncluirOK"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["RHO_IncluirOK"]
+    </div>
+}
+
+
+<h2>Incluir Novo Funcionário</h2>
+
+<br />
+
+<form method="post" action="/OcorrenciasDP/Funcionarios/RHO_Incluir" style="width:50%">
+
+    <!--Nome-->
+    <div class="form-group col-md-auto">
+        <label for="nome">Nome</label>
+        <input type="text" name="nome" class="form-control" id="login" value="@ViewBag.RHOFunc.Nome" placeholder="" required>
+    </div>
+
+    <!--CPF-->
+    <div class="form-group col-md-auto">
+        <label for="cpf">CPF</label>
+        <input type="text" name="cpf" class="form-control" id="cpf" value="@ViewBag.RHOFunc.CPF" placeholder="___.___.___-__" required>
+    </div>
+
+    <!--Código de Validação-->
+    <div class="form-group col-md-auto">
+        <label for="codigo">Código de Validação: </label>
+        <input type="text" name="codigoativacao" class="form-control" id="codigo" value="@ViewBag.RHOFunc.CodigoAtivacao" placeholder="">
+    </div>
+
+    <!--Loja-->
+    <div class="form-group col-md-auto">
+        <label for="perfil">Loja</label>
+        <select name="loja.id" id="loja" class="form-control mb-2" required>
+            @foreach (var loja2 in ViewBag.Lojas2)
+            {
+
+                if (loja2.Id == loja)
+                {
+                    <option value="@loja2.Id" selected>@loja2.Nome</option>
+                }
+                else
+                {
+                    <option value="@loja2.Id">@loja2.Nome</option>
+                }
+
+            }
+        </select>
+    </div>
+
+    <!--Setor-->
+    <div class="form-group p-2">
+        <label for="setor">Setor</label>
+        <select name="setor.id" id="setor" class="form-control mb-2" required>
+            @foreach (var depto in ViewBag.Setores)
+            {
+
+                if (depto.Id == setor)
+                {
+                    <option value="@depto.Id" selected>@depto.Nome</option>
+                }
+                else
+                {
+                    <option value="@depto.Id">@depto.Nome</option>
+                }
+
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="botaoenviar">Enviar</button>
+
+</form>

@@ -1,0 +1,59 @@
+﻿
+@{
+    ViewData["Title"] = "Enviar Arquivo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Enviar Arquivo</h2>
+
+<br />
+
+<form action="/OcorrenciasDP/Funcionarios/RHO_EnviarArquivo" method="post">
+
+
+        <div class="form-row">
+
+            <div >
+                <label for="mes">Mês</label>
+                <input type="number" name="mes" id="mes" value="" />
+            </div>
+
+            <div >
+                <label for="ano">Ano</label>
+                <input type="number" name="ano" id="ano" value="" />
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div >
+                <label for="loja">Loja</label>
+                <input type="text" name="loja" id="loja" value="" />
+            </div>
+
+            <div >
+                <label for="setor">Setor</label>
+                <input type="text" name="setor" id="setor" value="" />
+            </div>
+
+        </div>
+
+        <div >
+            <label for="setor">Telefone</label>
+            <input type="text" pattern="\([0-9]{2}\) [0-9]{4,6}-[0-9]{3,4}$" name="setor" id="setor" value="" />
+        </div>
+
+        
+
+        <div class="form-row">
+
+            <div >
+                <label for="arquivo">Arquivo</label>
+                <input type="file" name="arquivo" id="arquivo" value="" />
+            </div>
+
+        </div>
+
+
+</form>

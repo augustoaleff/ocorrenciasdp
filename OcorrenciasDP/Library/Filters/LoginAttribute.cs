@@ -22,7 +22,7 @@ namespace OcorrenciasDP.Library.Filters
                 }
 
                 context.Result = new RedirectToActionResult("Index", "Home", null);
-
+                
             }
         }
     }
